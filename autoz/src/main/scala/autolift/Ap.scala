@@ -3,7 +3,7 @@ package autolift
 import scalaz._
 
 //TODO: ok, this is repeated 3 times...
-trait Ap[FA, Function]{
+trait Ap[FA, -Function]{
 	type Out
 
 	def apply(fa: FA, f: Function): Out
