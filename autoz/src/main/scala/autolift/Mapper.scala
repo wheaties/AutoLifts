@@ -2,7 +2,7 @@ package autolift
 
 import scalaz._
 
-trait Mapper[FA, Function]{
+trait Mapper[FA, -Function]{
 	type Out
 
 	def apply(fa: FA, f: Function): Out

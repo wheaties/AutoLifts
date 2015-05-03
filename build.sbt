@@ -1,5 +1,7 @@
 import AutoLift._
 
 lazy val autoz = build("autolift", "autoz").settings(
-  libraryDependencies += "org.scalaz" %% "scalaz-core" % ScalaZ
+  libraryDependencies ++= Seq(
+  	"org.scalaz" %% "scalaz-core" % ScalaZ,
+  	"org.scalatest" %% "scalatest" % "2.2.1" % "test")
 )
