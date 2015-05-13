@@ -4,6 +4,7 @@ import scalaz.Functor
 
 object All extends AutoLiftImplicits with AutoMapImplicits with Lifters
 
+//Rename! Would like AutoLift._ just like Scalaz._
 object AutoLift extends AutoLiftImplicits
 
 trait AutoLiftImplicits{

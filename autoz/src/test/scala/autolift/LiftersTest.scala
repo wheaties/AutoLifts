@@ -9,6 +9,7 @@ class LiftersTest extends FlatSpec{
 	def same[A](x: A, y: A) = assert(x == y)
 
 	val intF = {x: Int => x+1}
+	val intL = {x: Int => List(x+1, x+2)}
 	val anyF = {x: Any => 1}
 
 	"liftF on List" should "work on a List" in{
@@ -37,5 +38,19 @@ class LiftersTest extends FlatSpec{
 		val out = lf(List(List("1")))
 
 		same[List[Int]](out, List(1))
+	}
+
+	"liftM on a List" should "work on a List" in{
+		val lf = liftM[List](intL)
+		val out = lf(List(1, 2))
+
+		same[List[Int]](out, List(2, 3, 3, 4))
+	}
+
+	"liftM on a List" should "work on an Option[List]" in{
+		val lf = liftM[List](intL)
+		val out = lf(Option(List(1, 2)))
+
+		same[Option[List[Int]]](out, Option(List(2, 3, 3, 4)))
 	}
 }
