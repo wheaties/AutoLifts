@@ -2,7 +2,7 @@ package autolift
 
 import scalaz.Functor
 
-object All extends AutoLiftImplicits with AutoMapImplicits with AutoTransformerImplicits
+object All extends AutoLiftImplicits with AutoMapImplicits with Lifters
 
 object AutoLift extends AutoLiftImplicits
 
@@ -27,17 +27,5 @@ trait AutoMapImplicits{
 	 */
 	implicit class AutoOps[F[_]: Functor, A](fa: F[A]){
 		def autoMap[Function](f: Function)(implicit dm: DepMap[F[A], Function]): dm.Out = dm(fa, f)
-	}
-}
-
-object AutoTransformer extends AutoTransformerImplicits
-
-trait AutoTransformerImplicits{
-	/** Implicit exposing methods on any type constructor with a valid Functor which provides automatic function lifting
-	 *  to the lowest nested non bindable type. */
-	implicit class AutoTransformerOps[F[_]: Functor, A](fa: F[A]){
-		def transMap[Function](f: Function)(implicit tm: TransformerMap[F[A], Function]): tm.Out = tm(fa, f)
-
-		def transFlatMap[Function](f: Function)(implicit fm: TransformerFlatMap[F[A], Function]): fm.Out = fm(fa, f)
 	}
 }
