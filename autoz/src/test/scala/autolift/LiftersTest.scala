@@ -10,6 +10,7 @@ class LiftersTest extends FlatSpec{
 
 	val intF = {x: Int => x+1}
 	val intL = {x: Int => List(x+1, x+2)}
+	val intAp = List(intF)
 	val anyF = {x: Any => 1}
 	val anyL = {x: Any => List(1)}
 
@@ -88,6 +89,20 @@ class LiftersTest extends FlatSpec{
 		val out = lf(List(1, 2, 3))
 
 		same[List[Int]](out, List(1, 1, 1))
+	}
+
+	"liftAp" should "work on a List" in{
+		val lf = liftAp(intAp)
+		val out = lf(List(1))
+
+		same[List[Int]](out, List(2))
+	}
+
+	"liftAp" should "work on an Option[List]" in{
+		val lf = liftAp(intAp)
+		val out = lf(Option(List(2, 3)))
+
+		same[Option[List[Int]]](out, Option(List(3, 4)))
 	}
 
 	"liftM" should "work on a List" in{
