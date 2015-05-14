@@ -2,6 +2,8 @@ package autolift
 
 import scalaz.Functor
 
+//TODO: for synthetic transformers flatMap, if can make M[F[A]], A => M[F[B]], and bind.bind(mfa){ something yield M[F[B]] }
+
 object All extends AutoLiftImplicits with AutoMapImplicits with Lifters
 
 //Rename! Would like AutoLift._ just like Scalaz._

@@ -2,33 +2,36 @@ package autolift
 
 import scalaz.{Functor, Bind}
 
-//TODO: Better names
-//autoLift
-//autoLiftM
+//liftAp
+//liftIntoAp?
+//TODO: need an arbitrarily nested Ap, i.e. F[M[A => B]] working on F[M[A]]
+//TODO: Think about map (compose) and if it's even possible to enforce compile time guarantees.
 
 object Lifters extends Lifters
 
 trait Lifters{
-	//call liftIntoF
-	def liftF[F[_]] = new LIFMaker[F]
+	def liftIntoF[F[_]] = new LIFMaker[F]
 
 	sealed class LIFMaker[F[_]]{
-		final def apply[Function](f: Function)(implicit ev: Functor[F]) = new LiftIntoFunctor[F, Function](f)
+		def apply[Function](f: Function)(implicit ev: Functor[F]) = new LiftIntoFunctor[F, Function](f)
 	}
 
-	//TODO: rename liftIntoM
-	def liftM[M[_]] = new LIBMaker[M]
+	def liftIntoM[M[_]] = new LIBMaker[M]
 
 	sealed class LIBMaker[F[_]]{
-		final def apply[Function](f: Function)(implicit ev: Bind[F]) = new LiftIntoBind[F, Function](f)
+		def apply[Function](f: Function)(implicit ev: Bind[F]) = new LiftIntoBind[F, Function](f)
 	}
+
+	def liftF[Function](f: Function) = new LiftedF(f)
+
+	def liftM[Function](f: Function) = new LiftedB(f)
 }
 
 class LiftIntoFunctor[F[_]: Functor, Function](f: Function){
 	def apply[That](that: That)(implicit into: LiftIntoF[F, That, Function]): into.Out = into(that, f)
 }
 
-trait LiftIntoF[F[_], Obj, Function]{
+sealed trait LiftIntoF[F[_], Obj, Function]{
 	type Out
 
 	def apply(obj: Obj, f: Function): Out
@@ -56,11 +59,11 @@ trait LowPriorityLiftIntoF{
 		}
 }
 
-class LiftIntoBind[M[_]: Bind, Function](f: Function){
+sealed class LiftIntoBind[M[_]: Bind, Function](f: Function){
 	def apply[That](that: That)(implicit into: LiftIntoB[M, That, Function]): into.Out = into(that, f)
 }
 
-trait LiftIntoB[M[_], Obj, Function]{
+sealed trait LiftIntoB[M[_], Obj, Function]{
 	type Out
 
 	def apply(obj: Obj, f: Function): Out
@@ -88,11 +91,11 @@ trait LowPriorityLiftIntoB{
 		}
 }
 
-class LiftedF[Function](f: Function){
+sealed class LiftedF[Function](f: Function){
 	def apply[That](that: That)(implicit lift: LiftF[That, Function]): lift.Out = lift(that, f)
 }
 
-trait LiftF[Obj, Function]{
+sealed trait LiftF[Obj, Function]{
 	type Out
 
 	def apply(obj: Obj, f: Function): Out
@@ -114,6 +117,38 @@ trait LowPriorityLiftF{
 
 	implicit def recur[F[_], G, Function](implicit functor: Functor[F], lift: LiftF[G, Function]): Aux[F[G], Function, F[lift.Out]] =
 		new LiftF[F[G], Function]{
+			type Out = F[lift.Out]
+
+			def apply(fg: F[G], f: Function) = functor.map(fg){ g: G => lift(g, f) }
+		}
+}
+
+sealed class LiftedB[Function](f: Function){
+	def apply[That](that: That)(implicit lift: LiftB[That, Function]): lift.Out = lift(that, f)
+}
+
+sealed trait LiftB[Obj, Function]{
+	type Out
+
+	def apply(obj: Obj, f: Function): Out
+}
+
+object LiftB extends LowPriorityLiftB {
+	def apply[Obj, Function](implicit lift: LiftB[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
+
+	implicit def base[M[_], A, C >: A, B](implicit bind: Bind[M]): Aux[M[A], C => M[B], M[B]] =
+		new LiftB[M[A], C => M[B]]{
+			type Out = M[B]
+
+			def apply(fa: M[A], f: C => M[B]) = bind.bind(fa)(f)
+		}
+}
+
+trait LowPriorityLiftB{
+	type Aux[Obj, Function, Out0] = LiftB[Obj, Function]{ type Out = Out0 }
+
+	implicit def recur[F[_], G, Function](implicit functor: Functor[F], lift: LiftB[G, Function]): Aux[F[G], Function, F[lift.Out]] =
+		new LiftB[F[G], Function]{
 			type Out = F[lift.Out]
 
 			def apply(fg: F[G], f: Function) = functor.map(fg){ g: G => lift(g, f) }
