@@ -4,7 +4,7 @@ package autolift
 import org.scalatest._
 import scalaz._
 import Scalaz._
-import AutoLift._
+import All._
 
 class AutoLiftTest extends FlatSpec{
 	def same[A](x: A, y: A) = assert(x == y)
@@ -44,8 +44,38 @@ class AutoLiftTest extends FlatSpec{
 
 	"liftAp on an Option[List]" should "work" in{
 		val in = Option(List(1))
-		val out = in.liftAp(List({x: Int => x + 1}))
+		val out = in liftAp List(intF)
 
-		same(out, Option(List(2)))
+		same[Option[List[Int]]](out, Option(List(2)))
+	}
+
+	"transformMap on a List" should "work" in{
+		val in = List(1)
+		val out = in transformMap intF
+
+		same[List[Int]](out, List(2))
+	}
+
+	"transformMap on an Option[List]" should "work" in{
+		val in = Option(List(1))
+		val out = in transformMap intF
+
+		same[Option[List[Int]]](out, Option(List(2)))
+	}
+
+	//TODO: ill defined test to show it only goes to inner most type
+
+	"transformAp on a List" should "work" in{
+		val in = List(1)
+		val out = in transformAp List(intF)
+
+		same[List[Int]](out, List(2))
+	}
+
+	"transformAp on an Option[List]" should "work" in{
+		val in = Option(List(1))
+		val out = in transformAp Option(List(intF))
+
+		same[Option[List[Int]]](out, Option(List(2)))
 	}
 }
