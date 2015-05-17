@@ -65,6 +65,13 @@ class AutoLiftTest extends FlatSpec{
 
 	//TODO: ill defined test to show it only goes to inner most type
 
+	"transformMap on an Option[List] w/ an Any => B" should "force application to the List" in{
+		val in = Option(List(1))
+		val out = in transformMap anyF
+
+		same[Option[List[Int]]](out, Option(List(1)))
+	}
+
 	"transformAp on a List" should "work" in{
 		val in = List(1)
 		val out = in transformAp List(intF)

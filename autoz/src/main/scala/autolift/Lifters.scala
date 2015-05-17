@@ -1,11 +1,8 @@
 package autolift
 
-//Applicative or Apply?
-import scalaz.{Functor, Applicative, Bind}
+import scalaz.{Functor, Apply, Bind}
 
-//liftAp
-//liftIntoAp?
-//TODO: need an arbitrarily nested Ap, i.e. F[M[A => B]] working on F[M[A]]
+//TODO: liftIntoAp?
 //TODO: Think about map (compose) and if it's even possible to enforce compile time guarantees.
 
 object Lifters extends Lifters
@@ -140,7 +137,7 @@ sealed trait LiftAp[Obj, Function]{
 object LiftAp extends LowPriorityLiftAp {
 	def apply[Obj, Function](implicit lift: LiftAp[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
 
-	implicit def base[F[_], A, B](implicit ap: Applicative[F]): Aux[F[A], F[A => B], F[B]] =
+	implicit def base[F[_], A, B](implicit ap: Apply[F]): Aux[F[A], F[A => B], F[B]] =
 		new LiftAp[F[A], F[A => B]]{
 			type Out = F[B]
 

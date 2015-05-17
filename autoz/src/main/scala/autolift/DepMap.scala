@@ -1,6 +1,14 @@
 package autolift
 
-import scalaz._
+import scalaz.{Bind, Apply, Functor}
+
+trait Mappers{
+	def auto[Function](f: Function) = new AutoApply(f)
+
+	sealed class AutoApply[Function](f: Function){
+		def apply[FA](fa: FA)(implicit dm: DepMap[FA, Function]): dm.Out = dm(fa, f)
+	}
+}
 
 trait DepMap[FA, -Function]{
 	type Out
@@ -8,24 +16,33 @@ trait DepMap[FA, -Function]{
 	def apply(fa: FA, f: Function): Out
 }
 
-object DepMap extends DepMapLowPriority{
+object DepMap extends DepMapLowerPriority{
 	def apply[FA, Function](implicit depmap: DepMap[FA, Function]): Aux[FA, Function, depmap.Out] = depmap
 
-	implicit def fm[M[_], A, B](implicit bind: Bind[M]): Aux[M[A], A => M[B], M[B]] =
-		new DepMap[M[A], A => M[B]]{
+	implicit def fm[M[_], A, C >: A, B](implicit bind: Bind[M]): Aux[M[A], C => M[B], M[B]] =
+		new DepMap[M[A], C => M[B]]{
 			type Out = M[B]
 
-			def apply(ma: M[A], f: A => M[B]) = bind.bind(ma)(f)
+			def apply(ma: M[A], f: C => M[B]) = bind.bind(ma)(f)
+		}
+}
+
+trait DepMapLowerPriority extends DepMapLowPriority{
+	implicit def ap[F[_], A, B](implicit ap: Apply[F]): Aux[F[A], F[A => B], F[B]] =
+		new DepMap[F[A], F[A => B]]{
+			type Out = F[B]
+
+			def apply(fa: F[A], f: F[A => B]) = ap.ap(fa)(f)
 		}
 }
 
 trait DepMapLowPriority{
 	type Aux[FA, Function, Out0] = DepMap[FA, Function]{ type Out = Out0 }
 
-	implicit def m[F[_], A, B](implicit functor: Functor[F]): Aux[F[A], A => B, F[B]] =
-		new DepMap[F[A], A => B]{
+	implicit def m[F[_], A, C >: A, B](implicit functor: Functor[F]): Aux[F[A], C => B, F[B]] =
+		new DepMap[F[A], C => B]{
 			type Out = F[B]
 
-			def apply(fa: F[A], f: A => B) = functor.map(fa)(f)
+			def apply(fa: F[A], f: C => B) = functor.map(fa)(f)
 		}
 }
