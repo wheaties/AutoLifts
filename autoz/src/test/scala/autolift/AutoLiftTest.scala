@@ -49,6 +49,48 @@ class AutoLiftTest extends FlatSpec{
 		same[Option[List[Int]]](out, Option(List(2)))
 	}
 
+	"liftFoldMap on a List" should "work" in{
+		val in = List("1")
+		val out = in liftFoldMap {x: String => x.toInt }
+
+		same[Int](out, 1)
+	}
+
+	"liftFoldMap on a List" should "work with functions" in{
+		val in = List(1, 2)
+		val out = in liftFoldMap anyF
+
+		same[Int](out, 2)
+	}
+
+	"liftFoldMap on an Option[List]" should "work" in{
+		val in = Option(List(1))
+		val out = in liftFoldMap intF
+
+		same[Int](out, 2)
+	}
+
+	"liftFold on a List" should "work" in{
+		val in = List(1, 2, 3)
+		val out = in.liftFold
+
+		same[Int](out, 6)
+	}
+
+	"liftFold on a List[Option]" should "work" in{
+		val in = List(Option(1), Option(2), None)
+		val out = in.liftFold
+
+		same[Option[Int]](out, Option(3))
+	}
+
+	"liftFold on a List[List]" should "work on the List if the type A is not a Monoid" in{
+		val in = List(List(1, "2"), List("3", 4))
+		val out = in.liftFold
+
+		same[Any](out, List(1, "2", "3", 4))
+	}
+
 	"transformMap on a List" should "work" in{
 		val in = List(1)
 		val out = in transformMap intF
