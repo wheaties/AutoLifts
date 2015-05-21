@@ -2,9 +2,6 @@ package autolift
 
 import scalaz.{Functor, Apply, Bind, Foldable, Monoid}
 
-//TODO: liftIntoAp?
-//TODO: Think about map (compose) and if it's even possible to enforce compile time guarantees.
-
 object Lifters extends Lifters
 
 trait Lifters{
@@ -22,7 +19,6 @@ trait Lifters{
 
 	def foldOver[F[_]: Foldable] = new FoldOver[F]
 
-	//should be foldMap
 	def liftFoldMap[Function](f: Function) = new LiftedFoldMap(f)
 }
 
@@ -30,11 +26,7 @@ class LiftIntoFunctor[F[_]: Functor, Function](f: Function){
 	def apply[That](that: That)(implicit into: LiftIntoF[F, That, Function]): into.Out = into(that, f)
 }
 
-sealed trait LiftIntoF[F[_], Obj, Function]{
-	type Out
-
-	def apply(obj: Obj, f: Function): Out
-}
+sealed trait LiftIntoF[F[_], Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftIntoF extends LowPriorityLiftIntoF{
 	def apply[F[_], Obj, Function](implicit lift: LiftIntoF[F, Obj, Function]): Aux[F, Obj, Function, lift.Out] = lift
@@ -62,11 +54,7 @@ sealed class LiftedF[Function](f: Function){
 	def apply[That](that: That)(implicit lift: LiftF[That, Function]): lift.Out = lift(that, f)
 }
 
-sealed trait LiftF[Obj, Function]{
-	type Out
-
-	def apply(obj: Obj, f: Function): Out
-}
+sealed trait LiftF[Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftF extends LowPriorityLiftF {
 	def apply[Obj, Function](implicit lift: LiftF[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
@@ -90,16 +78,11 @@ trait LowPriorityLiftF{
 		}
 }
 
-//
 sealed class LiftedAp[Function](f: Function){
 	def apply[That](that: That)(implicit lift: LiftAp[That, Function]): lift.Out = lift(that, f)
 }
 
-sealed trait LiftAp[Obj, Function]{
-	type Out
-
-	def apply(obj: Obj, f: Function): Out
-}
+sealed trait LiftAp[Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftAp extends LowPriorityLiftAp {
 	def apply[Obj, Function](implicit lift: LiftAp[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
@@ -127,11 +110,7 @@ sealed class LiftedB[Function](f: Function){
 	def apply[That](that: That)(implicit lift: LiftB[That, Function]): lift.Out = lift(that, f)
 }
 
-sealed trait LiftB[Obj, Function]{
-	type Out
-
-	def apply(obj: Obj, f: Function): Out
-}
+sealed trait LiftB[Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftB extends LowPriorityLiftB {
 	def apply[Obj, Function](implicit lift: LiftB[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
@@ -159,11 +138,7 @@ sealed class LiftedFoldMap[Function](f: Function){
 	def apply[That](that: That)(implicit fold: LiftFoldMap[That, Function]): fold.Out = fold(that, f)
 }
 
-trait LiftFoldMap[Obj, Function]{
-	type Out
-
-	def apply(obj: Obj, f: Function): Out
-}
+trait LiftFoldMap[Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftFoldMap extends LowPriorityLiftFoldMap{
 	def apply[Obj, Function](implicit lift: LiftFoldMap[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
@@ -189,30 +164,26 @@ trait LowPriorityLiftFoldMap{
 		}
 }
 
-trait LiftFold[Obj]{
-	type Out
+trait LiftedFold[Obj] extends DFunction1[Obj]
 
-	def apply(obj: Obj): Out
-}
-
-object LiftFold extends LowPriorityLiftFold{
-	def apply[Obj](implicit lift: LiftFold[Obj]): Aux[Obj, lift.Out] = lift
+object LiftedFold extends LowPriorityLiftedFold{
+	def apply[Obj](implicit lift: LiftedFold[Obj]): Aux[Obj, lift.Out] = lift
 
 	implicit def base[F[_], A](implicit fold: Foldable[F], ev: Monoid[A]): Aux[F[A], A] =
-		new LiftFold[F[A]]{
+		new LiftedFold[F[A]]{
 			type Out = A
 
 			def apply(fa: F[A]) = fold.fold(fa)
 		}
 }
 
-trait LowPriorityLiftFold{
-	type Aux[Obj, Out0] = LiftFold[Obj]{ type Out = Out0 }
+trait LowPriorityLiftedFold{
+	type Aux[Obj, Out0] = LiftedFold[Obj]{ type Out = Out0 }
 
 	implicit def recur[F[_], G, Out0](implicit fold: Foldable[F], 
-											   lift: LiftFold.Aux[G, Out0], 
+											   lift: LiftedFold.Aux[G, Out0], 
 											   ev: Monoid[Out0]): Aux[F[G], Out0] =
-		new LiftFold[F[G]]{
+		new LiftedFold[F[G]]{
 			type Out = Out0
 
 			def apply(fg: F[G]) = fold.foldMap(fg){ g: G => lift(g) }
@@ -223,11 +194,7 @@ sealed class FoldOver[F[_]: Foldable]{
 	def apply[That](that: That)(implicit fold: FoldedOver[F, That]): fold.Out = fold(that)
 }
 
-trait FoldedOver[F[_], Obj]{
-	type Out
-
-	def apply(obj: Obj): Out
-}
+trait FoldedOver[F[_], Obj] extends DFunction1[Obj]
 
 object FoldedOver extends LowPriorityFoldedOver{
 	def apply[F[_], Obj](implicit fold: FoldedOver[F, Obj]): Aux[F, Obj, fold.Out] = fold
@@ -250,5 +217,33 @@ trait LowPriorityFoldedOver{
 			type Out = Out0
 
 			def apply(gh: G[H]) = fold.foldMap(gh){ h: H => over(h) }
+		}
+}
+
+sealed class FoldUpTo[F[_]: Functor]{
+	def apply[That](that: That)(implicit fold: FoldedUpTo[F, That]): fold.Out = fold(that)
+}
+
+trait FoldedUpTo[F[_], Obj] extends DFunction1[Obj]
+
+object FoldedUpTo extends LowPriorityFoldedUpTo{
+	def apply[F[_], Obj](implicit fold: FoldedUpTo[F, Obj]): Aux[F, Obj, fold.Out] = fold
+
+	implicit def base[F[_], A](implicit functor: Functor[F], lift: LiftedFold[A]): Aux[F, F[A], F[lift.Out]] =
+		new FoldedUpTo[F, F[A]]{
+			type Out = F[lift.Out]
+
+			def apply(fa: F[A]) = functor.map(fa){ a: A => lift(a) }
+		}
+}
+
+trait LowPriorityFoldedUpTo{
+	type Aux[F[_], Obj, Out0] = FoldedUpTo[F, Obj]{ type Out = Out0 }
+
+	implicit def recur[F[_], G[_], H](implicit functor: Functor[G], fold: FoldedUpTo[F, H]): Aux[F, G[H], G[fold.Out]] =
+		new FoldedUpTo[F, G[H]]{
+			type Out = G[fold.Out]
+
+			def apply(gh: G[H]) = functor.map(gh){ h: H => fold(h) }
 		}
 }

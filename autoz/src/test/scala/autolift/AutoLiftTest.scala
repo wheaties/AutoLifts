@@ -91,6 +91,20 @@ class AutoLiftTest extends FlatSpec{
 		same[Any](out, List(1, "2", "3", 4))
 	}
 
+	"foldOver on a List[Option] w/ List" should "work" in{
+		val in = List(Option(1), None)
+		val out = in.foldOver[List]
+
+		same[Option[Int]](out, Option(1))
+	}
+
+	"foldOver on a List[Option] w/ Option" should "work" in{
+		val in = List(Option(1), None)
+		val out = in.foldOver[Option]
+
+		same[Int](out, 1)
+	}
+
 	"transformMap on a List" should "work" in{
 		val in = List(1)
 		val out = in transformMap intF

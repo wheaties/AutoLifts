@@ -17,12 +17,16 @@ trait AutoLiftImplicits{
 		def liftAp[Function](f: Function)(implicit lift: LiftAp[F[A], Function]): lift.Out = lift(fa, f)
 
 		def liftFlatMap[Function](f: Function)(implicit lift: LiftB[F[A], Function]): lift.Out = lift(fa, f)
+
+		def foldUpTo[M[_]](implicit fold: FoldedUpTo[M, F[A]]): fold.Out = fold(fa)
 	}
 
 	implicit class LifterFolds[F[_]: Foldable, A](fa: F[A]){
 		def liftFoldMap[Function](f: Function)(implicit lift: LiftFoldMap[F[A], Function]): lift.Out = lift(fa, f)
 
-		def liftFold(implicit lift: LiftFold[F[A]]): lift.Out = lift(fa)
+		def liftFold(implicit lift: LiftedFold[F[A]]): lift.Out = lift(fa)
+
+		def foldOver[M[_]](implicit fold: FoldedOver[M, F[A]]): fold.Out = fold(fa)
 	}
 }
 
