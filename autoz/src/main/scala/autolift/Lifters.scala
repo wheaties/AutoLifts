@@ -17,9 +17,10 @@ trait Lifters{
 
 	def liftM[Function](f: Function) = new LiftedB(f)
 
+	//TODO: Move to Folders.scala
 	def foldOver[F[_]: Foldable] = new FoldOver[F]
 
-	def liftFoldMap[Function](f: Function) = new LiftedFoldMap(f)
+	//def liftFoldMap[Function](f: Function) = new LiftedFoldMap(f)
 }
 
 class LiftIntoFunctor[F[_]: Functor, Function](f: Function){
@@ -134,14 +135,82 @@ trait LowPriorityLiftB{
 		}
 }
 
-sealed class LiftedFoldMap[Function](f: Function){
-	def apply[That](that: That)(implicit fold: LiftFoldMap[That, Function]): fold.Out = fold(that, f)
+trait LiftFoldLeft[FA, Function, Z] extends DFunction3[FA, Function, Z]
+
+object LiftFoldLeft extends LowPriorityLiftFoldLeft{
+	def apply[FA, Function, Z](implicit lift: LiftFoldLeft[FA, Function, Z]): Aux[FA, Function, Z, lift.Out] = lift
+
+	implicit def base[F[_], A, C >: A, B](implicit fold: Foldable[F]): Aux[F[A], (B, C) => B, B, B] =
+		new LiftFoldLeft[F[A], (B, C) => B, B]{
+			type Out = B
+
+			def apply(fa: F[A], f: (B, C) => B, z: B) = fold.foldLeft(fa, z)(f)
+		}
 }
 
-trait LiftFoldMap[Obj, Function] extends DFunction2[Obj, Function]
+trait LowPriorityLiftFoldLeft{
+	type Aux[FA, Function, Z, Out0] = LiftFoldLeft[FA, Function, Z]{ type Out = Out0 }
+
+	implicit def recur[F[_], G, Function, Z](implicit functor: Functor[F], lift: LiftFoldLeft[G, Function, Z]): Aux[F[G], Function, Z, F[lift.Out]] =
+		new LiftFoldLeft[F[G], Function, Z]{
+			type Out = F[lift.Out]
+
+			def apply(fg: F[G], f: Function, z: Z) = functor.map(fg){ g: G => lift(g, f, z) }
+		}
+}
+
+trait LiftFoldRight[FA, Function, Z] extends DFunction3[FA, Function, Z]
+
+object LiftFoldRight extends LowPriorityLiftFoldRight{
+	def apply[FA, Function, Z](implicit lift: LiftFoldRight[FA, Function, Z]): Aux[FA, Function, Z, lift.Out] = lift
+
+	implicit def base[F[_], A, C >: A, B](implicit fold: Foldable[F]): Aux[F[A], (C, => B) => B, B, B] =
+		new LiftFoldRight[F[A], (C, => B) => B, B]{
+			type Out = B
+
+			def apply(fa: F[A], f: (C, => B) => B, z: B) = fold.foldRight(fa, z)(f)
+		}
+}
+
+trait LowPriorityLiftFoldRight{
+	type Aux[FA, Function, Z, Out0] = LiftFoldRight[FA, Function, Z]{ type Out = Out0 }
+
+	implicit def recur[F[_], G, Function, Z](implicit functor: Functor[F], lift: LiftFoldRight[G, Function, Z]): Aux[F[G], Function, Z, F[lift.Out]] =
+		new LiftFoldRight[F[G], Function, Z]{
+			type Out = F[lift.Out]
+
+			def apply(fg: F[G], f: Function, z: Z) = functor.map(fg){ g: G => lift(g, f, z) }
+		}
+}
+
+trait LiftFold[FA] extends DFunction1[FA]
+
+object LiftFold extends LowPriorityLiftFold{
+	def apply[FA](implicit lift: LiftFold[FA]): Aux[FA, lift.Out] = lift
+
+	implicit def base[F[_], A](implicit fold: Foldable[F], ev: Monoid[A]): Aux[F[A], A] =
+		new LiftFold[F[A]]{
+			type Out = A
+
+			def apply(fa: F[A]) = fold.fold(fa)
+		}
+}
+
+trait LowPriorityLiftFold{
+	type Aux[FA, Out0] = LiftFold[FA]{ type Out = Out0 }
+
+	implicit def recur[F[_], G](implicit functor: Functor[F], lift: LiftFold[G]): Aux[F[G], F[lift.Out]] =
+		new LiftFold[F[G]]{
+			type Out = F[lift.Out]
+
+			def apply(fg: F[G]) = functor.map(fg){ g: G => lift(g) }
+		}
+}
+
+trait LiftFoldMap[FA, Function] extends DFunction2[FA, Function]
 
 object LiftFoldMap extends LowPriorityLiftFoldMap{
-	def apply[Obj, Function](implicit lift: LiftFoldMap[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
+	def apply[FA, Function](implicit lift: LiftFoldMap[FA, Function]): Aux[FA, Function, lift.Out] = lift
 
 	implicit def base[F[_], A, C >: A, B](implicit fold: Foldable[F], ev: Monoid[B]): Aux[F[A], C => B, B] =
 		new LiftFoldMap[F[A], C => B]{
@@ -152,98 +221,12 @@ object LiftFoldMap extends LowPriorityLiftFoldMap{
 }
 
 trait LowPriorityLiftFoldMap{
-	type Aux[Obj, Function, Out0] = LiftFoldMap[Obj, Function]{ type Out = Out0 }
+	type Aux[FA, Function, Out0] = LiftFoldMap[FA, Function]{ type Out = Out0 }
 
-	implicit def recur[F[_], G, Function, Out0](implicit fold: Foldable[F], 
-														 lift: LiftFoldMap.Aux[G, Function, Out0], 
-														 ev: Monoid[Out0]): Aux[F[G], Function, Out0] =
+	implicit def recur[F[_], G, Function](implicit functor: Functor[F], lift: LiftFoldMap[G, Function]): Aux[F[G], Function, F[lift.Out]] =
 		new LiftFoldMap[F[G], Function]{
-			type Out = Out0
-
-			def apply(fg: F[G], f: Function) = fold.foldMap(fg){ g: G => lift(g, f) }
-		}
-}
-
-trait LiftedFold[Obj] extends DFunction1[Obj]
-
-object LiftedFold extends LowPriorityLiftedFold{
-	def apply[Obj](implicit lift: LiftedFold[Obj]): Aux[Obj, lift.Out] = lift
-
-	implicit def base[F[_], A](implicit fold: Foldable[F], ev: Monoid[A]): Aux[F[A], A] =
-		new LiftedFold[F[A]]{
-			type Out = A
-
-			def apply(fa: F[A]) = fold.fold(fa)
-		}
-}
-
-trait LowPriorityLiftedFold{
-	type Aux[Obj, Out0] = LiftedFold[Obj]{ type Out = Out0 }
-
-	implicit def recur[F[_], G, Out0](implicit fold: Foldable[F], 
-											   lift: LiftedFold.Aux[G, Out0], 
-											   ev: Monoid[Out0]): Aux[F[G], Out0] =
-		new LiftedFold[F[G]]{
-			type Out = Out0
-
-			def apply(fg: F[G]) = fold.foldMap(fg){ g: G => lift(g) }
-		}
-}
-
-sealed class FoldOver[F[_]: Foldable]{
-	def apply[That](that: That)(implicit fold: FoldedOver[F, That]): fold.Out = fold(that)
-}
-
-trait FoldedOver[F[_], Obj] extends DFunction1[Obj]
-
-object FoldedOver extends LowPriorityFoldedOver{
-	def apply[F[_], Obj](implicit fold: FoldedOver[F, Obj]): Aux[F, Obj, fold.Out] = fold
-
-	implicit def base[F[_], A](implicit fold: Foldable[F], ev: Monoid[A]): Aux[F, F[A], A] =
-		new FoldedOver[F, F[A]]{
-			type Out = A
-
-			def apply(fa: F[A]) = fold.fold(fa)
-		}
-}
-
-trait LowPriorityFoldedOver{
-	type Aux[F[_], Obj, Out0] = FoldedOver[F, Obj]{ type Out = Out0 }
-
-	implicit def recur[F[_], G[_], H, Out0](implicit fold: Foldable[G], 
-													 over: FoldedOver.Aux[F, H, Out0], 
-													 ev: Monoid[Out0]): Aux[F, G[H], Out0] =
-		new FoldedOver[F, G[H]]{
-			type Out = Out0
-
-			def apply(gh: G[H]) = fold.foldMap(gh){ h: H => over(h) }
-		}
-}
-
-sealed class FoldUpTo[F[_]: Functor]{
-	def apply[That](that: That)(implicit fold: FoldedUpTo[F, That]): fold.Out = fold(that)
-}
-
-trait FoldedUpTo[F[_], Obj] extends DFunction1[Obj]
-
-object FoldedUpTo extends LowPriorityFoldedUpTo{
-	def apply[F[_], Obj](implicit fold: FoldedUpTo[F, Obj]): Aux[F, Obj, fold.Out] = fold
-
-	implicit def base[F[_], A](implicit functor: Functor[F], lift: LiftedFold[A]): Aux[F, F[A], F[lift.Out]] =
-		new FoldedUpTo[F, F[A]]{
 			type Out = F[lift.Out]
 
-			def apply(fa: F[A]) = functor.map(fa){ a: A => lift(a) }
-		}
-}
-
-trait LowPriorityFoldedUpTo{
-	type Aux[F[_], Obj, Out0] = FoldedUpTo[F, Obj]{ type Out = Out0 }
-
-	implicit def recur[F[_], G[_], H](implicit functor: Functor[G], fold: FoldedUpTo[F, H]): Aux[F, G[H], G[fold.Out]] =
-		new FoldedUpTo[F, G[H]]{
-			type Out = G[fold.Out]
-
-			def apply(gh: G[H]) = functor.map(gh){ h: H => fold(h) }
+			def apply(fg: F[G], f: Function) = functor.map(fg){ g: G => lift(g, f) }
 		}
 }

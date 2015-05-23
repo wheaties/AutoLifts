@@ -11,21 +11,34 @@ trait AutoLiftImplicits{
 	/** Implicit explosing methods on any type constructor with a valid Functor which provides automatic function 
 	 *  lifting based upon the type of the function. 
 	 */
-	implicit class LifterMappings[F[_]: Functor, A](fa: F[A]){
+	implicit class LifterOps[F[_]: Functor, A](fa: F[A]){
 		def liftMap[Function](f: Function)(implicit lift: LiftF[F[A], Function]): lift.Out = lift(fa, f)
 
 		def liftAp[Function](f: Function)(implicit lift: LiftAp[F[A], Function]): lift.Out = lift(fa, f)
 
 		def liftFlatMap[Function](f: Function)(implicit lift: LiftB[F[A], Function]): lift.Out = lift(fa, f)
 
-		def foldUpTo[M[_]](implicit fold: FoldedUpTo[M, F[A]]): fold.Out = fold(fa)
-	}
+		def liftFoldLeft[Function, Z](z: Z)(f: Function)(implicit lift: LiftFoldLeft[F[A], Function, Z]): lift.Out = 
+			lift(fa, f, z)
 
-	implicit class LifterFolds[F[_]: Foldable, A](fa: F[A]){
+		def liftFoldRight[Function, Z](z: Z)(f: Function)(implicit lift: LiftFoldRight[F[A], Function, Z]): lift.Out = 
+			lift(fa, f, z)
+
+		def liftFold(implicit lift: LiftFold[F[A]]): lift.Out = lift(fa)
+
 		def liftFoldMap[Function](f: Function)(implicit lift: LiftFoldMap[F[A], Function]): lift.Out = lift(fa, f)
 
-		def liftFold(implicit lift: LiftedFold[F[A]]): lift.Out = lift(fa)
+		//TODO: Move trait to Lifters.scala and rename
+		def liftFoldAt[M[_]](implicit fold: FoldedUpTo[M, F[A]]): fold.Out = fold(fa)
+	}
 
+	//TODO: This should be in a FolderImplicits
+	implicit class FolderOps[F[_]: Foldable, A](fa: F[A]){
+		def foldWith[Function](f: Function)(implicit lift: FoldMap[F[A], Function]): lift.Out = lift(fa, f)
+
+		def foldAll(implicit fold: FoldAll[F[A]]): fold.Out = fold(fa)
+
+		//TODO: Fix naming of FoldedOver to FoldOver
 		def foldOver[M[_]](implicit fold: FoldedOver[M, F[A]]): fold.Out = fold(fa)
 	}
 }
@@ -43,6 +56,7 @@ trait AutoMapImplicits{
 
 object AutoTransform extends AutoTransformImplicits
 
+//TODO: Folds for these!
 trait AutoTransformImplicits{
 	implicit class TransformerOps[F[_]: Functor, A](fa: F[A]){
 		def transformMap[Function](f: Function)(implicit trans: TransformerF[F[A], Function]): trans.Out = trans(fa, f)

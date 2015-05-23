@@ -1,6 +1,5 @@
 package autolift
 
-
 import org.scalatest._
 import scalaz._
 import Scalaz._
@@ -11,6 +10,7 @@ class AutoLiftTest extends FlatSpec{
 
 	val intF = { x: Int => x + 1 }
 	val intL = { x: Int => List(x + 1) }
+	def intintF(x: Int, y: Int) = x + y
 	val anyF = { x: Any => 1 }
 	val anyO = { x: Any => Option(1) }
 
@@ -49,25 +49,25 @@ class AutoLiftTest extends FlatSpec{
 		same[Option[List[Int]]](out, Option(List(2)))
 	}
 
-	"liftFoldMap on a List" should "work" in{
-		val in = List("1")
-		val out = in liftFoldMap {x: String => x.toInt }
+	"liftFoldLeft on a List" should "work" in{
+		val in = List(1, 2, 3)
+		val out = in.liftFoldLeft(0)(intintF _)
 
-		same[Int](out, 1)
+		same[Int](out, 6)
 	}
 
-	"liftFoldMap on a List" should "work with functions" in{
-		val in = List(1, 2)
-		val out = in liftFoldMap anyF
+	"liftFoldLeft on a List[Option]" should "work" in{
+		val in = List(Option(1), Option(2), None)
+		val out = in.liftFoldLeft(3)(intintF _)
 
-		same[Int](out, 2)
+		same[List[Int]](out, List(4, 5, 3))
 	}
 
-	"liftFoldMap on an Option[List]" should "work" in{
-		val in = Option(List(1))
-		val out = in liftFoldMap intF
+	"liftFoldAt on a List" should "work" in{
+		val in = List(1, 2, 3)
+		val out = in.liftFoldAt[List]
 
-		same[Int](out, 2)
+		same[Int](out, 6)
 	}
 
 	"liftFold on a List" should "work" in{
@@ -77,16 +77,85 @@ class AutoLiftTest extends FlatSpec{
 		same[Int](out, 6)
 	}
 
-	"liftFold on a List[Option]" should "work" in{
-		val in = List(Option(1), Option(2), None)
+	"liftFold on a List[List]" should "work" in{
+		val in = List(Nil, Nil, List(1))
 		val out = in.liftFold
+
+		same[List[Int]](out, List(1))
+	}
+
+	"liftFoldMap on a List" should "work" in{
+		val in = List("1", "2", "3")
+		val out = in.liftFoldMap{ x: String => x.toInt }
+
+		same[Int](out, 6)
+	}
+
+	"liftFoldMap on a List[Option]" should "work" in{
+		val in = List(Option("1"), Option("2"), Option("3"))
+		val out = in.liftFoldMap{ x: String => x.toInt }
+
+		same[List[Int]](out, List(1, 2, 3))
+	}
+
+	"liftFoldAt on a List[Option] w/ List" should "work" in{
+		val in = List(Option(1), None, Option(2))
+		val out = in.liftFoldAt[List]
 
 		same[Option[Int]](out, Option(3))
 	}
 
-	"liftFold on a List[List]" should "work on the List if the type A is not a Monoid" in{
+	"liftFoldAt on a List[Option] w/ Option" should "work" in{
+		val in = List(Option(1), None, Option(2))
+		val out = in.liftFoldAt[Option]
+
+		same[List[Int]](out, List(1, 0, 2))
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+
+	//TODO: This below is folders
+
+	///////////////////////////////////////////////////////////////////////////
+
+	"foldWith on a List" should "work" in{
+		val in = List("1")
+		val out = in foldWith {x: String => x.toInt }
+
+		same[Int](out, 1)
+	}
+
+	"foldWith on a List" should "work with functions" in{
+		val in = List(1, 2)
+		val out = in foldWith anyF
+
+		same[Int](out, 2)
+	}
+
+	"foldWith on an Option[List]" should "work" in{
+		val in = Option(List(1))
+		val out = in foldWith intF
+
+		same[Int](out, 2)
+	}
+
+	"foldAll on a List" should "work" in{
+		val in = List(1, 2, 3)
+		val out = in.foldAll
+
+		same[Int](out, 6)
+	}
+
+	"foldAll on a List[Option]" should "work" in{
+		val in = List(Option(1), Option(2), None)
+		val out = in.foldAll
+
+		same[Option[Int]](out, Option(3))
+	}
+
+	"foldAll on a List[List]" should "work on the List if the type A is not a Monoid" in{
 		val in = List(List(1, "2"), List("3", 4))
-		val out = in.liftFold
+		val out = in.foldAll
 
 		same[Any](out, List(1, "2", "3", 4))
 	}
@@ -104,6 +173,12 @@ class AutoLiftTest extends FlatSpec{
 
 		same[Int](out, 1)
 	}
+
+	///////////////////////////////////////////////////////////////////////////
+
+	//TODO: This below is transforms
+
+	///////////////////////////////////////////////////////////////////////////
 
 	"transformMap on a List" should "work" in{
 		val in = List(1)

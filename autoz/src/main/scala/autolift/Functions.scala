@@ -15,3 +15,11 @@ trait DFunction2[A,B]{
 
 	override def toString() = "<DFunction2>"
 }
+
+trait DFunction3[A,B, C]{
+	type Out
+
+	def apply(a: A, b: B, c: C): Out
+
+	override def toString() = "<DFunction3>"
+}
