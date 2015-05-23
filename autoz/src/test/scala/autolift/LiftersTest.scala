@@ -42,34 +42,6 @@ class LiftersTest extends FlatSpec{
 		same[List[Int]](out, List(1))
 	}
 
-	"liftIntoM on a List" should "work on a List" in{
-		val lf = liftIntoM[List](intL)
-		val out = lf(List(1, 2))
-
-		same[List[Int]](out, List(2, 3, 3, 4))
-	}
-
-	"liftIntoM on a List" should "work on an Option[List]" in{
-		val lf = liftIntoM[List](intL)
-		val out = lf(Option(List(1, 2)))
-
-		same[Option[List[Int]]](out, Option(List(2, 3, 3, 4)))
-	}
-
-	"liftIntoM on a List" should "work with functions" in{
-		val lf = liftIntoM[List](anyL)
-		val out = lf(List("2"))
-
-		same[List[Int]](out, List(1))
-	}
-
-	"liftIntoM on a List" should "work on first matching List" in{
-		val lf = liftIntoM[List](anyL)
-		val out = lf(List(List("2")))
-
-		same[List[Int]](out, List(1))
-	}
-
 	"liftF" should "work on a List" in{
 		val lf = liftF(intF)
 		val out = lf(List(1))
