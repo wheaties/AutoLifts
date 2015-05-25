@@ -12,11 +12,14 @@ object AutoLift{
 	    publishArtifact in Test := false,
 	    scalacOptions ++= Seq(
       	  "-deprecation",
-      	  "-encoding", 
-      	  "UTF-8",
+      	  "-encoding", "UTF-8",
       	  "-feature",
       	  "-language:higherKinds", 
       	  "-language:existentials",
-      	  "-unchecked")
+      	  "-unchecked",
+      	  "-Xfatal-warnings",
+  		  "-Yno-adapted-args",
+  		  "-Ywarn-dead-code",
+  		  "-Ywarn-value-discard")
 	  )
 }
