@@ -347,7 +347,7 @@ trait LiftFoldAt[F[_], Obj] extends DFunction1[Obj]
 object LiftFoldAt extends LowPriorityLiftFoldAt{
 	def apply[F[_], Obj](implicit fold: LiftFoldAt[F, Obj]): Aux[F, Obj, fold.Out] = fold
 
-	implicit def base[F[_], A](implicit fold: FoldAll[F[A]]): Aux[F, F[A], fold.Out] =
+	implicit def base[F[_], A](implicit fold: FoldComplete[F[A]]): Aux[F, F[A], fold.Out] =
 		new LiftFoldAt[F, F[A]]{
 			type Out = fold.Out
 
