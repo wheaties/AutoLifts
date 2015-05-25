@@ -3,8 +3,8 @@ AutoLifts
 
 A dependently typed library for auto lifting and auto mapping of functions. Still a Work In Progress. Code is not available yet for download.
 
-## AutoLift
-A generalization on the concept of lifting such that functions can be lifted to arbitrarily deep nestings and stacks of Functors and/or Monads. Or, put another way, adds a more powerful `map` and `flatMap` that figures out where the best application site is based upon the type of the function.
+## Lifters
+A generalization on the concept of lifting such that functions can be lifted to arbitrarily deep nestings and stacks of Functors, Applicatives, Monads and Traversables. Or, put another way, adds a more powerful `map`, `flatMap`, and `fold` that figures out where the best application site is based upon the type of the function.
 
 ```
 >> def addOne(x: Int) = x + 1
@@ -25,7 +25,7 @@ res1: List[Int] = List(2, 3, 4)
 res2: List[Option[Int]] = List(Some(2), None)
 ```
 
-Finally includes `liftIntoF` and `liftIntoM` functions such that each wrapped function will be auto lifted into a specific context within a stack of Monads/Functors:
+Finally includes `liftIntoX` functions such that each wrapped function will be auto lifted into a specific context within a stack of type constructors:
 
 ```
 >> def any2Int(x: Any) = x match{
@@ -36,32 +36,6 @@ Finally includes `liftIntoF` and `liftIntoM` functions such that each wrapped fu
 >> val into = liftIntoF[List](any2Int)
 >> into(Option(List(Option(1), Option(2))))
 res3: Option[List[Int]] = Some(List(1, 1))
-```
-
-##AutoMap
-A type driven `map`/`flatMap` combination which choses the correct mapping based upon the types of the function and the applied object.
-
-```
->> def onList[B](f: Int => B)(implicit dm: DepMap[List[Int], Int => B]): dm.Out = List(1, 2, 3) autoMap f
-
->> onList({x: Int => List(x+1)})
-res0: List[Int] = List(2, 3, 4)
-
->> onList(_ + 1)
-res0: List[Int] = List(2, 3, 4)
-```
-
-Also included is an `auto` function which places a given function into an auto mapping context
-
-```
->> def doubleList(x: Int) = List(x, x)
-
->> val dm = auto(doubleList)
->> dm(Option(2))
-res1: Option[List[Int]] = Some(List(2, 2))
-
->> dm(List(2, 3))
-res2: List[Int] = List(2, 2, 3, 3)
 ```
 
 ##TransformMap

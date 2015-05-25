@@ -4,29 +4,82 @@ import scalaz.{Functor, Apply, Bind, Foldable, Monoid}
 
 object Lifters extends Lifters
 
-trait Lifters{
+trait Lifters extends LiftFunctions with LiftImplicits
+
+trait LiftImplicits{
+	/** Implicit explosing methods on any type constructor with a valid Functor which provides automatic function 
+	 *  lifting based upon the type of the function.
+	 *
+	 * @param fa An instance of `F[A]`.
+	 * @tparam F A type constructor for which an instance of a `Functor` exists.
+	 * @tparam A The type within `F`.
+	 */
+	implicit class LifterOps[F[_]: Functor, A](fa: F[A]){
+		def liftMap[Function](f: Function)(implicit lift: LiftF[F[A], Function]): lift.Out = lift(fa, f)
+
+		def liftAp[Function](f: Function)(implicit lift: LiftAp[F[A], Function]): lift.Out = lift(fa, f)
+
+		def liftFlatMap[Function](f: Function)(implicit lift: LiftB[F[A], Function]): lift.Out = lift(fa, f)
+
+		def liftFoldLeft[Function, Z](z: Z)(f: Function)(implicit lift: LiftFoldLeft[F[A], Function, Z]): lift.Out = 
+			lift(fa, f, z)
+
+		def liftFoldRight[Function, Z](z: Z)(f: Function)(implicit lift: LiftFoldRight[F[A], Function, Z]): lift.Out = 
+			lift(fa, f, z)
+
+		def liftFold(implicit lift: LiftFold[F[A]]): lift.Out = lift(fa)
+
+		def liftFoldMap[Function](f: Function)(implicit lift: LiftFoldMap[F[A], Function]): lift.Out = lift(fa, f)
+
+		def liftFoldAt[M[_]](implicit fold: LiftFoldAt[M, F[A]]): fold.Out = fold(fa)
+	}
+}
+
+trait LiftFunctions{
 	def liftIntoF[F[_]] = new LIFMaker[F]
 
 	sealed class LIFMaker[F[_]]{
 		def apply[Function](f: Function)(implicit ev: Functor[F]) = new LiftIntoFunctor[F, Function](f)
 	}
 
+	sealed class LiftIntoFunctor[F[_]: Functor, Function](f: Function){
+		def apply[That](that: That)(implicit into: LiftIntoF[F, That, Function]): into.Out = into(that, f)
+	}
+
 	def liftF[Function](f: Function) = new LiftedF(f)
+
+	sealed class LiftedF[Function](f: Function){
+		def apply[That](that: That)(implicit lift: LiftF[That, Function]): lift.Out = lift(that, f)
+	}
 
 	def liftAp[Function](f: Function) = new LiftedAp(f)
 
+	sealed class LiftedAp[Function](f: Function){
+		def apply[That](that: That)(implicit lift: LiftAp[That, Function]): lift.Out = lift(that, f)
+	}
+
 	def liftM[Function](f: Function) = new LiftedB(f)
 
-	//TODO: Move to Folders.scala
-	def foldOver[F[_]: Foldable] = new FoldOver[F]
+	sealed class LiftedB[Function](f: Function){
+		def apply[That](that: That)(implicit lift: LiftB[That, Function]): lift.Out = lift(that, f)
+	}
 
-	//def liftFoldMap[Function](f: Function) = new LiftedFoldMap(f)
+	def liftFoldMap[Function](f: Function) = new LiftedFoldMap(f)
+
+	sealed class LiftedFoldMap[Function](f: Function){
+		def apply[That](that: That)(implicit lift: LiftFoldMap[That, Function]): lift.Out = lift(that, f)
+	}
 }
 
-class LiftIntoFunctor[F[_]: Functor, Function](f: Function){
-	def apply[That](that: That)(implicit into: LiftIntoF[F, That, Function]): into.Out = into(that, f)
-}
-
+/**
+ * Type class supporting mapping of a function over a specific higher-kinded type within a nested type constructor.
+ *
+ * @author Owein Reese
+ *
+ * @tparam F the higher-kinded type to lift the function into.
+ * @tparam Obj the type over which the function will be lifted.
+ * @tparam Function the type of the function which will be lifted.
+ */
 sealed trait LiftIntoF[F[_], Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftIntoF extends LowPriorityLiftIntoF{
@@ -51,10 +104,14 @@ trait LowPriorityLiftIntoF{
 		}
 }
 
-sealed class LiftedF[Function](f: Function){
-	def apply[That](that: That)(implicit lift: LiftF[That, Function]): lift.Out = lift(that, f)
-}
-
+/**
+ * Type class supporting the mapping over an arbitrary nesting of type constructors.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj the type to be lifted into.
+ * @tparam Function the function to be lifted.
+ */
 sealed trait LiftF[Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftF extends LowPriorityLiftF {
@@ -79,10 +136,14 @@ trait LowPriorityLiftF{
 		}
 }
 
-sealed class LiftedAp[Function](f: Function){
-	def apply[That](that: That)(implicit lift: LiftAp[That, Function]): lift.Out = lift(that, f)
-}
-
+/**
+ * Type class supporting the applicative mapping of a type over another type of arbitrary nested type constructors.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj The type of object to be lifted into.
+ * @tparam Funciton The type of function to be lifted.
+ */
 sealed trait LiftAp[Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftAp extends LowPriorityLiftAp {
@@ -107,10 +168,14 @@ trait LowPriorityLiftAp{
 		}
 }
 
-sealed class LiftedB[Function](f: Function){
-	def apply[That](that: That)(implicit lift: LiftB[That, Function]): lift.Out = lift(that, f)
-}
-
+/**
+ * Type class supporting flat mapping a function over an arbitrary nesting of type constructors.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj The type to be lifted into.
+ * @tparam Funciton The function to be lifted.
+ */
 sealed trait LiftB[Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftB extends LowPriorityLiftB {
@@ -135,7 +200,16 @@ trait LowPriorityLiftB{
 		}
 }
 
-trait LiftFoldLeft[FA, Function, Z] extends DFunction3[FA, Function, Z]
+/**
+ * Type class supporting foldLeft over an arbitrary nesting of type constructors given an initial value and a function.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj The type to be lifted into.
+ * @tparam Function The 2-airy function to be lifted.
+ * @tparam Z The initial value of the fold.
+ */
+trait LiftFoldLeft[Obj, Function, Z] extends DFunction3[Obj, Function, Z]
 
 object LiftFoldLeft extends LowPriorityLiftFoldLeft{
 	def apply[FA, Function, Z](implicit lift: LiftFoldLeft[FA, Function, Z]): Aux[FA, Function, Z, lift.Out] = lift
@@ -159,6 +233,15 @@ trait LowPriorityLiftFoldLeft{
 		}
 }
 
+/**
+ * Type class supporting foldRight over an arbitrary nesting of type constructors given an initial value and a function.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj The type to be lifted into.
+ * @tparam Function The 2-airy function to be lifted.
+ * @tparam Z The initial value of the fold.
+ */
 trait LiftFoldRight[FA, Function, Z] extends DFunction3[FA, Function, Z]
 
 object LiftFoldRight extends LowPriorityLiftFoldRight{
@@ -183,7 +266,14 @@ trait LowPriorityLiftFoldRight{
 		}
 }
 
-trait LiftFold[FA] extends DFunction1[FA]
+/**
+ * Type class supporting folding over an arbitrary nesting of type constructors.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj The type to be lifted into.
+ */
+trait LiftFold[Obj] extends DFunction1[Obj]
 
 object LiftFold extends LowPriorityLiftFold{
 	def apply[FA](implicit lift: LiftFold[FA]): Aux[FA, lift.Out] = lift
@@ -207,6 +297,15 @@ trait LowPriorityLiftFold{
 		}
 }
 
+/**
+ * Type class supporting fold over an arbitrary nesting of type constructors given a function which maps initial types to
+ * some other type defined with a Monoid.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj The type to be lifted into.
+ * @tparam Function The function to be used to map values.
+ */
 trait LiftFoldMap[FA, Function] extends DFunction2[FA, Function]
 
 object LiftFoldMap extends LowPriorityLiftFoldMap{
@@ -228,5 +327,41 @@ trait LowPriorityLiftFoldMap{
 			type Out = F[lift.Out]
 
 			def apply(fg: F[G], f: Function) = functor.map(fg){ g: G => lift(g, f) }
+		}
+}
+
+sealed class LiftedFoldAt[F[_]: Functor]{
+	def apply[That](that: That)(implicit fold: LiftFoldAt[F, That]): fold.Out = fold(that)
+}
+
+/**
+ * Type class supporting folding over a nested type constructor up to and including a type constructor.
+ *
+ * @author Owein Reese
+ *
+ * @tparam F The type at which to stop folding.
+ * @tparam Obj The type over which to lift the folding.
+ */
+trait LiftFoldAt[F[_], Obj] extends DFunction1[Obj]
+
+object LiftFoldAt extends LowPriorityLiftFoldAt{
+	def apply[F[_], Obj](implicit fold: LiftFoldAt[F, Obj]): Aux[F, Obj, fold.Out] = fold
+
+	implicit def base[F[_], A](implicit fold: FoldAll[F[A]]): Aux[F, F[A], fold.Out] =
+		new LiftFoldAt[F, F[A]]{
+			type Out = fold.Out
+
+			def apply(fa: F[A]) = fold(fa)
+		}
+}
+
+trait LowPriorityLiftFoldAt{
+	type Aux[F[_], Obj, Out0] = LiftFoldAt[F, Obj]{ type Out = Out0 }
+
+	implicit def recur[F[_], G[_], H](implicit functor: Functor[G], fold: LiftFoldAt[F, H]): Aux[F, G[H], G[fold.Out]] =
+		new LiftFoldAt[F, G[H]]{
+			type Out = G[fold.Out]
+
+			def apply(gh: G[H]) = functor.map(gh){ h: H => fold(h) }
 		}
 }
