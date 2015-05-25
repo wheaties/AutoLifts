@@ -90,7 +90,7 @@ trait LowPriorityTransformerF{
  * @tparam Function The function to be applicatively applied.
  */
 @implicitNotFound("Can not prove that ${Function} operates on the inner most type of ${Obj} which defined an Applicative.")
-trait TransformerAp[FA, Function] extends DFunction2[FA, Function]
+trait TransformerAp[Obj, Function] extends DFunction2[Obj, Function]
 
 object TransformerAp extends LowPriorityTransformerAp {
 	def apply[FA, Function](implicit tap: TransformerAp[FA, Function]): Aux[FA, Function, tap.Out] = tap
