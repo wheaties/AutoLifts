@@ -2,6 +2,10 @@ package autolift
 
 import scalaz.{Functor, Apply, Bind, Foldable, Monoid}
 
+trait Folders{
+	def foldOver[F[_]: Foldable] = new FoldOver[F]
+}
+
 sealed class FoldedMap[Function](f: Function){
 	def apply[That](that: That)(implicit fold: FoldMap[That, Function]): fold.Out = fold(that, f)
 }
@@ -88,30 +92,3 @@ trait LowPriorityFoldedOver{
 		}
 }
 
-sealed class FoldUpTo[F[_]: Functor]{
-	def apply[That](that: That)(implicit fold: FoldedUpTo[F, That]): fold.Out = fold(that)
-}
-
-trait FoldedUpTo[F[_], Obj] extends DFunction1[Obj]
-
-object FoldedUpTo extends LowPriorityFoldedUpTo{
-	def apply[F[_], Obj](implicit fold: FoldedUpTo[F, Obj]): Aux[F, Obj, fold.Out] = fold
-
-	implicit def base[F[_], A](implicit fold: FoldAll[F[A]]): Aux[F, F[A], fold.Out] =
-		new FoldedUpTo[F, F[A]]{
-			type Out = fold.Out
-
-			def apply(fa: F[A]) = fold(fa)
-		}
-}
-
-trait LowPriorityFoldedUpTo{
-	type Aux[F[_], Obj, Out0] = FoldedUpTo[F, Obj]{ type Out = Out0 }
-
-	implicit def recur[F[_], G[_], H](implicit functor: Functor[G], fold: FoldedUpTo[F, H]): Aux[F, G[H], G[fold.Out]] =
-		new FoldedUpTo[F, G[H]]{
-			type Out = G[fold.Out]
-
-			def apply(gh: G[H]) = functor.map(gh){ h: H => fold(h) }
-		}
-}
