@@ -1,0 +1,16 @@
+# See http://about.travis-ci.org/docs/user/build-configuration/
+branches:
+  only:
+    -master
+
+language: scala
+scala:
+  - 2.11.6
+  - 2.11.5
+
+jdk:
+  - openjdk7
+  - oraclejdk7
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION test
