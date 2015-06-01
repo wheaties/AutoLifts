@@ -9,7 +9,7 @@ A dependently typed library for auto lifting and auto mapping of functions. Stil
 A generalization on the concept of lifting such that functions can be lifted to arbitrarily deep nestings and stacks of Functors, Applicatives, Monads and Traversables. Or, put another way, adds a more powerful `map`, `flatMap`, and `fold` that figures out where the best application site is based upon the type of the function.
 
 ```
->> def addOne(x: Int) = x + 1
+>> val addOne = { x: Int => x + 1 }
 
 >> val in = Option(List(1, 2, 3))
 >> in liftMap addOne
@@ -19,7 +19,7 @@ res0: Option[List[Int]] = Some(List(2, 3, 4))
 Also included are generalized `liftF` and `liftM` functions such that each wraps a function into an auto lifting context:
 
 ```
->> val liftedOne = liftF(addOne _)
+>> val liftedOne = liftF(addOne)
 >> liftedOne(List(1, 2, 3))
 res1: List[Int] = List(2, 3, 4)
 
@@ -35,7 +35,7 @@ Finally includes a number of functions conversion calls which wrap a given funct
 	case _ => 1
 }
 
->> val into = liftIntoF[List](any2Int)
+>> val into = liftIntoF[List](any2Int _)
 >> into(Option(List(Option(1), Option(2))))
 res3: Option[List[Int]] = Some(List(1, 1))
 ```
@@ -50,13 +50,13 @@ res4: Int = 21
 ```
 
 ##Transformers
-Boilerplate reducing auto derivation of a `map` and `ap` on a stack of Monads such that they behave as if they were a MonadTransformer. Differs from the generalization on lifting in that application of functions are forced onto the inner most contained type instead on the first applicable type.
+Boilerplate reducing auto derivation of a `map` and `ap` on a stack of Monads such that they behave akin to the way a MonadTransformer might be expected to behave. Differs from the generalization on lifting in that application of functions are forced onto the inner most contained type instead on the first applicable type.
 
 ```
->> def double(x: Option[List[Int]]) = 2*x
-
+>> val doubleOL = Option(List({ x: Int => 2*x }))
 >> val in = Option(List(1))
->> in transformAp double
+
+>> in transformAp doubleOL
 res0: Option[List[Int]] = Some(List(1))
 ```
 
