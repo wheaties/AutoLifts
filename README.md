@@ -17,7 +17,7 @@ res0: Option[List[Int]] = Some(List(2, 3, 4))
 Also included are generalized `liftF` and `liftM` functions such that each wraps a function into an auto lifting context:
 
 ```
->> val liftedOne = liftF(addOne)
+>> val liftedOne = liftF(addOne _)
 >> liftedOne(List(1, 2, 3))
 res1: List[Int] = List(2, 3, 4)
 
@@ -25,7 +25,7 @@ res1: List[Int] = List(2, 3, 4)
 res2: List[Option[Int]] = List(Some(2), None)
 ```
 
-Finally includes `liftIntoX` functions such that each wrapped function will be auto lifted into a specific context within a stack of type constructors:
+Finally includes a number of functions conversion calls which wrap a given function instance into an auto-lifting context. For instance, `liftIntoF` will lift a function into a given context:
 
 ```
 >> def any2Int(x: Any) = x match{
@@ -38,7 +38,16 @@ Finally includes `liftIntoX` functions such that each wrapped function will be a
 res3: Option[List[Int]] = Some(List(1, 1))
 ```
 
-##TransformMap
+##Folders
+A generalization on the concept of folding. Any traversable object with a defined instance of a `Foldable` yields folds over arbitrarily deep nestings.
+
+```
+>> val nested = List(List("1", "2", "3"), Nil, List("4", "5", "6"))
+>> nested.foldWith{ x: String => x.toInt }
+res4: Int = 21
+```
+
+##Transformers
 Boilerplate reducing auto derivation of a `map` and `ap` on a stack of Monads such that they behave as if they were a MonadTransformer. Differs from the generalization on lifting in that application of functions are forced onto the inner most contained type instead on the first applicable type.
 
 ```

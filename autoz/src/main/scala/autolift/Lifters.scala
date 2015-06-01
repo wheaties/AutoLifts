@@ -330,10 +330,6 @@ trait LowPriorityLiftFoldMap{
 		}
 }
 
-sealed class LiftedFoldAt[F[_]: Functor]{
-	def apply[That](that: That)(implicit fold: LiftFoldAt[F, That]): fold.Out = fold(that)
-}
-
 /**
  * Type class supporting folding over a nested type constructor up to and including a type constructor.
  *

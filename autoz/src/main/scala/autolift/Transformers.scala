@@ -22,6 +22,7 @@ trait TransformerImplicits{
  *
  * @tparam FA The type to witness.
  */
+@implicitNotFound("Could not prove that ${FA} is not a construct of a single type parameter higher-kinded type, F[A].")
 trait Apart[FA]{
 	type W[X]
 	type T

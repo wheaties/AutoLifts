@@ -8,7 +8,7 @@ trait Folders extends FolderImplicits with FolderFunctions
 
 trait FolderImplicits{
 	implicit class FolderOps[F[_]: Foldable, A](fa: F[A]){
-		def foldWith[Function](f: Function)(implicit lift: FoldMap[F[A], Function]): lift.Out = lift(fa, f)
+		def foldWith[Function](f: Function)(implicit lift: FoldWith[F[A], Function]): lift.Out = lift(fa, f)
 
 		def foldComplete(implicit fold: FoldComplete[F[A]]): fold.Out = fold(fa)
 
@@ -30,7 +30,7 @@ trait FolderFunctions{
 	def foldMap[Function](f: Function) = new FoldedMap(f)
 
 	sealed class FoldedMap[Function](f: Function){
-		def apply[That](that: That)(implicit fold: FoldMap[That, Function]): fold.Out = fold(that, f)
+		def apply[That](that: That)(implicit fold: FoldWith[That, Function]): fold.Out = fold(that, f)
 	}
 }
 
@@ -43,26 +43,26 @@ trait FolderFunctions{
  * @tparam Obj The types to be folded.
  * @tparam Function The function over which to map and then fold.
  */
-trait FoldMap[Obj, Function] extends DFunction2[Obj, Function]
+trait FoldWith[Obj, Function] extends DFunction2[Obj, Function]
 
-object FoldMap extends LowPriorityFoldMap{
-	def apply[Obj, Function](implicit lift: FoldMap[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
+object FoldWith extends LowPriorityFoldWith{
+	def apply[Obj, Function](implicit lift: FoldWith[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
 
 	implicit def base[F[_], A, C >: A, B](implicit fold: Foldable[F], ev: Monoid[B]): Aux[F[A], C => B, B] =
-		new FoldMap[F[A], C => B]{
+		new FoldWith[F[A], C => B]{
 			type Out = B
 
 			def apply(fa: F[A], f: C => B) = fold.foldMap(fa)(f)
 		}
 }
 
-trait LowPriorityFoldMap{
-	type Aux[Obj, Function, Out0] = FoldMap[Obj, Function]{ type Out = Out0 }
+trait LowPriorityFoldWith{
+	type Aux[Obj, Function, Out0] = FoldWith[Obj, Function]{ type Out = Out0 }
 
 	implicit def recur[F[_], G, Function, Out0](implicit fold: Foldable[F], 
-														 lift: FoldMap.Aux[G, Function, Out0], 
+														 lift: FoldWith.Aux[G, Function, Out0], 
 														 ev: Monoid[Out0]): Aux[F[G], Function, Out0] =
-		new FoldMap[F[G], Function]{
+		new FoldWith[F[G], Function]{
 			type Out = Out0
 
 			def apply(fg: F[G], f: Function) = fold.foldMap(fg){ g: G => lift(g, f) }
