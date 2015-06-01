@@ -1,7 +1,7 @@
 # See http://about.travis-ci.org/docs/user/build-configuration/
 branches:
   only:
-    -master
+    - master
 
 language: scala
 scala:
@@ -11,6 +11,3 @@ scala:
 jdk:
   - openjdk7
   - oraclejdk7
-
-script:
-  - sbt ++$TRAVIS_SCALA_VERSION test

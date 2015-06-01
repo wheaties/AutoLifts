@@ -3,6 +3,8 @@ AutoLifts
 
 A dependently typed library for auto lifting and auto mapping of functions. Still a Work In Progress. Code is not available yet for download.
 
+[![Build Status](https://secure.travis-ci.org/wheaties/AutoLifts.png)](http://travis-ci.org/wheaties/AutoLifts)
+
 ## Lifters
 A generalization on the concept of lifting such that functions can be lifted to arbitrarily deep nestings and stacks of Functors, Applicatives, Monads and Traversables. Or, put another way, adds a more powerful `map`, `flatMap`, and `fold` that figures out where the best application site is based upon the type of the function.
 
