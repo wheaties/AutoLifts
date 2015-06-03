@@ -6,3 +6,7 @@ resolvers += Resolver.url(
 addSbtPlugin("org.tpolecat" % "tut-plugin" % "0.3.2")
 
 addSbtPlugin("org.brianmckenna" % "sbt-wartremover" % "0.13")
+
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "0.5.0")
+
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")

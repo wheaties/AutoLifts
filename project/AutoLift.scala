@@ -21,7 +21,7 @@ object AutoLift{
   		  "-Yno-adapted-args",
   		  "-Ywarn-dead-code",
   		  "-Ywarn-value-discard")
-	  )
+	  ).settings(publishSettings: _*)
 
   val publishSettings = Seq(
     pomExtra := autoliftPom,
