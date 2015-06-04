@@ -9,8 +9,7 @@ object AutoLift{
 	  .settings(
 	    scalaVersion := ScalaVersion,
 	    name := pjName,
-	    publishArtifact in Test := false,
-	    scalacOptions ++= Seq(
+	    scalacOptions := Seq(
         "-deprecation",
         "-encoding", "UTF-8",
         "-feature",
@@ -20,23 +19,20 @@ object AutoLift{
         "-Xfatal-warnings",
   		  "-Yno-adapted-args",
   		  "-Ywarn-dead-code",
-  		  "-Ywarn-value-discard")
-	  ).settings(publishSettings: _*)
-
-  val publishSettings = Seq(
-    pomExtra := autoliftPom,
-    publishTo <<= version { v: String =>
-      val nexus = "https://oss.sonatype.org/"
-      if (v.trim.endsWith("SNAPSHOT"))
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("releases" at nexus + "service/local/staging/deploy/maven2")
-    },
-    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
-    pomIncludeRepository := { x => false },
-    publishMavenStyle := true,
-    publishArtifact in Test := false
-  )
+  		  "-Ywarn-value-discard"),
+      pomExtra := autoliftPom,
+      publishTo <<= version { v: String =>
+        val nexus = "https://oss.sonatype.org/"
+        if (v.trim.endsWith("SNAPSHOT"))
+          Some("snapshots" at nexus + "content/repositories/snapshots")
+        else
+          Some("releases" at nexus + "service/local/staging/deploy/maven2")
+      },
+      credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+      pomIncludeRepository := { x => false },
+      publishMavenStyle := true,
+      publishArtifact in Test := false
+    )
 
   val autoliftPom =
     <url>http://github.com/wheaties/AutoLifts</url>
@@ -55,6 +51,7 @@ object AutoLift{
       <developer>
            <id>wheaties</id>
            <name>Owein Reese</name>
+           <url>www.github.com/wheaties</url>
       </developer>
     </developers>
 
