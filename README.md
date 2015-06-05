@@ -3,6 +3,8 @@ AutoLifts
 
 A dependently typed library for auto lifting and auto mapping of functions.
 
+[![Build Status](https://secure.travis-ci.org/wheaties/AutoLifts.png)](http://travis-ci.org/wheaties/AutoLifts)
+
 ##Using
 
 The current released branch is 0.1 and compiled against Scala version 2.11.5. If using SBT add the following:
@@ -12,8 +14,6 @@ libraryDependencies += "com.github.wheaties" %% "autolift" % "0.1"
 ```
 
 Due note, the api will be subject to change as the library develops and progresses to a 1.0 release. As is, the library is in an experimental stage. Please use apropriately.
-
-[![Build Status](https://secure.travis-ci.org/wheaties/AutoLifts.png)](http://travis-ci.org/wheaties/AutoLifts)
 
 ## Lifters
 A generalization on the concept of lifting such that functions can be lifted to arbitrarily deep nestings and stacks of Functors, Applicatives, Monads and Traversables. Or, put another way, adds a more powerful `map`, `flatMap`, and `fold` that figures out where the best application site is based upon the type of the function.
