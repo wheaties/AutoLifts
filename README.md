@@ -1,7 +1,17 @@
 AutoLifts
 =========
 
-A dependently typed library for auto lifting and auto mapping of functions. Still a Work In Progress. Code is not available yet for download.
+A dependently typed library for auto lifting and auto mapping of functions.
+
+##Using
+
+The current released branch is 0.1 and compiled against Scala version 2.11.5. If using SBT add the following:
+
+```scala
+libraryDependencies += "com.github.wheaties" %% "autolift" % "0.1"
+```
+
+Due note, the api will be subject to change as the library develops and progresses to a 1.0 release. As is, the library is in an experimental stage. Please use apropriately.
 
 [![Build Status](https://secure.travis-ci.org/wheaties/AutoLifts.png)](http://travis-ci.org/wheaties/AutoLifts)
 
