@@ -8,4 +8,9 @@ lazy val autoz = build("autolift", "autoz").settings(
   wartremoverErrors in (Compile, compile) ++= Warts.allBut(Wart.Var, Wart.NoNeedForMonad)
 )
 
+lazy val docs = build("docs", "docs")
+  .settings(tutSettings: _*)
+  .settings(publishArtifact := false)
+  .dependsOn(autoz)
+
 scalaVersion := AutoLift.ScalaVersion
