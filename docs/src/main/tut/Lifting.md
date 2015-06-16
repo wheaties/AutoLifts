@@ -87,7 +87,6 @@ def apOver(optList: List[Option[Int]], f: Option[Int => Int])(implicit ap: Apply
 which could be redone as
 
 ```tut
-```tut
 import autolift._
 import AutoLift._
 import scalaz._
@@ -98,8 +97,93 @@ def apOver(optList: List[Option[Int]], f: Option[Int => Int]) = optList liftAp f
 
 ## 4. liftFoldLeft and liftFoldRight
 
+Both `liftFoldLeft` and `liftFoldRight` are auto-lifting forms of a fold which choose where they should be applied based upon the types of the fold function. They follow the same useage pattern as `liftMap` and `liftFlatMap` and operate by succesively calling `map` up until the point where it can call the fold.  It requires that each nested type have at least an instance of a `Functor` defined and that the final type should have an instance of a `Foldable`.
+
+Demonstrating its use, given the following
+
+```tut
+val listOpt = Option(List(1,2,3))
+val out = listOpt map { list: List[Int] =>
+  list.foldLeft(0)(_ + _)
+}
+```
+
+it could be rewritten
+
+```tut
+import autolift._
+import AutoLift._
+import scalaz._
+import Scalaz._
+
+val listOpt = Option(List(1,2,3))
+val out = listOpt.liftFoldLeft(0){ (x: Int, y: Int) => x + y }
+```
+
 ## 5. liftFold
+
+Like `liftFoldLeft` and `liftFoldRight`, `liftFold` finds the first type contained within a nested set of types that has a `Monoid` defined and folds over that. For those that don't known what a `Monoid` is, [it is an algebraic structure with an associative binary operation that has an identity element](https://wiki.haskell.org/Monoid) Hence, `liftFold` is equivalent to `liftFoldLeft` but the arguments supplied via an implicit type class. Again, as with the case with all of the lifters, the outer types require a `Functor` to be defined for them while a `Foldable` defined for the most inner type.
+
+```tut
+val listOpt = Option(List(1,2,3))
+val out = listOpt map { list: List[Int] =>
+  list.foldLeft(0)(_ + _)
+}
+```
+
+compared with
+
+```tut
+import autolift._
+import AutoLift._
+import scalaz._
+import Scalaz._
+
+val listOpt = Option(List(1,2,3))
+val out = listOpt.liftFold
+```
 
 ## 6. liftFoldMap
 
+This function is a variant on `liftFold` such that the return type of a function must have a `Monoid` defined for it. The function is lifted until it can be operated on a type which matches the signature of the function and thus a fold commenced.
+
+The following is equivalent
+
+```tut
+val listOpt = Option(List("1","2","3"))
+val out = listOpt map { list: List[String] =>
+  list.foldLeft(0)(_ + _.toInt)
+}
+```
+
+compared with
+
+```tut
+import autolift._
+import AutoLift._
+import scalaz._
+import Scalaz._
+
+val listOpt = Option(List("1","2","3"))
+val out = listOpt.liftFoldMap{x: String => x.toInt}
+```
+
 ## 7. liftFoldAt
+
+Another variant of `liftFold`, this function takes as a parameter a higher-kinded type such that the type contained within that type and within the type structure of the left hand side of the operation is a `Monoid`. This is useful for cases where there is a `Monoid` for which it is not desired to be folded over and instead something found deeper in the nested structure is preferable.
+
+As an example:
+
+```tut
+import autolift._
+import AutoLift._
+import scalaz._
+import Scalaz._
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+val futListOpt = Future(List(Option(1), None, Option(2)))
+val futListOpt.liftFoldAt[Option]
+```
+
+which will force the evaluation at the `Int`, bypassing both the `List`, which itself is a `Monoid` and the `Option` which by way of a recurance relation is a `Monoid`.
