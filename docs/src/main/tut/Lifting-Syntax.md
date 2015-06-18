@@ -1,6 +1,17 @@
 # Lifter Syntax:
 
-The Lifters package provides for some convenience syntax upon any higher-kinded type which has a defined `Functor`. There is no requirement that the type signature of the lifted expressions contain multiply nested types. For those types which do conform, additional methods will be available as given by the list below. Some will require additional type classes to be defined in order to be used.
+The Lifters package provides for some convenience syntax upon any instance of a higher-kinded type which has a defined `Functor`. The following methods are added via an extension class:
+
+ * liftMap - An auto-lifting `map`
+ * liftFlatMap - An auto-lifting `flatMap`
+ * liftAp - An auto-lifting `Applicative`
+ * liftFoldLeft - An auto-lifting `foldLeft`
+ * liftFoldRight - An auto-lifting `foldRight`
+ * liftFold - An auto-lifting `fold`
+ * liftFoldMap - An auto-lifting `fold`, analogous to the `foldMap` of the `Foldable` type class
+ * liftFoldAt - An auto-lifting `fold` constrained to a specific higher-kinded type
+
+There is no requirement that the type signature of the syntax target contain multiply nested types. Some methods require additional type classes to be defined in order to be used, such as any `fold` variants.
 
 ## 1. liftMap
 
