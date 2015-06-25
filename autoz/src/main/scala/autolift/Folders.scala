@@ -116,11 +116,11 @@ trait FoldOver[F[_], Obj] extends DFunction1[Obj]
 object FoldOver extends LowPriorityFoldOver{
 	def apply[F[_], Obj](implicit fold: FoldOver[F, Obj]): Aux[F, Obj, fold.Out] = fold
 
-	implicit def base[F[_], A](implicit fold: Foldable[F], ev: Monoid[A]): Aux[F, F[A], A] =
+	implicit def base[F[_], A, Out0](implicit fold: FoldComplete.Aux[F[A], Out0]): Aux[F, F[A], Out0] =
 		new FoldOver[F, F[A]]{
-			type Out = A
+			type Out = Out0
 
-			def apply(fa: F[A]) = fold.fold(fa)
+			def apply(fa: F[A]) = fold(fa)
 		}
 }
 
