@@ -1,6 +1,6 @@
 # Lifters
 
-The first group of functionality that the AutoLifts library adds -- coincidentally the genesis of its name -- are a set of function wrappers and syntax extensions for type based automatic functional lifting and application. These components can be imported one of two ways, the first by importing all library functionality via the `AutoLift` object:
+The first group of functionality that the AutoLifts library adds -- coincidentally the genesis of its name -- is a set of function wrappers and syntax extensions for type based automatic functional lifting and application. These components can be imported one of two ways, the first by importing all library functionality via the `AutoLift` object:
 
 ```tut
 import autolift._
@@ -14,7 +14,7 @@ import autolift._
 import Lifters._
 ```
 
-# A Brief Introduction to Lifting
+## A Brief Introduction to Lifting
 
 Lifting is a concept, a design pattern in functional languages, where given a type `A`, move it into the context of a higher-kinded type, `L[_]`, so that it may be acted upon within `L[_]`. In general, the type that is lifted is a function and the things acted upon already exist within the `L[_]` context. Without lifting the types would incompatible and much boilerplate would have to be written for each variant of `L[_]` and `A`. 
 
@@ -27,7 +27,21 @@ val addOne = { x: Int => x+1 }   //has type Int => Int
 val lift = fmapList(addOne) _    //has type List[Int] => List[Int]
 ```
 
-Using the lifting syntax extensions this could be rewritten
+For the curious, a more indepth discussion on the concept of lifting than found here can be had at the [Haskell wiki page](https://wiki.haskell.org/Lifting).
+
+## Using Lifters
+
+For cases where the application of a function is clear cut but the types dictate extra work on the developers part, the AutoLifts library starts to shine. Given the following function and nested types:
+
+```tut
+val addOne = { x: Int => x+1 }
+val value = Option(List(1, 2, 3))
+val out = value map { list =>
+  list map addOne
+}
+```
+
+in order to make use of the function, two different maps had to be written. Using the lifting syntax extensions this could be rewritten
 
 ```tut
 import autolift._
@@ -35,11 +49,11 @@ import Lifters._
 import scalaz._
 import Scalaz._
 
-val value = List(1, 2, 3)
+val value = Option(List(1, 2, 3))
 val out = value liftMap { x: Int => x+1 }
 ```
 
-while using the function wrappers it could be rewritten
+or using the function wrappers it could be rewritten
 
 ```tut
 import autolift._
@@ -48,7 +62,6 @@ import scalaz._
 import Scalaz._
 
 val wrapped = liftF{ x: Int => x+1 }
-val out = wrapped(List(1, 2, 3))
+val out = wrapped(Option(List(1, 2, 3)))
 ```
 
-For the curious, a more indepth discussion on the concept of lifting than found here can be had at the [Haskell wiki page](https://wiki.haskell.org/Lifting).
