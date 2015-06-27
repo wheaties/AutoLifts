@@ -27,9 +27,9 @@ trait FolderFunctions{
 		def apply[That](that: That)(implicit fold: FoldOver[F, That]): fold.Out = fold(that)
 	}
 
-	def foldMap[Function](f: Function) = new FoldedMap(f)
+	def foldWith[Function](f: Function) = new FoldedWith(f)
 
-	sealed class FoldedMap[Function](f: Function){
+	sealed class FoldedWith[Function](f: Function){
 		def apply[That](that: That)(implicit fold: FoldWith[That, Function]): fold.Out = fold(that, f)
 	}
 }
