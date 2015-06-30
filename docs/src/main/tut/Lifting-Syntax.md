@@ -1,3 +1,7 @@
+---
+layout: post
+title: Lifter Syntax
+---
 # Lifter Syntax
 
 The Lifters package provides for some convenience syntax upon any instance of a higher-kinded type which has a defined `Functor`. The following methods are added via an implicit extension class:

@@ -1,3 +1,7 @@
+---
+layout: post
+title: Folders
+---
 # Folders
 
 The second group of functionality that the AutoLifts library adds is is a set of function wrappers and syntax extensions for type based automatic functional folding. These components can be imported one of two ways, the first by importing all library functionality via the `AutoLift` object:

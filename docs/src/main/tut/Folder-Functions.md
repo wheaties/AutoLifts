@@ -1,3 +1,7 @@
+---
+layout: post
+title: Folding Functions
+---
 # Folder Functions
 
 The Folders package contains several context transforming functions which form the corrolary of auto-folding logic. Wherein folding syntax was concerned with a specific type and arbitrary functions, the folding functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:

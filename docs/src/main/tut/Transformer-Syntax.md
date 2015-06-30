@@ -1,3 +1,7 @@
+---
+layout: post
+title: Transformer Syntax
+---
 # Transformer Syntax
 
 The `Transformers` group provides for some convenience syntax upon any nested instance of two or more higher-kinded types which have a defined `Functor`. The following methods are added via an implicit extension class:

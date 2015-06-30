@@ -1,6 +1,10 @@
+---
+layout: post
+title: Lifting Functions
+---
 # Lifter Functions
 
-The Lifters package contains several context transforming functions which form the corrolary of auto-lifting logic. Wherein lifting syntax was concerned with a specific type and arbitrary functions, the lifting functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
+The Lifters group contains several context transforming functions which form the corrolary of auto-lifting logic. Wherein lifting syntax was concerned with a specific type and arbitrary functions, the lifting functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
 
  * liftF - places a function into an auto-lifting context
  * liftAp - takes a type of the form `L[A => B]` and puts it into an auto-lifting context

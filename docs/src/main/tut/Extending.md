@@ -1,3 +1,7 @@
+---
+layout: post
+title: Extentions
+---
 # Extending AutoLifts
 
 In order to have classes and traits which are custom to a code base work with AutoLifts, several type classes need to be created. Not all methods require all type classes. The following is a rough guideline:
