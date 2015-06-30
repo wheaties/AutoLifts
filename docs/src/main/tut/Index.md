@@ -12,13 +12,13 @@ All code examples contained in these documents are checked at compile time using
 
 Using the library is as simple as adding the dependency to the project. Current release version is 0.1:
 
-```
+```scala
 libraryDependencies += "com.github.wheaties" %% "autolift" % "0.1"
 ```
 
 Then in any file that would like to take advantage of the syntax extensions and/or context wrappers, add four imports:
 
-```
+```scala
 import autolifts._
 import AutoLifts._
 import scalaz._
