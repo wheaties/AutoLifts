@@ -1,6 +1,7 @@
 ---
-layout: post
+layout: default
 title: Transformers
+category: Transformers
 ---
 # Transformers
 

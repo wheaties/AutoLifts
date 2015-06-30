@@ -1,6 +1,7 @@
 ---
-layout: post
+layout: default
 title: Folder Syntax
+category: Folders
 ---
 # Folder Syntax
 

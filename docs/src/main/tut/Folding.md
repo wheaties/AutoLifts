@@ -1,6 +1,7 @@
 ---
-layout: post
+layout: default
 title: Folders
+category: Folders
 ---
 # Folders
 

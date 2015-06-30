@@ -1,6 +1,7 @@
 ---
-layout: post
-title: Lifting Functions
+layout: default
+title: Lifter Functions
+category: Lifters
 ---
 # Lifter Functions
 

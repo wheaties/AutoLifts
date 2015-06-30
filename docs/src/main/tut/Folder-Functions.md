@@ -1,6 +1,7 @@
 ---
-layout: post
-title: Folding Functions
+layout: default
+title: Folder Functions
+category: Folders
 ---
 # Folder Functions
 

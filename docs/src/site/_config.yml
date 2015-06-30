@@ -1,0 +1,7 @@
+name: AutoLifts
+markdown: redcarpet
+highlighter: pygments
+
+collections:
+  tut:
+    output: true

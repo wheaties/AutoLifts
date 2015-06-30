@@ -1,6 +1,7 @@
 ---
-layout: post
+layout: default
 title: Lifters
+category: Lifters
 ---
 # Lifters
 

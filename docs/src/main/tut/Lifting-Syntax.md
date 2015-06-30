@@ -1,6 +1,7 @@
 ---
-layout: post
+layout: default
 title: Lifter Syntax
+category: Lifters
 ---
 # Lifter Syntax
 

@@ -1,6 +1,7 @@
 ---
-layout: post
+layout: default
 title: Transformer Syntax
+category: Transformers
 ---
 # Transformer Syntax
 
