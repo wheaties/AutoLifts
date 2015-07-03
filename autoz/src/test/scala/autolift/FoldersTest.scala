@@ -53,7 +53,7 @@ trait FoldersTest extends FlatSpec{
 		val in = List(List(1, "2"), List("3", 4))
 		val out = in.foldComplete
 
-		same[Any](out, List(1, "2", "3", 4))
+		same[List[Any]](out, List(1, "2", "3", 4))
 	}
 
 	"foldOver on a List[Option] w/ List" should "work" in{

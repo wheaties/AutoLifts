@@ -28,8 +28,8 @@ This is a fancy and indirect way of talking about how `Functors`, `Applicatives`
 ```tut
 def fmapList[A, B](f: A => B)(list: List[A]): List[B] = list.map(f)
 
-val addOne = { x: Int => x+1 }   //has type Int => Int
-val lift = fmapList(addOne) _    //has type List[Int] => List[Int]
+val addOne = { x: Int => x+1 }
+val lift = fmapList(addOne) _
 ```
 
 For the curious, a more indepth discussion on the concept of lifting than found here can be had at the [Haskell wiki page](https://wiki.haskell.org/Lifting).

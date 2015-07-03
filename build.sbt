@@ -1,6 +1,7 @@
 import AutoLift._
 import com.typesafe.sbt.SbtSite.SiteKeys._
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
+import sbtunidoc.Plugin.UnidocKeys._
 
 lazy val autoz = build("autolift", "autoz").settings(
   libraryDependencies ++= Seq(
@@ -17,10 +18,16 @@ lazy val docs = build("docs", "docs")
   .settings(
     publishArtifact := false,
     site.addMappingsToSiteDir(tut, "_tut"),
+    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject,
     ghpagesNoJekyll := false,
-    git.remoteRepo := "git@github.com:wheaties/autolifts.git"
+    git.remoteRepo := "git@github.com:wheaties/autolifts.git",
+    autoAPIMappings := true
   )
+  .settings(site.includeScaladoc(): _*)
+  .settings(unidocSettings: _*)
   .dependsOn(autoz)
 
 scalaVersion := AutoLift.ScalaVersion
-site.includeScaladoc()
+
+addCommandAlias("gen-site", "unidoc;tut;make-site")
