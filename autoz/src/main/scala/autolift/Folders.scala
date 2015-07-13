@@ -94,7 +94,7 @@ trait LowPriorityFoldComplete{
 	type Aux[Obj, Out0] = FoldComplete[Obj]{ type Out = Out0 }
 
 	implicit def recur[F[_], G, Out0](implicit fold: Foldable[F], 
-											   lift: FoldComplete.Aux[G, Out0], 
+											   lift: Aux[G, Out0], 
 											   ev: Monoid[Out0]): Aux[F[G], Out0] =
 		new FoldComplete[F[G]]{
 			type Out = Out0

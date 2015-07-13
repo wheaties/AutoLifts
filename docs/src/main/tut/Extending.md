@@ -1,3 +1,7 @@
+---
+layout: default
+title: Extentions
+---
 # Extending AutoLifts
 
 In order to have classes and traits which are custom to a code base work with AutoLifts, several type classes need to be created. Not all methods require all type classes. The following is a rough guideline:
@@ -12,7 +16,7 @@ In order to have classes and traits which are custom to a code base work with Au
 
 Imagine the following code exists in a project:
 
-```tut
+```tut:silent
 trait Status[+A]{
   def map[B](f: A => B): Status[B]
   def flatMap[B](f: A => Status[B]): Status[B]
@@ -31,7 +35,7 @@ case object Closed extends Status[Nothing]{
 
 In order to use `liftMap` and `liftFlatMap` the following implicit class should be added to the code base:
 
-```
+```tut:silent
 import scalaz.Bind
 
 implicit object StatusBind extends Bind[Status]{

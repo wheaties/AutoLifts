@@ -1,6 +1,11 @@
+---
+layout: default
+title: Lifter Functions
+category: Lifters
+---
 # Lifter Functions
 
-The Lifters package contains several context transforming functions which form the corrolary of auto-lifting logic. Wherein lifting syntax was concerned with a specific type and arbitrary functions, the lifting functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
+The Lifters group contains several context transforming functions which form the corrolary of auto-lifting logic. Wherein lifting syntax was concerned with a specific type and arbitrary functions, the lifting functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
 
  * liftF - places a function into an auto-lifting context
  * liftAp - takes a type of the form `L[A => B]` and puts it into an auto-lifting context
@@ -23,8 +28,8 @@ import scalaz._
 import Scalaz._
 
 val lifted = liftF{ x: Int => x+1 }
-val single = lifted(List(1, 2, 3))                // single == List(2, 3, 4)
-val doubly = lifted(List(Some(1), None, Some(3))) // doubly == List(Some(2), None, Some(4))
+val single = lifted(List(1, 2, 3))
+val doubly = lifted(List(Some(1), None, Some(3)))
 ```
 
 ## liftAp
@@ -40,8 +45,8 @@ import scalaz._
 import Scalaz._
 
 val lifted = liftAp(List({ x: Int => x+1 }, { x: Int => x+4 }))
-val single = lifted(List(1, 2, 3))          // single == List(2, 3, 4, 5, 6, 7)
-val doubly = lifted(Option(List(1, 2, 3)))  // doubly == Option(List(2, 3, 4, 5, 6, 7))
+val single = lifted(List(1, 2, 3))
+val doubly = lifted(Option(List(1, 2, 3)))
 ```
 
 ## liftM
@@ -57,8 +62,8 @@ import scalaz._
 import Scalaz._
 
 val lifted = liftM{ x: Int => Option(x+1) }
-val single = lifted(Option(1))                    // single == Option(2)
-val doubly = lifted(List(Some(1), None, Some(3))) // doubly == List(Some(2), None, Some(4))
+val single = lifted(Option(1))
+val doubly = lifted(List(Some(1), None, Some(3)))
 ```
 
 ## LiftIntoF
@@ -72,8 +77,8 @@ import scalaz._
 import Scalaz._
 
 val lifted = liftIntoF[List]{ x: Any => x.toString }
-val single = lifted(List(1, 2))                           // single == List("1", "2")
-val doubly = lifted(Option(List(Some(1), None, Some(3)))) // doubly == Some(List("Some(1)", "None", "Some(4)"))
+val single = lifted(List(1, 2))
+val doubly = lifted(Option(List(Some(1), None, Some(3))))
 ```
 
 ## LiftFoldMap
@@ -89,6 +94,6 @@ import scalaz._
 import Scalaz._
 
 val lifted = liftFoldMap{ x: Any => x.toString.size }
-val single = lifted(List(1, 2, 3))         // single == 6
-val doubly = lifted(List(Option(1), None)) // doubly == 11
+val single = lifted(List(1, 2, 3))
+val doubly = lifted(List(Option(1), None))
 ```

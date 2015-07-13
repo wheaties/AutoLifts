@@ -1,3 +1,8 @@
+---
+layout: default
+title: Lifter Syntax
+category: Lifters
+---
 # Lifter Syntax
 
 The Lifters package provides for some convenience syntax upon any instance of a higher-kinded type which has a defined `Functor`. The following methods are added via an implicit extension class:
@@ -187,7 +192,7 @@ import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 val futListOpt = Future(List(Option(1), None, Option(2)))
-val futListOpt.liftFoldAt[Option]
+val out = futListOpt.liftFoldAt[Option]
 ```
 
 which will force the evaluation at the `Int`, bypassing both the `List`, which itself is a `Monoid` and the `Option` which by way of a recurance relation is a `Monoid`.

@@ -1,3 +1,8 @@
+---
+layout: default
+title: Folder Functions
+category: Folders
+---
 # Folder Functions
 
 The Folders package contains several context transforming functions which form the corrolary of auto-folding logic. Wherein folding syntax was concerned with a specific type and arbitrary functions, the folding functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
@@ -20,8 +25,8 @@ import scalaz._
 import Scalaz._
 
 val folded = foldWith{ x: String => x.toInt }
-val single = folded(List("1", "2", "3"))            // single == 6
-val many = folded(List(Set("1"), Set("2", "3")))    // many == 6
+val single = folded(List("1", "2", "3"))
+val many = folded(List(Set("1"), Set("2", "3")))
 ```
 
 ## foldOver
@@ -38,6 +43,6 @@ import Scalaz._
 
 val foldedL = foldOver[List]
 val foldedO = foldOver[Option]
-val outL = foldedL(List(Option(1), Option(2), Option(3))) // outL == Option(6)
-val outO = foldedO(List(Option(1), Option(2), Option(3))) // outO == 6
+val outL = foldedL(List(Option(1), Option(2), Option(3)))
+val outO = foldedO(List(Option(1), Option(2), Option(3)))
 ```
