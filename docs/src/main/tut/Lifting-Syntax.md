@@ -192,7 +192,7 @@ import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 val futListOpt = Future(List(Option(1), None, Option(2)))
-val futListOpt.liftFoldAt[Option]
+val out = futListOpt.liftFoldAt[Option]
 ```
 
 which will force the evaluation at the `Int`, bypassing both the `List`, which itself is a `Monoid` and the `Option` which by way of a recurance relation is a `Monoid`.

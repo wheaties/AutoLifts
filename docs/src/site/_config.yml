@@ -3,5 +3,5 @@ markdown: redcarpet
 highlighter: pygments
 
 collections:
-  tut:
+  - tut:
     output: true

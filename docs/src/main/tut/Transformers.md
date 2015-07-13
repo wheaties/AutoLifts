@@ -11,10 +11,11 @@ It would be nice if there were synthetic methods which could be auto-injected su
 
 ## What Are MonadTransformers? (Why Should I care?)
 
-MonadTransformers are used to stack Monads atop one another in a way that allows the `map` method of `F[G[A]]` to take a type `A => B` and return a `F[G[B]]` instead of taking a `G[A] => B`. Similarly for many of the other methods such as `flatMap`, the function argument would be `A` and not `G[A`. This is a work around for the fact that Monads of different types do not compose. It manifests itself most clearly in for comprehensions:
+MonadTransformers are used to stack Monads atop one another in a way that allows the `map` method of `F[G[A]]` to take a type `A => B` and return a `F[G[B]]` instead of taking a `G[A] => B`. Similarly for many of the other methods such as `flatMap`, the function argument would be `A` and not `G[A]`. This is a work around for the fact that Monads of different types do not compose. It manifests itself most clearly in for comprehensions:
 
 ```scala
 import concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 def something[A](futL: Future[List[Int]])(f: Int => A): Future[List[A]] = for{
   list <- futL
@@ -24,10 +25,11 @@ def something[A](futL: Future[List[Int]])(f: Int => A): Future[List[A]] = for{
 
 compared to using a MonadTransformer
 
-```scala
+```tut:silent
 import scalaz._
 import Scalaz._
 import concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 def something[A](futL: ListT[Future, Int])(f: Int => A): ListT[Future, A] = for{
   item <- futL //direct iteration over the items within the List

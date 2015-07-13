@@ -10,6 +10,7 @@ lazy val autoz = build("autolift", "autoz").settings(
   sonatypeProfileName := "wheaties",
   wartremoverErrors in (Compile, compile) ++= Warts.allBut(Wart.Var, Wart.NoNeedForMonad)
 )
+.settings(genjavadocSettings: _*)
 
 lazy val docs = build("docs", "docs")
   .settings(tutSettings: _*)
@@ -22,9 +23,11 @@ lazy val docs = build("docs", "docs")
     unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject,
     ghpagesNoJekyll := false,
     git.remoteRepo := "git@github.com:wheaties/autolifts.git",
-    autoAPIMappings := true
+    autoAPIMappings := true,
+    includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.md"
   )
   .settings(site.includeScaladoc(): _*)
+  //.settings(site.jekyllSupport(): _*)
   .settings(unidocSettings: _*)
   .dependsOn(autoz)
 

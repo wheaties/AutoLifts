@@ -97,7 +97,9 @@ This is equivalent to an auto-folding `fold`. That is, given a nested type struc
 To demonstrate, given the following code:
 
 ```tut
-val sl = List(Set(1, 2, 3), Set(4, 3))
+import scalaz.NonEmptyList
+
+val sl = NonEmptyList(NonEmptyList(1, 2, 3), NonEmptyList(4, 3))
 val out = sl.foldLeft(0){
   _ + _.foldLeft(0)(_ + _)
 }
@@ -111,7 +113,7 @@ import AutoLift._
 import scalaz._
 import Scalaz._
 
-val sl = List(Set(1, 2, 3), Set(4, 3))
+val sl = NonEmptyList(NonEmptyList(1, 2, 3), NonEmptyList(4, 3))
 val out = sl.foldComplete
 ```
 
