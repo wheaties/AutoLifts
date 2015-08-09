@@ -97,3 +97,20 @@ val lifted = liftFoldMap{ x: Any => x.toString.size }
 val single = lifted(List(1, 2, 3))
 val doubly = lifted(List(Option(1), None))
 ```
+
+## LiftFilter
+
+The `liftFilter` is analogous to the `filter` method on many collection types only within an auto-lifting context. In order to work, it requires that the object acted upon have defined a `Foldable`, `Monoid` and `Applicative`. It operates by calling successive `map` operations until it is able to filter.
+
+To demonstrate:
+
+```tut
+import autolift._
+import Lifters._
+import scalaz._
+import Scalaz._
+
+val lifted = liftFilter{ x: Any => x.toString.size < 2 }
+val single = lifted(List(1, 10, 100))
+val doubly = lifted(NonEmptyList(List(1, 10, 100)))
+```

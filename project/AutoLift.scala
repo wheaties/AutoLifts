@@ -3,7 +3,7 @@ import sbt.Keys._
 import xerial.sbt.Sonatype._
 
 object AutoLift{
-	val ScalaVersion = "2.11.5"
+	val ScalaVersion = "2.11.6"
 	val ScalaZ = "7.1.1"
 
 	def build(pjName: String, base: String) = Project(

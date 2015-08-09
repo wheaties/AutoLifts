@@ -383,17 +383,17 @@ trait LiftFilter[Obj, Function] extends ((Obj, Function) => Obj)
 object LiftFilter extends LowPriorityLiftFilter{
 	def apply[Obj, Function](implicit lift: LiftFilter[Obj, Function]) = lift
 
-	implicit def recur[F[_], G, Function](implicit lift: LiftFilter[G, Function], functor: Functor[F]) =
-		new LiftFilter[F[G], Function]{
-			def apply(fg: F[G], f: Function) = functor.map(fg){ g: G => lift(g, f) }
-		}
-}
-
-trait LowPriorityLiftFilter{
 	implicit def base[F[_], A, B >: A](implicit fold: Foldable[F], m: Monoid[F[A]], ap: Applicative[F]) =
 		new LiftFilter[F[A], B => Boolean]{
 			def apply(fa: F[A], pred: B => Boolean) = fold.foldRight(fa, m.zero){
 				(a, res) => if(pred(a)) m.append(ap.pure(a), res) else res
 			}
+		}
+}
+
+trait LowPriorityLiftFilter{
+	implicit def recur[F[_], G, Function](implicit lift: LiftFilter[G, Function], functor: Functor[F]) =
+		new LiftFilter[F[G], Function]{
+			def apply(fg: F[G], f: Function) = functor.map(fg){ g: G => lift(g, f) }
 		}
 }

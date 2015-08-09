@@ -129,6 +129,13 @@ class LiftersTest extends FlatSpec{
 		assert(out == Option(List(2)))
 	}
 
+	"liftFilter on an Option[List]" should "work work with functions" in{
+		val in = NonEmptyList(List(1, 2, 3))
+		val out = in.liftFilter{x: Any => false}
+
+		assert(out == NonEmptyList(Nil))
+	}
+
 	"liftIntoF on List" should "work on a List" in{
 		val lf = liftIntoF[List](intF)
 		val out = lf(List(1, 2, 3))

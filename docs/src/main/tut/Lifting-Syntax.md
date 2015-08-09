@@ -15,6 +15,7 @@ The Lifters package provides for some convenience syntax upon any instance of a 
  * liftFold - An auto-lifting `fold`
  * liftFoldMap - An auto-lifting `fold`, analogous to the `foldMap` of the `Foldable` type class
  * liftFoldAt - An auto-lifting `fold` constrained to a specific higher-kinded type
+ * liftFilter - An auto-lifting `filter`
 
 There is no requirement that the type signature of the syntax target contain multiply nested types. Some methods require additional type classes to be defined in order to be used, such as any `fold` variants.
 
@@ -196,3 +197,28 @@ val out = futListOpt.liftFoldAt[Option]
 ```
 
 which will force the evaluation at the `Int`, bypassing both the `List`, which itself is a `Monoid` and the `Option` which by way of a recurance relation is a `Monoid`.
+
+## 8. liftFilter
+
+LiftFilter is a more general `filter` with the ability to auto-deduce where a given predicate should be applied based upon the type signature of the predicate and the applicability of the type structure to which it is applied. That is, `liftFilter` can lift a predicate into the first suitable context for which it can be applied and that defines a `Foldable`, `Monoid` and `Applicative` (i.e. has a `foldLeft`, a means of combining non-destructively two instances, an empty representation and a single argument constructor.) In practice, it operates as successive calls of `map` over nested types until it filters. The return type of the method is the same as the object it was fed.
+
+To demonstrate
+
+```tut
+val optList = Option(List(2, 4, 6, 8))
+val out = optList.map{ list =>
+  list.filter(_ % 3 == 0)
+}
+```
+
+compared with
+
+```tut
+import autolift._
+import AutoLift._
+import scalaz._
+import Scalaz._
+
+val optList = Option(List(2, 4, 6, 8))
+val out = optList.liftFilter{ x: Int => x % 3 == 0 }
+```
