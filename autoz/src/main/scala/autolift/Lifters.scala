@@ -1,6 +1,6 @@
 package autolift
 
-import scalaz.{Functor, Apply, Bind, Foldable, Monoid}
+import scalaz.{Functor, Apply, Applicative, Bind, Foldable, Monoid}
 
 object Lifters extends Lifters
 
@@ -32,6 +32,8 @@ trait LiftImplicits{
 		def liftFoldMap[Function](f: Function)(implicit lift: LiftFoldMap[F[A], Function]): lift.Out = lift(fa, f)
 
 		def liftFoldAt[M[_]](implicit fold: LiftFoldAt[M, F[A]]): fold.Out = fold(fa)
+
+		def liftFilter[Function](f: Function)(implicit lift: LiftFilter[F[A], Function]): F[A] = lift(fa, f)
 	}
 }
 
@@ -68,6 +70,12 @@ trait LiftFunctions{
 
 	sealed class LiftedFoldMap[Function](f: Function){
 		def apply[That](that: That)(implicit lift: LiftFoldMap[That, Function]): lift.Out = lift(that, f)
+	}
+
+	def liftFilter[Function](f: Function) = new LiftedFilter(f)
+
+	sealed class LiftedFilter[Function](f: Function){
+		def apply[That](that: That)(implicit lift: LiftFilter[That, Function]): That = lift(that, f)
 	}
 }
 
@@ -359,5 +367,33 @@ trait LowPriorityLiftFoldAt{
 			type Out = G[fold.Out]
 
 			def apply(gh: G[H]) = functor.map(gh){ h: H => fold(h) }
+		}
+}
+
+/**
+ * Typeclass supporting filtering a set of values within a nested type constructor.
+ * 
+ * @author Owein Reese
+ * 
+ * @tparam Obj The object over which to filter
+ * @tparam Function The predicate which determines if a value is included in the final result
+ */
+trait LiftFilter[Obj, Function] extends ((Obj, Function) => Obj)
+
+object LiftFilter extends LowPriorityLiftFilter{
+	def apply[Obj, Function](implicit lift: LiftFilter[Obj, Function]) = lift
+
+	implicit def recur[F[_], G, Function](implicit lift: LiftFilter[G, Function], functor: Functor[F]) =
+		new LiftFilter[F[G], Function]{
+			def apply(fg: F[G], f: Function) = functor.map(fg){ g: G => lift(g, f) }
+		}
+}
+
+trait LowPriorityLiftFilter{
+	implicit def base[F[_], A, B >: A](implicit fold: Foldable[F], m: Monoid[F[A]], ap: Applicative[F]) =
+		new LiftFilter[F[A], B => Boolean]{
+			def apply(fa: F[A], pred: B => Boolean) = fold.foldRight(fa, m.zero){
+				(a, res) => if(pred(a)) m.append(ap.pure(a), res) else res
+			}
 		}
 }

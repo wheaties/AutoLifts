@@ -15,6 +15,7 @@ class LiftersTest extends FlatSpec{
 	val anyF = {x: Any => 1}
 	val anyL = {x: Any => List(1)}
 	val anyO = { x: Any => Option(1) }
+	val even = {x: Int => x % 2 == 0 }
 
 	"liftMap on an Option[List]" should "work" in{
 		val in = Option(List(1))
@@ -112,6 +113,20 @@ class LiftersTest extends FlatSpec{
 		val out = in.liftFoldAt[Option]
 
 		same[List[Int]](out, List(1, 0, 2))
+	}
+
+	"liftFilter on a List" should "work" in{
+		val in = List(1, 2, 3)
+		val out = in.liftFilter(even)
+
+		assert(out == List(2))
+	}
+
+	"liftFilter on an Option[List]" should "work" in{
+		val in = Option(List(1, 2, 3))
+		val out = in.liftFilter(even)
+
+		assert(out == Option(List(2)))
 	}
 
 	"liftIntoF on List" should "work on a List" in{
