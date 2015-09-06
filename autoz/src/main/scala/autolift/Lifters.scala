@@ -38,8 +38,6 @@ trait LiftImplicits{
 }
 
 //TODO: split into another file, a la ops, syntax.
-//TODO: These would actually be a lot easier to handle if funcion types weren't single type expressions. Those make sense in LifterOps only.
-//TODO:    ...and functions could be chained.
 trait LiftFunctions{ //These are autolifting contexts
 	def liftIntoF[F[_]] = new LIFMaker[F]
 
@@ -51,103 +49,56 @@ trait LiftFunctions{ //These are autolifting contexts
 		def apply[That](that: That)(implicit into: LiftIntoF[F, That, Function]): into.Out = into(that, f)
 	}
 
-	def liftF[Function](f: Function) = new LiftedF(f)
+	def liftF[A, B](f: A => B) = new LiftedF(f)
 
-	sealed class LiftedF[Fn](protected[autolift] val f: Fn){
-		type This = LiftedF[Fn]
+	sealed class LiftedF[A, B](protected[autolift] val f: A => B){
+		def andThen[C >: B, D](lf: LiftedF[C, D]) = new LiftedF(f andThen lf.f)
 
-		def andThen[That](that: That)(implicit comp: LiftCompose[This, That]): comp.Out = comp(this, that)
+		def compose[C, D <: A](lf: LiftedF[C, D]) = lf andThen this
 
-		def compose[That](that: That)(implicit comp: LiftCompose[That, This]): comp.Out = comp(that, this)
+		def map[C](g: B => C): LiftedF[A, C] = new LiftedF(f andThen g)
 
-		//def map[C](f: B => C): LiftedF[A, C]
-
-		def apply[That](that: That)(implicit lift: LiftF[That, Fn]): lift.Out = lift(that, f)
+		def apply[That](that: That)(implicit lift: LiftF[That, A => B]): lift.Out = lift(that, f)
 	}
 
-	object LiftedF{
-		implicit def compose[A, B, C >: B, D] = new LiftCompose[LiftedF[A => B], LiftedF[C => D]]{
-			type Out = LiftedF[A => D]
+	def liftAp[A, B, F[_]](f: F[A => B])(implicit ap: Apply[F]) = new LiftedAp(f)
 
-			def apply(left: LiftedF[A => B], right: LiftedF[C => D]) = new LiftedF(left.f andThen right.f)
-		}
-	}
-
-	def liftAp[Function](f: Function) = new LiftedAp(f)
-
-	sealed class LiftedAp[Fn](protected[autolift] val f: Fn){
-		type This = LiftedAp[Fn]
-
-		def andThen[That](that: That)(implicit comp: LiftCompose[This, That]): comp.Out = comp(this, that)
-
-		def compose[That](that: That)(implicit comp: LiftCompose[That, This]): comp.Out = comp(that, this)
-
-		//def map[C](f: B => C): LiftedAp[A, C, F]
-
-		def apply[That](that: That)(implicit lift: LiftAp[That, Fn]): lift.Out = lift(that, f)
-	}
-
-	object LiftedAp{
-		implicit def compose[A, B, C >: B, D, F[_]](implicit ap: Apply[F]) =
-			new LiftCompose[LiftedAp[F[A => B]],LiftedAp[F[C => D]]]{
-				type Out = LiftedAp[F[A => D]]
-
-				def apply(left: LiftedAp[F[A => B]], right: LiftedAp[F[C => D]]) = new LiftedAp(
-					ap.ap(left.f)(
-						ap.map(right.f){ 
-							y: (C => D) => { x: (A => B) => x andThen y } 
-						}
-					)
-				)
+	sealed class LiftedAp[A, B, F[_]](protected[autolift] val f: F[A => B])(implicit ap: Apply[F]){
+		def andThen[C >: B, D](lf: LiftedAp[C, D, F]) = new LiftedAp(ap.ap(f)(
+			ap.map(lf.f){ 
+				y: (C => D) => { x: (A => B) => x andThen y } 
 			}
+		))
+
+		def compose[C, D <: A](lf: LiftedAp[C, D, F]) = lf andThen this
+
+		def map[C](g: B => C): LiftedAp[A, C, F] = new LiftedAp(ap.map(f){ _ andThen g })
+
+		def apply[That](that: That)(implicit lift: LiftAp[That, F[A => B]]): lift.Out = lift(that, f)
 	}
 
-	def liftM[Function](f: Function) = new LiftedM(f)
+	def liftM[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedM(f)
 
-	sealed class LiftedM[Fn](protected[autolift] val f: Fn){
-		type This = LiftedM[Fn]
+	sealed class LiftedM[A, B, M[_]](protected[autolift] val f: A => M[B])(implicit bind: Bind[M]){
+		def andThen[C >: B, D](lf: LiftedM[C, D, M]) = new LiftedM({ x: A => bind.bind(f(x))(lf.f) })
 
-		def andThen[That](that: That)(implicit comp: LiftCompose[This, That]): comp.Out = comp(this, that)
+		def compose[C, D <: A](lf: LiftedM[C, D, M]) = lf andThen this
 
-		def compose[That](that: That)(implicit comp: LiftCompose[That, This]): comp.Out = comp(that, this)
+		def map[C](g: B => C): LiftedM[A, C, M] = new LiftedM({ x: A => bind.map(f(x))(g) })
 
-		//def map[C](f: B => C): LiftedM[A, C, M]
-
-		def apply[That](that: That)(implicit lift: LiftB[That, Fn]): lift.Out = lift(that, f)
+		def apply[That](that: That)(implicit lift: LiftB[That, A => M[B]]): lift.Out = lift(that, f)
 	}
 
-	object LiftedM{
-		implicit def compose[A, B, C >: B, D, M[_]](implicit bind: Bind[M]) =
-			new LiftCompose[LiftedM[A => M[B]], LiftedM[C => M[D]]]{
-				type Out = LiftedM[A => M[D]]
+	def liftFoldMap[A, B](f: A => B)(implicit m: Monoid[B]) = new LiftedFoldMap(f)
 
-				def apply(left: LiftedM[A => M[B]], right: LiftedM[C => M[D]]) = new LiftedM({
-					x: A => bind.bind(left.f(x))(right.f)
-				})
-			}
-	}
+	sealed class LiftedFoldMap[A, B](protected[autolift] val f: A => B)(implicit m: Monoid[B]){
+		def andThen[C >: B, D : Monoid](lf: LiftedFoldMap[C, D]) = new LiftedFoldMap(f andThen lf.f)
 
-	def liftFoldMap[Function](f: Function) = new LiftedFoldMap(f)
+		def compose[C, D <: A](lf: LiftedFoldMap[C, D]) = lf andThen this
 
-	sealed class LiftedFoldMap[Fn](protected[autolift] val f: Fn){
-		type This = LiftedFoldMap[Fn]
+		def map[C : Monoid](g: B => C): LiftedFoldMap[A, C] = new LiftedFoldMap(f andThen g)
 
-		def andThen[That](that: That)(implicit comp: LiftCompose[This, That]): comp.Out = comp(this, that)
-
-		def compose[That](that: That)(implicit comp: LiftCompose[That, This]): comp.Out = comp(that, this)
-
-		//def map[C](f: B => C)(implicit m: Monoid[C]): LiftedFoldMap[A, C]
-
-		def apply[That](that: That)(implicit lift: LiftFoldMap[That, Fn]): lift.Out = lift(that, f)
-	}
-
-	object LiftedFoldMap{
-		implicit def compose[A, B, C >: B, D](implicit m: Monoid[D]) =
-			new LiftCompose[LiftedFoldMap[A => B], LiftedFoldMap[C => D]]{
-				type Out = LiftedFoldMap[A => D]
-
-				def apply(left: LiftedFoldMap[A => B], right: LiftedFoldMap[C => D]) = new LiftedFoldMap(left.f andThen right.f)
-			}
+		def apply[That](that: That)(implicit lift: LiftFoldMap[That, A => B]): lift.Out = lift(that, f)
 	}
 
 	def liftFilter[Function](f: Function) = new LiftedFilter(f)
@@ -156,8 +107,6 @@ trait LiftFunctions{ //These are autolifting contexts
 		def apply[That](that: That)(implicit lift: LiftFilter[That, Function]): That = lift(that, f)
 	}
 }
-
-trait LiftCompose[F, G] extends DFunction2[F, G]
 
 /**
  * Type class supporting mapping of a function over a specific higher-kinded type within a nested type constructor.
