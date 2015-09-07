@@ -8,29 +8,41 @@ trait Folders extends FolderImplicits with FolderFunctions
 
 trait FolderImplicits{
 	implicit class FolderOps[F[_]: Foldable, A](fa: F[A]){
-		def foldWith[Function](f: Function)(implicit lift: FoldWith[F[A], Function]): lift.Out = lift(fa, f)
+		def foldWith[B, C](f: B => C)(implicit lift: FoldWith[F[A], B => C]): lift.Out = lift(fa, f)
 
 		def foldComplete(implicit fold: FoldComplete[F[A]]): fold.Out = fold(fa)
 
 		def foldOver[M[_]](implicit fold: FoldOver[M, F[A]]): fold.Out = fold(fa)
 
-		def foldAny[Function](f: Function)(implicit fold: FoldAny[F[A], Function]): Boolean = fold(fa, f)
+		def foldAny[B](f: B => Boolean)(implicit fold: FoldAny[F[A], B => Boolean]): Boolean = fold(fa, f)
 
-		def foldAll[Function](f: Function)(implicit fold: FoldAll[F[A], Function]): Boolean = fold(fa, f)
+		def foldAll[B](f: B => Boolean)(implicit fold: FoldAll[F[A], B => Boolean]): Boolean = fold(fa, f)
 	}
 }
 
 trait FolderFunctions{
-	def foldOver[F[_]: Foldable] = new FoldedOver[F]
+	def foldWith[A, B : Monoid](f: A => B) = new FoldedWith(f)
 
-	sealed class FoldedOver[F[_]: Foldable]{
-		def apply[That](that: That)(implicit fold: FoldOver[F, That]): fold.Out = fold(that)
+	sealed class FoldedWith[A, B : Monoid](protected[autolift] val f: A => B){
+		def andThen[C >: B, D : Monoid](fw: FoldedWith[C, D]) = new FoldedWith(f andThen fw.f)
+
+		def compose[C, D <: A](fw: FoldedWith[C, D]) = fw andThen this
+
+		def map[C : Monoid](g: B => C): FoldedWith[A, C] = new FoldedWith(f andThen g)
+
+		def apply[That](that: That)(implicit fold: FoldWith[That, A => B]): fold.Out = fold(that, f)
 	}
 
-	def foldWith[Function](f: Function) = new FoldedWith(f)
+	def foldAny[A](f: A => Boolean) = new FoldedAny[A](f)
 
-	sealed class FoldedWith[Function](f: Function){
-		def apply[That](that: That)(implicit fold: FoldWith[That, Function]): fold.Out = fold(that, f)
+	sealed class FoldedAny[A](f: A => Boolean){
+		def apply[That](that: That)(implicit fold: FoldAny[That, A => Boolean]): Boolean = fold(that, f)
+	}
+
+	def foldAll[A](f: A => Boolean) = new FoldedAny[A](f)
+
+	sealed class FoldedAll[A](f: A => Boolean){
+		def apply[That](that: That)(implicit fold: FoldAll[That, A => Boolean]): Boolean = fold(that, f)
 	}
 }
 

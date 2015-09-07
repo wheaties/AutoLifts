@@ -208,6 +208,15 @@ class LiftersTest extends FlatSpec{
 		same[Option[List[Int]]](out, Option(List(3, 4)))
 	}
 
+	"liftAp" should "compose with other liftAp" in{
+		val lf = liftAp(intAp)
+		val lf2 = liftAp(List(anyF))
+		val comp = lf andThen lf2
+		val out = comp(List(4))
+
+		same[List[Int]](out, List(1))
+	}
+
 	"liftM" should "work on a List" in{
 		val lf = liftM(intL)
 		val out = lf(List(1))
@@ -227,5 +236,14 @@ class LiftersTest extends FlatSpec{
 		val out = lf(List(1, 2, 3))
 
 		same[List[Int]](out, List(1, 1, 1))
+	}
+
+	"liftM" should "compose with other liftM" in{
+		val lf = liftM(anyL)
+		val lf2 = liftM(intL)
+		val comp = lf andThen lf2
+		val out = comp(List(1, 2, 3))
+
+		same[List[Int]](out, List(2, 3, 2, 3, 2, 3))
 	}
 }

@@ -15,25 +15,25 @@ trait LiftImplicits{
 	 * @tparam A The type within `F`.
 	 */
 	implicit class LifterOps[F[_]: Functor, A](fa: F[A]){
-		def liftMap[Function](f: Function)(implicit lift: LiftF[F[A], Function]): lift.Out = lift(fa, f)
+		def liftMap[B, C](f: B => C)(implicit lift: LiftF[F[A], B => C]): lift.Out = lift(fa, f)
 
-		def liftAp[Function](f: Function)(implicit lift: LiftAp[F[A], Function]): lift.Out = lift(fa, f)
+		def liftAp[B, C, M[_]](f: M[B => C])(implicit lift: LiftAp[F[A], M[B => C]]): lift.Out = lift(fa, f)
 
-		def liftFlatMap[Function](f: Function)(implicit lift: LiftB[F[A], Function]): lift.Out = lift(fa, f)
+		def liftFlatMap[B, C, M[_]](f: B => M[C])(implicit lift: LiftB[F[A], B => M[C]]): lift.Out = lift(fa, f)
 
-		def liftFoldLeft[Function, Z](z: Z)(f: Function)(implicit lift: LiftFoldLeft[F[A], Function, Z]): lift.Out = 
+		def liftFoldLeft[B, Z](z: Z)(f: (Z, B) => Z)(implicit lift: LiftFoldLeft[F[A], (Z, B) => Z, Z]): lift.Out = 
 			lift(fa, f, z)
 
-		def liftFoldRight[Function, Z](z: Z)(f: Function)(implicit lift: LiftFoldRight[F[A], Function, Z]): lift.Out = 
+		def liftFoldRight[B, Z](z: Z)(f: (B, => Z) => Z)(implicit lift: LiftFoldRight[F[A], (B, => Z) => Z, Z]): lift.Out = 
 			lift(fa, f, z)
 
 		def liftFold(implicit lift: LiftFold[F[A]]): lift.Out = lift(fa)
 
-		def liftFoldMap[Function](f: Function)(implicit lift: LiftFoldMap[F[A], Function]): lift.Out = lift(fa, f)
+		def liftFoldMap[B, C](f: B => C)(implicit lift: LiftFoldMap[F[A], B => C]): lift.Out = lift(fa, f)
 
 		def liftFoldAt[M[_]](implicit fold: LiftFoldAt[M, F[A]]): fold.Out = fold(fa)
 
-		def liftFilter[Function](f: Function)(implicit lift: LiftFilter[F[A], Function]): F[A] = lift(fa, f)
+		def liftFilter[B](f: B => Boolean)(implicit lift: LiftFilter[F[A], B => Boolean]): F[A] = lift(fa, f)
 	}
 }
 
@@ -42,11 +42,17 @@ trait LiftFunctions{ //These are autolifting contexts
 	def liftIntoF[F[_]] = new LIFMaker[F]
 
 	sealed class LIFMaker[F[_]]{
-		def apply[Function](f: Function)(implicit ev: Functor[F]) = new LiftIntoFunctor[F, Function](f)
+		def apply[A, B](f: A => B)(implicit ev: Functor[F]) = new LiftIntoFunctor[A, B, F](f)
 	}
 
-	sealed class LiftIntoFunctor[F[_]: Functor, Function](f: Function){
-		def apply[That](that: That)(implicit into: LiftIntoF[F, That, Function]): into.Out = into(that, f)
+	sealed class LiftIntoFunctor[A, B, F[_]: Functor](protected[autolift] val f: A => B){
+		def andThen[C >: B, D](lf: LiftIntoFunctor[C, D, F]) = new LiftIntoFunctor[A, D, F](f andThen lf.f)
+
+		def compose[C, D <: A](lf: LiftIntoFunctor[C, D, F]) = lf andThen this
+
+		def map[C](g: B => C): LiftIntoFunctor[A, C, F] = new LiftIntoFunctor[A, C, F](f andThen g)
+
+		def apply[That](that: That)(implicit into: LiftIntoF[F, That, A => B]): into.Out = into(that, f)
 	}
 
 	def liftF[A, B](f: A => B) = new LiftedF(f)
@@ -101,10 +107,10 @@ trait LiftFunctions{ //These are autolifting contexts
 		def apply[That](that: That)(implicit lift: LiftFoldMap[That, A => B]): lift.Out = lift(that, f)
 	}
 
-	def liftFilter[Function](f: Function) = new LiftedFilter(f)
+	def liftFilter[A](f: A => Boolean) = new LiftedFilter(f)
 
-	sealed class LiftedFilter[Function](f: Function){
-		def apply[That](that: That)(implicit lift: LiftFilter[That, Function]): That = lift(that, f)
+	sealed class LiftedFilter[A](f: A => Boolean){
+		def apply[That](that: That)(implicit lift: LiftFilter[That, A => Boolean]): That = lift(that, f)
 	}
 }
 
