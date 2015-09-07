@@ -8,7 +8,8 @@ category: Folders
 The Folders package contains several context transforming functions which form the corrolary of auto-folding logic. Wherein folding syntax was concerned with a specific type and arbitrary functions, the folding functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
 
  * foldWith - places a function into an auto-folding context
- * foldOver - generates an auto-folding context specific to an upper type bound within the applied nested argument structures
+ * foldAll - places a predicate into an auto-folding context which returns true if all folds return true
+ * foldAny - places a predicate into an auto-folding context which returns true if any fold returns true
 
 There is no requirement that the type signature of the arguments contain multiply nested types. Besides `Foldable` being defined, the result of the fold(s) also requires a defined `Monoid`.
 
@@ -29,9 +30,9 @@ val single = folded(List("1", "2", "3"))
 val many = folded(List(Set("1"), Set("2", "3")))
 ```
 
-## foldOver
+## foldAll
 
-Less of a context wrapper for functions and more of a function generator, `foldOver` is analogous to the `fold` method of `Foldable`. Unlike plain `fold`, `foldOver` works on arbitrarily nested types with the restriction that the folding occurs on an uppper type bound within the structure. Hence, if `G[_]`, and `A` have defined `Monoid` then `foldOver[F]` on `F[G[A]]` will produce a result of type `G[A]` while `foldOver[G]` will produce a type of `A`.
+The `foldAll` function is analogous to the `forall` method on the standard collections library. It works with any nested set of `Foldable`, auto-detecting the correct place to be invoked based upon the type signatures of the predicate and applied object. It operates by making successive calls to `all` from the `Foldable` type class. If you aren't familiar with `all` it is equivalent to `foldRight(true)(_ && p(_))` where `p` is a predicate function.
 
 To demonstrate:
 
@@ -41,8 +42,7 @@ import Folders._
 import scalaz._
 import Scalaz._
 
-val foldedL = foldOver[List]
-val foldedO = foldOver[Option]
-val outL = foldedL(List(Option(1), Option(2), Option(3)))
-val outO = foldedO(List(Option(1), Option(2), Option(3)))
+val folded = foldAll{ x: String => x.length < 2 }
+val resTrue = folded(List("1", "2", "3"))
+val resFalse = folded(List(Set("1"), Set("2", "32")))
 ```
