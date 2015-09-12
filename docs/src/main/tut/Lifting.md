@@ -66,7 +66,7 @@ import Lifters._
 import scalaz._
 import Scalaz._
 
-val wrapped = liftF{ x: Int => x+1 }
+val wrapped = liftMap{ x: Int => x+1 }
 val out = wrapped(Option(List(1, 2, 3)))
 ```
 

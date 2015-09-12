@@ -9,9 +9,10 @@ class LiftersTest extends FlatSpec{
 	def same[A](x: A, y: A) = assert(x == y)
 
 	val intF = {x: Int => x+1}
+	def intintF(x: Int, y: Int) = x + y
+	def anyanyF(x: Any, y: Any) = 1
 	val intL = {x: Int => List(x+1, x+2)}
 	val intAp = List(intF)
-	def intintF(x: Int, y: Int) = x + y
 	val anyF = {x: Any => 1}
 	val anyL = {x: Any => List(1)}
 	val anyO = { x: Any => Option(1) }
@@ -164,30 +165,30 @@ class LiftersTest extends FlatSpec{
 		same[List[Int]](out, List(1))
 	}
 
-	"liftF" should "work on a List" in{
-		val lf = liftF(intF)
+	"liftMap" should "work on a List" in{
+		val lf = liftMap(intF)
 		val out = lf(List(1))
 
 		same[List[Int]](out, List(2))
 	}
 
-	"liftF" should "work on an Option[List]" in{
-		val lf = liftF(intF)
+	"liftMap" should "work on an Option[List]" in{
+		val lf = liftMap(intF)
 		val out = lf(Option(List(1)))
 
 		same[Option[List[Int]]](out, Option(List(2)))
 	}
 
-	"liftF on a List" should "work with functions" in{
-		val lf = liftF(anyF)
+	"liftMap on a List" should "work with functions" in{
+		val lf = liftMap(anyF)
 		val out = lf(List(1, 2, 3))
 
 		same[List[Int]](out, List(1, 1, 1))
 	}
 
-	"liftF" should "compose with other liftF" in{
-		val lf = liftF(anyF)
-		val lf2 = liftF(intF)
+	"liftMap" should "compose with other liftMap" in{
+		val lf = liftMap(anyF)
+		val lf2 = liftMap(intF)
 		val comp = lf andThen lf2
 		val out = comp(List(4))
 
@@ -217,33 +218,58 @@ class LiftersTest extends FlatSpec{
 		same[List[Int]](out, List(1))
 	}
 
-	"liftM" should "work on a List" in{
-		val lf = liftM(intL)
+	"liftFlatMap" should "work on a List" in{
+		val lf = liftFlatMap(intL)
 		val out = lf(List(1))
 
 		same[List[Int]](out, List(2, 3))
 	}
 
-	"liftM" should "work on an Option[List]" in{
-		val lf = liftM(intL)
+	"liftFlatMap" should "work on an Option[List]" in{
+		val lf = liftFlatMap(intL)
 		val out = lf(Option(List(2, 3)))
 
 		same[Option[List[Int]]](out, Option(List(3, 4, 4, 5)))
 	}
 
-	"liftM on a List" should "work with functions" in{
-		val lf = liftM(anyL)
+	"liftFlatMap on a List" should "work with functions" in{
+		val lf = liftFlatMap(anyL)
 		val out = lf(List(1, 2, 3))
 
 		same[List[Int]](out, List(1, 1, 1))
 	}
 
-	"liftM" should "compose with other liftM" in{
-		val lf = liftM(anyL)
-		val lf2 = liftM(intL)
+	"liftFlatMap" should "compose with other liftFlatMap" in{
+		val lf = liftFlatMap(anyL)
+		val lf2 = liftFlatMap(intL)
 		val comp = lf andThen lf2
 		val out = comp(List(1, 2, 3))
 
 		same[List[Int]](out, List(2, 3, 2, 3, 2, 3))
+	}
+
+	"liftM2" should "work on a pair of List" in{
+		val lf = liftM2(intintF)
+		val out = lf(List(0, 1), List(1, 2))
+
+		same[List[Int]](out, List(1, 2, 2, 3))
+	}
+
+	"liftM2" should "work on a pair of Option List" in{
+		val lf = liftM2(intintF)
+		val out = lf(Option(List(0, 1)), Option(List(1, 2)))
+
+		same[Option[List[Int]]](out, Option(List(1, 2, 2, 3)))
+
+		val out2 = lf(Option(List(0, 1)), None: Option[List[Int]])
+
+		same[Option[List[Int]]](out2, None)
+	}
+
+	"liftM2" should "work with functions" in{
+		val lf = liftM2(anyanyF)
+		val out = lf(Option(2), Option('c'))
+
+		same[Option[Int]](out, Option(1))
 	}
 }

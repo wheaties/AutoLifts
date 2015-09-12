@@ -55,14 +55,14 @@ trait LiftFunctions{ //These are autolifting contexts
 		def apply[That](that: That)(implicit into: LiftIntoF[F, That, A => B]): into.Out = into(that, f)
 	}
 
-	def liftF[A, B](f: A => B) = new LiftedF(f)
+	def liftMap[A, B](f: A => B) = new LiftedMap(f)
 
-	sealed class LiftedF[A, B](protected[autolift] val f: A => B){
-		def andThen[C >: B, D](lf: LiftedF[C, D]) = new LiftedF(f andThen lf.f)
+	sealed class LiftedMap[A, B](protected[autolift] val f: A => B){
+		def andThen[C >: B, D](lf: LiftedMap[C, D]) = new LiftedMap(f andThen lf.f)
 
-		def compose[C, D <: A](lf: LiftedF[C, D]) = lf andThen this
+		def compose[C, D <: A](lf: LiftedMap[C, D]) = lf andThen this
 
-		def map[C](g: B => C): LiftedF[A, C] = new LiftedF(f andThen g)
+		def map[C](g: B => C): LiftedMap[A, C] = new LiftedMap(f andThen g)
 
 		def apply[That](that: That)(implicit lift: LiftF[That, A => B]): lift.Out = lift(that, f)
 	}
@@ -83,14 +83,14 @@ trait LiftFunctions{ //These are autolifting contexts
 		def apply[That](that: That)(implicit lift: LiftAp[That, F[A => B]]): lift.Out = lift(that, f)
 	}
 
-	def liftM[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedM(f)
+	def liftFlatMap[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedFlatMap(f)
 
-	sealed class LiftedM[A, B, M[_]](protected[autolift] val f: A => M[B])(implicit bind: Bind[M]){
-		def andThen[C >: B, D](lf: LiftedM[C, D, M]) = new LiftedM({ x: A => bind.bind(f(x))(lf.f) })
+	sealed class LiftedFlatMap[A, B, M[_]](protected[autolift] val f: A => M[B])(implicit bind: Bind[M]){
+		def andThen[C >: B, D](lf: LiftedFlatMap[C, D, M]) = new LiftedFlatMap({ x: A => bind.bind(f(x))(lf.f) })
 
-		def compose[C, D <: A](lf: LiftedM[C, D, M]) = lf andThen this
+		def compose[C, D <: A](lf: LiftedFlatMap[C, D, M]) = lf andThen this
 
-		def map[C](g: B => C): LiftedM[A, C, M] = new LiftedM({ x: A => bind.map(f(x))(g) })
+		def map[C](g: B => C): LiftedFlatMap[A, C, M] = new LiftedFlatMap({ x: A => bind.map(f(x))(g) })
 
 		def apply[That](that: That)(implicit lift: LiftB[That, A => M[B]]): lift.Out = lift(that, f)
 	}
@@ -111,6 +111,14 @@ trait LiftFunctions{ //These are autolifting contexts
 
 	sealed class LiftedFilter[A](f: A => Boolean){
 		def apply[That](that: That)(implicit lift: LiftFilter[That, A => Boolean]): That = lift(that, f)
+	}
+
+	def liftM2[A, B, C](f: (A, B) => C) = new LiftedM2(f)
+
+	sealed class LiftedM2[A, B, C](f: (A, B) => C){
+		def map[D](g: C => D): LiftedM2[A, B, D] = new LiftedM2((x: A, y: B) => g(f(x, y)))
+
+		def apply[MA, MB](ma: MA, mb: MB)(implicit lift: LiftM2[MA, MB, (A, B) => C]): lift.Out = lift(ma, mb, f)
 	}
 }
 
@@ -430,5 +438,33 @@ trait LowPriorityLiftFilter{
 	implicit def recur[F[_], G, Function](implicit lift: LiftFilter[G, Function], functor: Functor[F]) =
 		new LiftFilter[F[G], Function]{
 			def apply(fg: F[G], f: Function) = functor.map(fg){ g: G => lift(g, f) }
+		}
+}
+
+trait LiftM2[Obj1, Obj2, Function] extends DFunction3[Obj1, Obj2, Function]
+
+object LiftM2 extends LowPriorityLiftM2{
+	def apply[Obj1, Obj2, Fn](implicit lift: LiftM2[Obj1, Obj2, Fn]): Aux[Obj1, Obj2, Fn, lift.Out] = lift
+
+	implicit def base[M[_], A, B, A1 >: A, B1 >: B, C](implicit bind: Bind[M]): Aux[M[A], M[B], (A1, B1) => C, M[C]] =
+		new LiftM2[M[A], M[B], (A1, B1) => C]{
+			type Out = M[C]
+
+			def apply(ma: M[A], mb: M[B], f: (A1, B1) => C) = bind.bind(ma){ a: A =>
+				bind.map(mb){ b: B => f(a, b) }
+			}
+		}
+}
+
+trait LowPriorityLiftM2{
+	type Aux[Obj1, Obj2, Fn, Out0] = LiftM2[Obj1, Obj2, Fn]{ type Out = Out0 }
+
+	implicit def recur[M[_], A, B, Fn](implicit bind: Bind[M], lift: LiftM2[A, B, Fn]): Aux[M[A], M[B], Fn, M[lift.Out]] =
+		new LiftM2[M[A], M[B], Fn]{
+			type Out = M[lift.Out]
+
+			def apply(ma: M[A], mb: M[B], f: Fn) = bind.bind(ma){ a: A =>
+				bind.map(mb){ b: B => lift(a, b, f) }
+			}
 		}
 }

@@ -7,17 +7,18 @@ category: Lifters
 
 The Lifters group contains several context transforming functions which form the corrolary of auto-lifting logic. Wherein lifting syntax was concerned with a specific type and arbitrary functions, the lifting functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
 
- * liftF - places a function into an auto-lifting context
+ * liftMap - places a function into an auto-lifting context
  * liftAp - takes a type of the form `L[A => B]` and puts it into an auto-lifting context
- * liftM - takes a function of the form `A => M[B]` and places it into an auto-lifting `flatMap` context
+ * liftFlatMap - takes a function of the form `A => M[B]` and places it into an auto-lifting `flatMap` context
  * liftIntoF - places a function into an auto-lifting context defined by some type `L[_]`
  * liftFoldMap - places a function into an auto-lifting context that folds
+ * liftM2 - places a function of airity 2 into an auto-lifting context
 
 All context wrappers require that the types operated on have at least a `Functor` defined for them. Several of these context wrappers require additional type classes, such a `liftFoldMap` requiring a `Foldable`.
 
-## liftF
+## liftMap
 
-The `liftF` function is analogous to the `lift` method of a `Functor`. Unlike `lift` which must have a defined type `L[_]` into which it is lifted, that restriction is relaxed so that any type or nested set of types may be acted upon. Hence, given a function of the form `A => B` and having been transformed by `liftF` it is free to act upon the types `F[A]`, `F[G[A]]`, `F1[F2[...Fn[A]...]]`, etc. It operates by calling successive `map` operations until it finds the first type for which `A => B` may act.
+The `liftMap` function is analogous to the `lift` method of a `Functor`. Unlike `lift` which must have a defined type `L[_]` into which it is lifted, that restriction is relaxed so that any type or nested set of types may be acted upon. Hence, given a function of the form `A => B` and having been transformed by `liftF` it is free to act upon the types `F[A]`, `F[G[A]]`, `F1[F2[...Fn[A]...]]`, etc. It operates by calling successive `map` operations until it finds the first type for which `A => B` may act.
 
 To demonstrate:
 
@@ -27,7 +28,7 @@ import Lifters._
 import scalaz._
 import Scalaz._
 
-val lifted = liftF{ x: Int => x+1 }
+val lifted = liftMap{ x: Int => x+1 }
 val single = lifted(List(1, 2, 3))
 val doubly = lifted(List(Some(1), None, Some(3)))
 ```
@@ -49,9 +50,9 @@ val single = lifted(List(1, 2, 3))
 val doubly = lifted(Option(List(1, 2, 3)))
 ```
 
-## liftM
+## liftFlatMap
 
-The `liftM` function wrapper is more of an extension on `flatMap` than it is on the classical Haskell [liftM](https://wiki.haskell.org/Lifting#Monad_lifting) family of functions. Hence, it takes a function of the form `A => M[B]` and operates on an arbitrarily nested set of types which must contain a `M[A]`. It operates by calling successive `map` operations until it finds the first type is may `flatMap` over.
+The `liftFlatMap` function wrapper is more of an extension on `flatMap` . Hence, it takes a function of the form `A => M[B]` and operates on an arbitrarily nested set of types which must contain a `M[A]`. It operates by calling successive `map` operations until it finds the first type is may `flatMap` over.
 
 To demonstrate:
 
@@ -61,7 +62,7 @@ import Lifters._
 import scalaz._
 import Scalaz._
 
-val lifted = liftM{ x: Int => Option(x+1) }
+val lifted = liftFlatMap{ x: Int => Option(x+1) }
 val single = lifted(Option(1))
 val doubly = lifted(List(Some(1), None, Some(3)))
 ```
@@ -113,4 +114,30 @@ import Scalaz._
 val lifted = liftFilter{ x: Any => x.toString.size < 2 }
 val single = lifted(List(1, 10, 100))
 val doubly = lifted(NonEmptyList(List(1, 10, 100)))
+```
+
+## liftM2
+
+The `liftM2` is analogous to calling a function from within a for-comprehension or nested sets of for-comprehensions. It is based on the classical Haskell [liftM](https://wiki.haskell.org/Lifting#Monad_lifting) family of functions, only on steriods. The function is applied based according to the types of the arguments in relatino to the function itself but does require that every nested type have at least a `Bind` defined.
+
+To demonstrate:
+
+```tut
+val out = for{
+	a <- List(1, 2, 3)
+	b <- List(1, 2, 3)
+} yield a - b
+```
+
+is identical to
+
+```tut
+import autolift._
+import Lifters._
+import scalaz._
+import Scalaz._
+
+def sub(x: Int, y: Int) = x - y
+
+val out = liftM2(sub)(List(1, 2, 3), List(1, 2, 3))
 ```
