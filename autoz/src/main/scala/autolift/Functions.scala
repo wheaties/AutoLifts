@@ -23,3 +23,11 @@ trait DFunction3[A,B,C]{
 
 	override def toString() = "<DFunction3>"
 }
+
+trait DFunction4[A,B,C, D]{
+	type Out
+
+	def apply(a: A, b: B, c: C, d: D): Out
+
+	override def toString() = "<DFunction4>"
+}

@@ -120,6 +120,32 @@ trait LiftFunctions{ //These are autolifting contexts
 
 		def apply[MA, MB](ma: MA, mb: MB)(implicit lift: LiftM2[MA, MB, (A, B) => C]): lift.Out = lift(ma, mb, f)
 	}
+
+	def liftM3[A, B, C, D](f: (A, B, C) => D) = new LiftedM3(f)
+
+	sealed class LiftedM3[A, B, C, D](f: (A, B, C) => D){
+		def map[E](g: D => E): LiftedM3[A, B, C, E] = new LiftedM3((x: A, y: B, z: C) => g(f(x, y, z)))
+
+		def apply[MA, MB, MC](ma: MA, mb: MB, mc: MC)(implicit lift: LiftM3[MA, MB, MC, (A, B, C) => D]): lift.Out = 
+			lift(ma, mb, mc, f)
+	}
+
+	def liftA2[A, B, C](f: (A, B) => C) = new LiftedA2(f)
+
+	sealed class LiftedA2[A, B, C](f: (A, B) => C){
+		def map[D](g: C => D): LiftedA2[A, B, D] = new LiftedA2((x: A, y: B) => g(f(x, y)))
+
+		def apply[MA, MB](ma: MA, mb: MB)(implicit lift: LiftA2[MA, MB, (A, B) => C]): lift.Out = lift(ma, mb, f)
+	}
+
+	def liftA3[A, B, C, D](f: (A, B, C) => D) = new LiftedA3(f)
+
+	sealed class LiftedA3[A, B, C, D](f: (A, B, C) => D){
+		def map[E](g: D => E): LiftedA3[A, B, C, E] = new LiftedA3((x: A, y: B, z: C) => g(f(x, y, z)))
+
+		def apply[MA, MB, MC](ma: MA, mb: MB, mc: MC)(implicit lift: LiftA3[MA, MB, MC, (A, B, C) => D]): lift.Out = 
+			lift(ma, mb, mc, f)
+	}
 }
 
 /**
@@ -441,6 +467,16 @@ trait LowPriorityLiftFilter{
 		}
 }
 
+/**
+ * Typeclass supporting lifting a function of airity 2 and applying it to the inner types through a combination of
+ * flatMap and map. 
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj1 The first object over which to apply the function.
+ * @tparam Obj2 The second object over which to apply the function.
+ * @tparam Function The function to be used to map values.
+ */
 trait LiftM2[Obj1, Obj2, Function] extends DFunction3[Obj1, Obj2, Function]
 
 object LiftM2 extends LowPriorityLiftM2{
@@ -465,6 +501,133 @@ trait LowPriorityLiftM2{
 
 			def apply(ma: M[A], mb: M[B], f: Fn) = bind.bind(ma){ a: A =>
 				bind.map(mb){ b: B => lift(a, b, f) }
+			}
+		}
+}
+
+/**
+ * Typeclass supporting lifting a function of airity 3 and applying it to the inner types through a combination of
+ * flatMap and map.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj1 The first object over which to apply the function.
+ * @tparam Obj2 The second object over which to apply the function.
+ * @tparam Obj3 The third object over which to apply the function.
+ * @tparam Function The function to be used to map values.
+ */
+trait LiftM3[Obj1, Obj2, Obj3, Function] extends DFunction4[Obj1, Obj2, Obj3, Function]
+
+object LiftM3 extends LowPriorityLiftM3{
+	def apply[Obj1, Obj2, Obj3, Fn](implicit lift: LiftM3[Obj1, Obj2, Obj3, Fn]): Aux[Obj1, Obj2, Obj3, Fn, lift.Out] = lift
+
+	implicit def base[M[_], A, B, C, A1 >: A, B1 >: B, C1 >: C, D]
+		(implicit bind: Bind[M]): Aux[M[A], M[B], M[C], (A1, B1, C1) => D, M[D]] =
+			new LiftM3[M[A], M[B], M[C], (A1, B1, C1) => D]{
+				type Out = M[D]
+
+				def apply(ma: M[A], mb: M[B], mc: M[C], f: (A1, B1, C1) => D) = bind.bind(ma){ a: A =>
+					bind.bind(mb){ b: B => 
+						bind.map(mc){ c: C => f(a, b, c) }
+					}
+				}
+			}
+}
+
+trait LowPriorityLiftM3{
+	type Aux[Obj1, Obj2, Obj3, Fn, Out0] = LiftM3[Obj1, Obj2, Obj3, Fn]{ type Out = Out0 }
+
+	implicit def recur[M[_], A, B, C, Fn]
+		(implicit bind: Bind[M], lift: LiftM3[A, B, C, Fn]): Aux[M[A], M[B], M[C], Fn, M[lift.Out]] =
+			new LiftM3[M[A], M[B], M[C], Fn]{
+				type Out = M[lift.Out]
+
+				def apply(ma: M[A], mb: M[B], mc: M[C], f: Fn) = bind.bind(ma){ a: A =>
+					bind.bind(mb){ b: B => 
+						bind.map(mc){ c: C => lift(a, b, c, f) }
+					}
+				}
+			}
+}
+
+/**
+ * Typeclass supporting lifting a function of airity 2 and applying it to the inner types through a combination of
+ * ap and map. 
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj1 The first object over which to apply the function.
+ * @tparam Obj2 The second object over which to apply the function.
+ * @tparam Function The function to be used to map values.
+ */
+trait LiftA2[Obj1, Obj2, Function] extends DFunction3[Obj1, Obj2, Function]
+
+object LiftA2 extends LowPriorityLiftA2{
+	def apply[Obj1, Obj2, Fn](implicit lift: LiftA2[Obj1, Obj2, Fn]): Aux[Obj1, Obj2, Fn, lift.Out] = lift
+
+	implicit def base[M[_], A, B, A1 >: A, B1 >: B, C](implicit ap: Apply[M]): Aux[M[A], M[B], (A1, B1) => C, M[C]] =
+		new LiftA2[M[A], M[B], (A1, B1) => C]{
+			type Out = M[C]
+
+			def apply(ma: M[A], mb: M[B], f: (A1, B1) => C) = ap.ap(ma){
+				ap.map(mb){ b: B => f(_, b) }
+			}
+		}
+}
+
+trait LowPriorityLiftA2{
+	type Aux[Obj1, Obj2, Fn, Out0] = LiftA2[Obj1, Obj2, Fn]{ type Out = Out0 }
+
+	implicit def recur[M[_], A, B, Fn](implicit ap: Apply[M], lift: LiftA2[A, B, Fn]): Aux[M[A], M[B], Fn, M[lift.Out]] =
+		new LiftA2[M[A], M[B], Fn]{
+			type Out = M[lift.Out]
+
+			def apply(ma: M[A], mb: M[B], f: Fn) = ap.ap(ma){
+				ap.map(mb){ b: B => lift(_, b, f) }
+			}
+		}
+}
+
+/**
+ * Typeclass supporting lifting a function of airity 3 and applying it to the inner types through a combination of
+ * ap and map. 
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj1 The first object over which to apply the function.
+ * @tparam Obj2 The second object over which to apply the function.
+ * @tparam Obj3 The third object over which to apply the function.
+ * @tparam Function The function to be used to map values.
+ */
+trait LiftA3[Obj1, Obj2, Obj3, Function] extends DFunction4[Obj1, Obj2, Obj3, Function]
+
+object LiftA3 extends LowPriorityLiftA3{
+	def apply[Obj1, Obj2, Obj3, Fn](implicit lift: LiftA3[Obj1, Obj2, Obj3, Fn]): Aux[Obj1, Obj2, Obj3, Fn, lift.Out] = lift
+
+	implicit def base[M[_], A, B, C, A1 >: A, B1 >: B, C1 >: C, D]
+		(implicit ap: Apply[M]): Aux[M[A], M[B], M[C], (A1, B1, C1) => D, M[D]] =
+			new LiftA3[M[A], M[B], M[C], (A1, B1, C1) => D]{
+				type Out = M[D]
+
+				def apply(ma: M[A], mb: M[B], mc: M[C], f: (A1, B1, C1) => D) = ap.ap(ma){
+					ap.ap(mb){
+						ap.map(mc){ c: C => b: B => a: A => f(a, b, c) }
+					}
+				}
+			}
+}
+
+trait LowPriorityLiftA3{
+	type Aux[Obj1, Obj2, Obj3, Fn, Out0] = LiftA3[Obj1, Obj2, Obj3, Fn]{ type Out = Out0 }
+
+	implicit def recur[M[_], A, B, C, Fn](implicit ap: Apply[M], lift: LiftA3[A, B, C, Fn]): Aux[M[A], M[B], M[C], Fn, M[lift.Out]] =
+		new LiftA3[M[A], M[B], M[C], Fn]{
+			type Out = M[lift.Out]
+
+			def apply(ma: M[A], mb: M[B], mc: M[C], f: Fn) = ap.ap(ma){
+				ap.ap(mb){
+					ap.map(mc){ c: C => b: B => a: A => lift(a, b, c, f) }
+				}
 			}
 		}
 }
