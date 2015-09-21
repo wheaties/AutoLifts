@@ -116,9 +116,9 @@ val single = lifted(List(1, 10, 100))
 val doubly = lifted(NonEmptyList(List(1, 10, 100)))
 ```
 
-## liftM2
+## liftM2, liftM3
 
-The `liftM2` is analogous to calling a function from within a for-comprehension or nested sets of for-comprehensions. It is based on the classical Haskell [liftM](https://wiki.haskell.org/Lifting#Monad_lifting) family of functions, only on steriods. The function is applied based according to the types of the arguments in relatino to the function itself but does require that every nested type have at least a `Bind` defined.
+The `liftM2` is analogous to calling a function from within a for-comprehension or nested sets of for-comprehensions. It is based on the Haskell [liftM](https://wiki.haskell.org/Lifting#Monad_lifting) family of functions, only on steriods. The function is applied based according to the types of the arguments in relation to the function itself but does require that every nested type have at least a `Bind` defined.
 
 To demonstrate:
 
@@ -141,3 +141,24 @@ def sub(x: Int, y: Int) = x - y
 
 val out = liftM2(sub)(List(1, 2, 3), List(1, 2, 3))
 ```
+
+The `liftM3` context producing function is equivalent to `liftM2` only for airity 3 functions.
+
+## liftA2, liftA3
+
+The `liftA2` is similar to `liftM2` except instead of using the power of Monadic composition to lift a function, it uses Applicatives. It is based on the Haskell [LiftA](https://wiki.haskell.org/Lifting#Applicative_lifting) family of functions, only on steroids. The function is applied based according to the types of the arguments in relation to the function itself but does require that every nested type have at least a `Apply` defined.
+
+To demonstrate, since `List` has a Monad and thus an Applicative, `liftA2` should be equivalent to `liftM2`:
+
+```tut
+import autolift._
+import Lifters._
+import scalaz._
+import Scalaz._
+
+def sub(x: Int, y: Int) = x - y
+
+val out = liftA2(sub)(List(1, 2, 3), List(1, 2, 3))
+```
+
+The `liftA3` context producing function is equivalent to `liftA2` only for airity 3 functions.
