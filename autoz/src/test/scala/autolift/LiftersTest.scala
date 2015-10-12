@@ -116,6 +116,20 @@ class LiftersTest extends FlatSpec{
 		same[List[Int]](out, List(1, 0, 2))
 	}
 
+	"liftFlatten" should "work on a List of Lists" in{
+		val in = List(List(1, 2), List(3, 4))
+		val out = in.liftFlatten[List]
+
+		same[List[Int]](out, List(1, 2, 3, 4))
+	}
+
+	"liftFlatten" should "work on an Option of List of Lists" in{
+		val in = Option(List(List(1, 2), List(3, 4)))
+		val out = in.liftFlatten[List]
+
+		same[Option[List[Int]]](out, Option(List(1, 2, 3, 4)))
+	}
+
 	"liftFilter on a List" should "work" in{
 		val in = List(1, 2, 3)
 		val out = in.liftFilter(even)

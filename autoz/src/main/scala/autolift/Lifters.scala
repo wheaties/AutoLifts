@@ -1,6 +1,6 @@
 package autolift
 
-import scalaz.{Functor, Apply, Applicative, Bind, Foldable, Monoid}
+import scalaz.{Functor, Apply, Applicative, Bind, Foldable, Monoid, MonadPlus}
 
 object Lifters extends Lifters
 
@@ -34,6 +34,8 @@ trait LiftImplicits{
 		def liftFoldAt[M[_]](implicit fold: LiftFoldAt[M, F[A]]): fold.Out = fold(fa)
 
 		def liftFilter[B](f: B => Boolean)(implicit lift: LiftFilter[F[A], B => Boolean]): F[A] = lift(fa, f)
+
+		def liftFlatten[M[_]](implicit lift: LiftFlatten[M, F[A]]): lift.Out = lift(fa)
 	}
 }
 
@@ -452,7 +454,14 @@ trait LiftFilter[Obj, Function] extends ((Obj, Function) => Obj)
 object LiftFilter extends LowPriorityLiftFilter{
 	def apply[Obj, Function](implicit lift: LiftFilter[Obj, Function]) = lift
 
-	implicit def base[F[_], A, B >: A](implicit fold: Foldable[F], m: Monoid[F[A]], ap: Applicative[F]) =
+	implicit def plus[M[_], A, B >: A](implicit mp: MonadPlus[M]) =
+		new LiftFilter[M[A], B => Boolean]{
+			def apply(ma: M[A], pred: B => Boolean) = mp.filter(ma)(pred)
+		}
+}
+
+trait LowPriorityLiftFilter extends LowPriorityLiftFilter1{
+	implicit def foldable[F[_], A, B >: A](implicit fold: Foldable[F], m: Monoid[F[A]], ap: Applicative[F]) =
 		new LiftFilter[F[A], B => Boolean]{
 			def apply(fa: F[A], pred: B => Boolean) = fold.foldRight(fa, m.zero){
 				(a, res) => if(pred(a)) m.append(ap.pure(a), res) else res
@@ -460,10 +469,34 @@ object LiftFilter extends LowPriorityLiftFilter{
 		}
 }
 
-trait LowPriorityLiftFilter{
+trait LowPriorityLiftFilter1{
 	implicit def recur[F[_], G, Function](implicit lift: LiftFilter[G, Function], functor: Functor[F]) =
 		new LiftFilter[F[G], Function]{
 			def apply(fg: F[G], f: Function) = functor.map(fg){ g: G => lift(g, f) }
+		}
+}
+
+trait LiftFlatten[M[_], Obj] extends DFunction1[Obj]
+
+object LiftFlatten extends LowPriorityLiftFlatten{
+	def apply[M[_], Obj](implicit lift: LiftFlatten[M, Obj]): Aux[M, Obj, lift.Out] = lift
+
+	implicit def base[M[_], A](implicit bind: Bind[M]): Aux[M, M[M[A]], M[A]] =
+		new LiftFlatten[M, M[M[A]]]{
+			type Out = M[A]
+
+			def apply(mma: M[M[A]]) = bind.bind(mma){ ma: M[A] => ma }
+		}
+}
+
+trait LowPriorityLiftFlatten{
+	type Aux[M[_], Obj, Out0] = LiftFlatten[M, Obj]{ type Out = Out0 }
+
+	implicit def recur[M[_], F[_], G](implicit functor: Functor[F], lift: LiftFlatten[M, G]): Aux[M, F[G], F[lift.Out]] =
+		new LiftFlatten[M, F[G]]{
+			type Out = F[lift.Out]
+
+			def apply(fg: F[G]) = functor.map(fg){ g: G => lift(g) }
 		}
 }
 
