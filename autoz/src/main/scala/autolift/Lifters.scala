@@ -7,14 +7,14 @@ object Lifters extends Lifters
 trait Lifters extends LiftFunctions with LiftImplicits
 
 trait LiftImplicits{
-	/** Implicit explosing methods on any type constructor with a valid Functor which provides automatic function 
-	 *  lifting based upon the type of the function.
+	/** Implicit exposing methods on any type constructor which provides automatic function lifting based upon the 
+	 *  type of the function.
 	 *
 	 * @param fa An instance of `F[A]`.
-	 * @tparam F A type constructor for which an instance of a `Functor` exists.
+	 * @tparam F A type constructor
 	 * @tparam A The type within `F`.
 	 */
-	implicit class LifterOps[F[_]: Functor, A](fa: F[A]){
+	implicit class LifterOps[F[_], A](fa: F[A]){
 		def liftMap[B, C](f: B => C)(implicit lift: LiftF[F[A], B => C]): lift.Out = lift(fa, f)
 
 		def liftAp[B, C, M[_]](f: M[B => C])(implicit lift: LiftAp[F[A], M[B => C]]): lift.Out = lift(fa, f)
