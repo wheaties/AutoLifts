@@ -47,10 +47,10 @@ trait LiftFunctions{ //These are autolifting contexts
 		def apply[A, B](f: A => B)(implicit ev: Functor[F]) = new LiftIntoFunctor[A, B, F](f)
 	}
 
-	sealed class LiftIntoFunctor[A, B, F[_]: Functor](protected[autolift] val f: A => B){
-		def andThen[C >: B, D](lf: LiftIntoFunctor[C, D, F]) = new LiftIntoFunctor[A, D, F](f andThen lf.f)
+	sealed class LiftIntoFunctor[A, B, F[_]: Functor](f: A => B){
+		def andThen[C >: B, D](that: LiftIntoFunctor[C, D, F]) = that compose this
 
-		def compose[C, D <: A](lf: LiftIntoFunctor[C, D, F]) = lf andThen this
+		def compose[C, D <: A](that: LiftIntoFunctor[C, D, F]) = that map f
 
 		def map[C](g: B => C): LiftIntoFunctor[A, C, F] = new LiftIntoFunctor[A, C, F](f andThen g)
 
@@ -59,10 +59,10 @@ trait LiftFunctions{ //These are autolifting contexts
 
 	def liftMap[A, B](f: A => B) = new LiftedMap(f)
 
-	sealed class LiftedMap[A, B](protected[autolift] val f: A => B){
-		def andThen[C >: B, D](lf: LiftedMap[C, D]) = new LiftedMap(f andThen lf.f)
+	sealed class LiftedMap[A, B](f: A => B){
+		def andThen[C >: B, D](that: LiftedMap[C, D]) = that compose this
 
-		def compose[C, D <: A](lf: LiftedMap[C, D]) = lf andThen this
+		def compose[C, D <: A](that: LiftedMap[C, D]) = that map f
 
 		def map[C](g: B => C): LiftedMap[A, C] = new LiftedMap(f andThen g)
 
@@ -87,10 +87,10 @@ trait LiftFunctions{ //These are autolifting contexts
 
 	def liftFlatMap[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedFlatMap(f)
 
-	sealed class LiftedFlatMap[A, B, M[_]](protected[autolift] val f: A => M[B])(implicit bind: Bind[M]){
-		def andThen[C >: B, D](lf: LiftedFlatMap[C, D, M]) = new LiftedFlatMap({ x: A => bind.bind(f(x))(lf.f) })
+	sealed class LiftedFlatMap[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]){
+		def andThen[C >: B, D](that: LiftedFlatMap[C, D, M]) = that compose this
 
-		def compose[C, D <: A](lf: LiftedFlatMap[C, D, M]) = lf andThen this
+		def compose[C, D <: A](that: LiftedFlatMap[C, D, M]) = that map f
 
 		def map[C](g: B => C): LiftedFlatMap[A, C, M] = new LiftedFlatMap({ x: A => bind.map(f(x))(g) })
 
@@ -99,10 +99,10 @@ trait LiftFunctions{ //These are autolifting contexts
 
 	def liftFoldMap[A, B](f: A => B)(implicit m: Monoid[B]) = new LiftedFoldMap(f)
 
-	sealed class LiftedFoldMap[A, B](protected[autolift] val f: A => B)(implicit m: Monoid[B]){
-		def andThen[C >: B, D : Monoid](lf: LiftedFoldMap[C, D]) = new LiftedFoldMap(f andThen lf.f)
+	sealed class LiftedFoldMap[A, B](f: A => B)(implicit m: Monoid[B]){
+		def andThen[C >: B, D : Monoid](that: LiftedFoldMap[C, D]) = that compose this
 
-		def compose[C, D <: A](lf: LiftedFoldMap[C, D]) = lf andThen this
+		def compose[C, D <: A](that: LiftedFoldMap[C, D]) = that map f
 
 		def map[C : Monoid](g: B => C): LiftedFoldMap[A, C] = new LiftedFoldMap(f andThen g)
 
