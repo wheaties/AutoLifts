@@ -3,7 +3,7 @@ import sbt.Keys._
 import xerial.sbt.Sonatype._
 
 object AutoLift{
-	val ScalaVersion = "2.11.6"
+	val ScalaVersion = "2.11.7"
 	val ScalaZ = "7.1.1"
 
 	def build(pjName: String, base: String) = Project(
@@ -24,7 +24,8 @@ object AutoLift{
           "-Xfatal-warnings",
     		  "-Yno-adapted-args",
     		  "-Ywarn-dead-code",
-    		  "-Ywarn-value-discard"),
+    		  "-Ywarn-value-discard",
+          "-Xfuture"),
         pomExtra := autoliftPom,
         publishTo <<= version { v: String =>
           val nexus = "https://oss.sonatype.org/"
@@ -36,7 +37,11 @@ object AutoLift{
         credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
         pomIncludeRepository := { x => false },
         publishMavenStyle := true,
-        publishArtifact in Test := false
+        publishArtifact in Test := false,
+        resolvers ++= Seq(
+          Resolver.sonatypeRepo("releases"),
+          Resolver.sonatypeRepo("snapshots")
+        )
       )
     )
 

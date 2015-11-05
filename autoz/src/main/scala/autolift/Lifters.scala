@@ -174,7 +174,7 @@ trait LowPriorityLiftIntoF{
  * @tparam Obj the type to be lifted into.
  * @tparam Function the function to be lifted.
  */
-sealed trait LiftF[Obj, Function] extends DFunction2[Obj, Function]
+trait LiftF[Obj, Function] extends DFunction2[Obj, Function]
 
 object LiftF extends LowPriorityLiftF {
 	def apply[Obj, Function](implicit lift: LiftF[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
