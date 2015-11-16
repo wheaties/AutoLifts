@@ -71,7 +71,7 @@ trait LiftFunctions{ //These are autolifting contexts
 
 	def liftAp[A, B, F[_]](f: F[A => B])(implicit ap: Apply[F]) = new LiftedAp(f)
 
-	sealed class LiftedAp[A, B, F[_]](protected[autolift] val f: F[A => B])(implicit ap: Apply[F]){
+	sealed class LiftedAp[A, B, F[_]](protected val f: F[A => B])(implicit ap: Apply[F]){
 		def andThen[C >: B, D](lf: LiftedAp[C, D, F]) = new LiftedAp(ap.ap(f)(
 			ap.map(lf.f){ 
 				y: (C => D) => { x: (A => B) => x andThen y } 
@@ -87,10 +87,10 @@ trait LiftFunctions{ //These are autolifting contexts
 
 	def liftFlatMap[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedFlatMap(f)
 
-	sealed class LiftedFlatMap[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]){
-		def andThen[C >: B, D](that: LiftedFlatMap[C, D, M]) = that compose this
+	sealed class LiftedFlatMap[A, B, M[_]](protected val f: A => M[B])(implicit bind: Bind[M]){
+		def andThen[C >: B, D](that: LiftedFlatMap[C, D, M]) = new LiftedFlatMap({ x: A => bind.bind(f(x))(that.f) })
 
-		def compose[C, D <: A](that: LiftedFlatMap[C, D, M]) = that map f
+		def compose[C, D <: A](that: LiftedFlatMap[C, D, M]) = that andThen this
 
 		def map[C](g: B => C): LiftedFlatMap[A, C, M] = new LiftedFlatMap({ x: A => bind.map(f(x))(g) })
 
