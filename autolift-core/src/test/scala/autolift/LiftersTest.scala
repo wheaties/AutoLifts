@@ -5,6 +5,8 @@ import scalaz._
 import Scalaz._
 import Lifters._
 
+//TODO: Test out the andThen, compose and map methods. Already finding errors!
+
 class LiftersTest extends FlatSpec{
 	def same[A](x: A, y: A) = assert(x == y)
 

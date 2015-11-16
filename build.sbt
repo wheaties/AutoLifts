@@ -1,12 +1,12 @@
 import AutoLift._
 import com.typesafe.sbt.SbtSite.SiteKeys._
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
-//import sbtunidoc.Plugin.UnidocKeys._
+import sbtunidoc.Plugin.UnidocKeys._
 
-lazy val autoz = build("autolift", "autoz")
-  .settings(libraryDependencies ++= Seq(
+lazy val core = build("autolift-core", "autolift-core").settings(
+  libraryDependencies ++= Seq(
     "org.scalaz" %% "scalaz-core" % ScalaZ,
-    "org.typelevel" %% "export-hook" % "1.0.3-SNAPSHOT",
+    "org.typelevel" %% "export-hook" % "1.1.1-SNAPSHOT",
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
@@ -25,7 +25,18 @@ lazy val autoAlge = build("autolift-algebird", "auto-algebird").settings(
   ),
   sonatypeProfileName := "wheaties"
 )
-.dependsOn(autoz)
+.dependsOn(core)
+
+lazy val autoScalaz = build("autolift-scalaz", "autolift-scalaz").settings(
+  libraryDependencies ++= Seq(
+    "org.scalaz" %% "scalaz-core" % ScalaZ,
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+    "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+  ),
+  sonatypeProfileName := "wheaties"
+)
+.dependsOn(core)
 
 lazy val docs = build("docs", "docs")
   .settings(tutSettings: _*)
@@ -34,23 +45,23 @@ lazy val docs = build("docs", "docs")
   .settings(
     publishArtifact := false,
     site.addMappingsToSiteDir(tut, "_tut"),
-    //site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
-    //unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject,
+    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject,
     ghpagesNoJekyll := false,
     git.remoteRepo := "git@github.com:wheaties/autolifts.git",
     autoAPIMappings := true,
     includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.md"
   )
   .settings(site.includeScaladoc(): _*)
-  //.settings(site.jekyllSupport(): _*)
-  //.settings(unidocSettings: _*)
-  .dependsOn(autoz, autoAlge)
+  .settings(site.jekyllSupport(): _*)
+  .settings(unidocSettings: _*)
+  .dependsOn(core, autoAlge, autoScalaz)
 
 lazy val bench = build("bench", "bench")
   .settings(
     publishArtifact := false
   )
-  .dependsOn(autoz)
+  .dependsOn(core, autoScalaz)
   .enablePlugins(JmhPlugin)
 
 

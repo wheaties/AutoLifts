@@ -1,9 +1,9 @@
 package autolift.bench
 
-import autolift._
-import AutoLift._
 import scalaz._
 import Scalaz._
+import autolift._
+import AutoLift._
 import org.openjdk.jmh.annotations.{Benchmark, Scope, State}
 
 /** 11/17/15 - timing
@@ -12,6 +12,14 @@ import org.openjdk.jmh.annotations.{Benchmark, Scope, State}
 [info] LiftMBench.singleNest  thrpt  200  2394289.346 ± 21467.774  ops/s
 [info] LiftMBench.transNest   thrpt  200   808685.187 ±  6298.217  ops/s
 */
+
+/** 11/21/15 timing
+[info] LiftMBench.basicNest              thrpt  200   2895730.940 ±  15318.568  ops/s
+[info] LiftMBench.basicTriple            thrpt  200   2787368.105 ±  13220.673  ops/s
+[info] LiftMBench.doubleNest             thrpt  200   2369862.662 ±  10135.498  ops/s
+[info] LiftMBench.singleNest             thrpt  200   2472520.241 ±   9912.827  ops/s
+[info] LiftMBench.transNest              thrpt  200    813141.155 ±   4493.687  ops/s
+ */
 
 @State(Scope.Benchmark)
 class LiftMBench{
