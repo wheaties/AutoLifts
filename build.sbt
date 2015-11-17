@@ -30,6 +30,14 @@ lazy val docs = build("docs", "docs")
   .settings(unidocSettings: _*)
   .dependsOn(autoz)
 
+lazy val bench = build("bench", "bench")
+  .settings(
+    publishArtifact := false
+  )
+  .dependsOn(autoz)
+  .enablePlugins(JmhPlugin)
+
+
 scalaVersion := AutoLift.ScalaVersion
 
 addCommandAlias("gen-site", "unidoc;tut;make-site")
