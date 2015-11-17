@@ -26,28 +26,15 @@ scala> in liftMap addOne
 res0: Option[List[Int]] = Some(List(2, 3, 4))
 ```
 
-Also included are generalized `liftF` and `liftM` functions such that each wraps a function into an auto lifting context:
+Also included are generalized `liftMap` and `liftFlatMap` functions such that each wraps a function into an auto lifting context:
 
 ```scala
-scala> val liftedOne = liftF(addOne)
+scala> val liftedOne = liftMap(addOne)
 scala> liftedOne(List(1, 2, 3))
 res1: List[Int] = List(2, 3, 4)
 
 scala> liftedOne(List(Option(1), None))
 res2: List[Option[Int]] = List(Some(2), None)
-```
-
-Finally includes a number of functions conversion calls which wrap a given function instance into an auto-lifting context. For instance, `liftIntoF` will lift a function into a given context:
-
-```scala
-scala> def any2Int(x: Any) = x match{
-	case i: Int => i
-	case _ => 1
-}
-
-scala> val into = liftIntoF[List](any2Int)
-scala> into(Option(List(Option(1), Option(2))))
-res3: Option[List[Int]] = Some(List(1, 1))
 ```
 
 ##Folders
