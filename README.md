@@ -7,10 +7,10 @@ A dependently typed library for auto lifting and auto mapping of functions.
 
 ##Using
 
-The current released branch is 0.2 and compiled against Scala version 2.11. If using SBT add the following:
+The current released branch is 0.3 and compiled against Scala version 2.11. If using SBT add the following:
 
 ```scala
-libraryDependencies += "com.github.wheaties" %% "autolift" % "0.2"
+libraryDependencies += "com.github.wheaties" %% "autolift" % "0.3"
 ```
 
 Due note, the api will be subject to change as the library develops and progresses to a 1.0 release. As is, the library is in an experimental stage. Please use apropriately.
