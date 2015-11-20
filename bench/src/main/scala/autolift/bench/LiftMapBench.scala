@@ -22,6 +22,7 @@ class LiftMapBench{
 	val two = Option(List(1, 2, 3, 4, 5))
 	val three = Option(two)
 	val four = Option(three)
+	val trans = ListT.fromList(two)
 
 	@Benchmark
 	def twoDeep() = two.liftMap{ x: Int => x + 1 }
@@ -50,4 +51,7 @@ class LiftMapBench{
 			}
 		}
 	}
+
+	@Benchmark
+	def transMap() = trans.map(_ + 1)
 }

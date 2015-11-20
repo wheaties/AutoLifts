@@ -37,4 +37,26 @@ class LiftMBench{
 		a <- trans
 		b <- trans
 	} yield add(a, b)
+
+	@Benchmark
+	def basicNest() = two.flatMap{ l1 =>
+		two.map{ l2 =>
+			l1.flatMap{ x =>
+				l2.map(_ + x)
+			}
+		}
+	}
+
+	@Benchmark
+	def basicTriple() = three.flatMap{ o1 =>
+		three.map{ o2 =>
+			o1.flatMap{ l1 =>
+				o2.map{ l2 =>
+					l1.flatMap{ x =>
+						l2.map(_ + x)
+					}
+				}
+			}
+		}
+	}
 }
