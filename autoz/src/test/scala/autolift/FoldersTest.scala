@@ -5,7 +5,7 @@ import scalaz._
 import Scalaz._
 import AutoLift._
 
-trait FoldersTest extends FlatSpec{
+class FoldersTest extends FlatSpec{
 	def same[A](x: A, y: A) = assert(x == y)
 
 	val s2i = {x: String => x.toInt }
