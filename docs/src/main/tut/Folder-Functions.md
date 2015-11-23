@@ -5,7 +5,7 @@ category: Folders
 ---
 # Folder Functions
 
-The Folders package contains several context transforming functions which form the corrolary of auto-folding logic. Wherein folding syntax was concerned with a specific type and arbitrary functions, the folding functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
+The Folders package contains several context transforming functions which form the corollary of auto-folding logic. Wherein folding syntax was concerned with a specific type and arbitrary functions, the folding functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
 
  * foldWith - places a function into an auto-folding context
  * foldAll - places a predicate into an auto-folding context which returns true if all folds return true
@@ -15,7 +15,7 @@ There is no requirement that the type signature of the arguments contain multipl
 
 ## foldWith
 
-The `foldWith` function is analogous to the `foldMap` method of a `Foldable`. Unlike the `foldMap` method which is defined for a specific type `L[_]`, `foldWith` works on any nested set of higher-kinded types for which a `Foldable` is defined. Hence, given a function of the form `A => B` where `B` has a `Monoid` defined and having been transformed by `foldWith` it is free to act on the types `F[A]`, `F`[F2...Fn[A]...]]`, etc. It operates by successively calling `foldMap` until it find the first match for which `A => B` matches.
+The `foldWith` function is analogous to the `foldMap` method of a `Foldable`. Unlike the `foldMap` method which is defined for a specific type `L[_]`, `foldWith` works on any nested set of higher-kinded types for which a `Foldable` is defined. Hence, given a function of the form `A => B` where `B` has a `Monoid` defined and having been transformed by `foldWith` it is free to act on the types `F[A]`, `F[F2...Fn[A]...]]`, etc. It operates by successively calling `foldMap` until it find the first match for which `A => B` matches.
 
 To demonstrate:
 
