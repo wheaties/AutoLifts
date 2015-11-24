@@ -14,5 +14,8 @@ jdk:
 script:
   - sbt clean compile coverage test && sbt coverageAggregate
 
+before_install:
+  - pip install --user codecov
+
 after_success:
-  - sbt coveralls
+  - codecov
