@@ -5,9 +5,14 @@ branches:
 
 language: scala
 scala:
-  - 2.11.6
-  - 2.11.5
+  - 2.11.7
 
 jdk:
   - openjdk7
   - oraclejdk7
+
+script:
+  - sbt clean compile coverage test && sbt coverageAggregate
+
+after_success:
+  - sbt coveralls
