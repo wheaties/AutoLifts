@@ -29,6 +29,7 @@ object Boilerplate {
 
   val templates: Seq[Template] = Seq(
     GenDFunctions
+//    GenLifterInstances
   )
 
   val header = "// auto-generated boilerplate" // TODO: put something meaningful here?
@@ -41,6 +42,7 @@ object Boilerplate {
     tgtFile
   }
 
+  //TODO: Should be 22. keep at 2 for now to test
   val maxArity = 22
 
   final class TemplateVals(val arity: Int) {
@@ -58,11 +60,8 @@ object Boilerplate {
 
   trait Template {
     def filename(root: File): File
-
     def content(tv: TemplateVals): String
-
     def range = 1 to maxArity
-
     def body: String = {
       val headerLines = header split '\n'
       val rawContents = range map { n => content(new TemplateVals(n)) split '\n' filterNot (_.isEmpty) }
@@ -104,5 +103,140 @@ object Boilerplate {
     }
   }
 
-}
+  object GenLifterInstances extends Template {
+    override def filename(root: File): File = root / "autolift" / "LiftersGen.scala"
 
+    override def content(tv: TemplateVals): String = {
+      import tv._
+
+      block"""
+        |package autolift
+        |
+        |import scalaz.Bind
+        |
+        -trait LiftM$arity[${`A..N`}, Function] extends DFunction3[Obj1, Obj2, Function]
+        -
+        -object LiftM2 extends LowPriorityLiftM2 {
+        -  def apply[Obj1, Obj2, Fn](implicit lift: LiftM2[Obj1, Obj2, Fn]): Aux[Obj1, Obj2, Fn, lift.Out] = lift
+        -
+        -  implicit def base[M[_], A, B, A1 >: A, B1 >: B, C](implicit bind: Bind[M]): Aux[M[A], M[B], (A1, B1) => C, M[C]] =
+        -    new LiftM2[M[A], M[B], (A1, B1) => C] {
+        -      type Out = M[C]
+        -
+        -      def apply(ma: M[A], mb: M[B], f: (A1, B1) => C) = bind.bind(ma) { a: A =>
+        -        bind.map(mb) { b: B => f(a, b) }
+        -      }
+        -    }
+        -}
+        -
+        -trait LowPriorityLiftM2 {
+        -  type Aux[Obj1, Obj2, Fn, Out0] = LiftM2[Obj1, Obj2, Fn] {type Out = Out0}
+        -
+        -  implicit def recur[M[_], A, B, Fn](implicit bind: Bind[M], lift: LiftM2[A, B, Fn]): Aux[M[A], M[B], Fn, M[lift.Out]] =
+        -    new LiftM2[M[A], M[B], Fn] {
+        -      type Out = M[lift.Out]
+        -
+        -      def apply(ma: M[A], mb: M[B], f: Fn) = bind.bind(ma) { a: A =>
+        -        bind.map(mb) { b: B => lift(a, b, f) }
+        -      }
+        -    }
+        -}
+      """
+    }
+  }
+
+  /*
+  object GenApplyBuilders extends Template {
+    def filename(root: File) = root /  "cats" / "syntax" / "ApplyBuilder.scala"
+
+    def content(tv: TemplateVals) = {
+      import tv._
+
+      val tpes = synTypes map { tpe => s"F[$tpe]" }
+      val tpesString = synTypes mkString ", "
+      val params = (synVals zip tpes) map { case (v,t) => s"$v:$t"} mkString ", "
+      val next = if (arity + 1 <= maxArity) {
+        s"def |@|[Z](z: F[Z]) = new ApplyBuilder${arity + 1}(${`a..n`}, z)"
+      } else {
+        ""
+      }
+
+      val n = if (arity == 1) { "" } else { arity.toString }
+
+      val tupled = if (arity != 1) {
+        s"def tupled(implicit F: Apply[F]): F[(${`A..N`})] = F.tuple$n(${`a..n`})"
+      } else {
+        ""
+      }
+
+      block"""
+         |package autolit
+         |
+        |private[syntax] final class ApplyBuilder[F[_]] {
+         |  def |@|[A](a: F[A]) = new ApplyBuilder1(a)
+         |
+        -  private[syntax] final class ApplyBuilder$arity[${`A..N`}](${params}) {
+        -    $next
+        -    def ap[Z](f: F[(${`A..N`}) => Z])(implicit F: Apply[F]): F[Z] = F.ap$n(${`a..n`})(f)
+        -    def map[Z](f: (${`A..N`}) => Z)(implicit F: Apply[F]): F[Z] = F.map$n(${`a..n`})(f)
+        -    $tupled
+        - }
+         |}
+      """
+    }
+  }
+
+  object GenApplyArityFunctions extends Template {
+    def filename(root: File) = root / "cats" / "ApplyArityFunctions.scala"
+    override def range = 3 to maxArity
+    def content(tv: TemplateVals) = {
+      import tv._
+
+      val tpes = synTypes map { tpe => s"F[$tpe]" }
+      val tpesString = synTypes mkString ", "
+      val fargs = (0 until arity) map { "f" + _ }
+      val fargsS = fargs mkString ", "
+      val fparams = (fargs zip tpes) map { case (v,t) => s"$v:$t"} mkString ", "
+
+      val a = arity / 2
+      val b = arity - a
+
+      val fArgsA = (0 until a) map { "f" + _ } mkString ","
+      val fArgsB = (a until arity) map { "f" + _ } mkString ","
+      val argsA = (0 until a) map { "a" + _ } mkString ","
+      val argsB = (a until arity) map { "a" + _ } mkString ","
+      def apN(n: Int) = if (n == 1) { "ap" } else { s"ap$n" }
+      def allArgs = (0 until arity) map { "a" + _ } mkString ","
+
+      val map = if (arity == 3) {
+        " ap(f2)(map2(f0, f1)((a, b) => c => f(a, b, c)))"
+      }  else {
+        block"""
+          -    map2(tuple$a($fArgsA), tuple$b($fArgsB)) {
+          -      case (($argsA), ($argsB)) => f($allArgs)
+          -    }
+        """
+      }
+      val apply =
+        block"""
+          -    ${apN(b)}($fArgsB)(${apN(a)}($fArgsA)(map(f)(f =>
+          -      ($argsA) => ($argsB) => f($allArgs)
+          -    )))
+          """
+
+      block"""
+         |package cats
+         |trait ApplyArityFunctions[F[_]] { self: Apply[F] =>
+         |  def tuple2[A, B](fa: F[A], fb: F[B]): F[(A, B)] = map2(fa, fb)((_, _))
+         |
+        -  def ap$arity[${`A..N`}, Z]($fparams)(f: F[(${`A..N`}) => Z]):F[Z] = $apply
+        -  def map$arity[${`A..N`}, Z]($fparams)(f: (${`A..N`}) => Z):F[Z] = $map
+        -  def tuple$arity[${`A..N`}]($fparams):F[(${`A..N`})] =
+        -    map$arity($fargsS)((${`_.._`}))
+         |}
+      """
+    }
+  }
+  */
+
+}
