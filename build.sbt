@@ -3,12 +3,16 @@ import com.typesafe.sbt.SbtSite.SiteKeys._
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 import sbtunidoc.Plugin.UnidocKeys._
 
-lazy val autoz = build("autolift", "autoz").settings(
-  libraryDependencies ++= Seq(
+lazy val autoz = build("autolift", "autoz")
+  .settings(libraryDependencies ++= Seq(
     "org.scalaz" %% "scalaz-core" % ScalaZ,
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"),
-  sonatypeProfileName := "wheaties"
-)
+    sonatypeProfileName := "wheaties"
+  )
+  .settings(
+    sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.gen)
+  )
+
 //.settings(genjavadocSettings: _*)
 
 lazy val docs = build("docs", "docs")
