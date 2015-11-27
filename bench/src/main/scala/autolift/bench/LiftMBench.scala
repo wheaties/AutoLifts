@@ -20,7 +20,12 @@ class LiftMBench{
 	val three = Option(two)
 	val four = Option(three)
 
+	type OL[A] = ListT[Option, A]
+	def mkOL[A](x: List[A]): OL[A] = ListT(Option(x))
+	def mkOOL[A](x: List[A]): OptionT[OL, A] = OptionT(mkOL(x.map(Option(_))))
+
 	val trans = ListT.fromList(two)
+	val trans2 = mkOOL(List(1, 2, 3, 4, 5))
 
 	def add(x: Int, y: Int) = x + y
 
@@ -36,6 +41,12 @@ class LiftMBench{
 	def transNest() = for{
 		a <- trans
 		b <- trans
+	} yield add(a, b)
+
+	@Benchmark
+	def trans2Next() = for{
+		a <- trans2
+		b <- trans2
 	} yield add(a, b)
 
 	@Benchmark
