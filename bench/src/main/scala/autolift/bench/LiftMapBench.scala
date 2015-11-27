@@ -22,7 +22,13 @@ class LiftMapBench{
 	val two = Option(List(1, 2, 3, 4, 5))
 	val three = Option(two)
 	val four = Option(three)
+
+	type OL[A] = ListT[Option, A]
+	def mkOL[A](x: List[A]): OL[A] = ListT(Option(x))
+	def mkOOL[A](x: List[A]): OptionT[OL, A] = OptionT(mkOL(x.map(Option(_))))
+
 	val trans = ListT.fromList(two)
+	val trans2 = mkOOL(List(1, 2, 3, 4, 5))
 
 	@Benchmark
 	def twoDeep() = two.liftMap{ x: Int => x + 1 }
@@ -54,4 +60,7 @@ class LiftMapBench{
 
 	@Benchmark
 	def transMap() = trans.map(_ + 1)
+
+	@Benchmark
+	def trans2Map() = trans2.map(_ + 1)
 }
