@@ -28,8 +28,8 @@ object Boilerplate {
 
 
   val templates: Seq[Template] = Seq(
-    GenDFunctions
-//    GenLifterInstances
+    GenDFunctions,
+    GenLifterInstances
   )
 
   val header = "// auto-generated boilerplate" // TODO: put something meaningful here?
@@ -45,16 +45,31 @@ object Boilerplate {
   //TODO: Should be 22. keep at 2 for now to test
   val maxArity = 22
 
-  final class TemplateVals(val arity: Int) {
-    val synTypes = (0 until arity) map (n => s"A$n")
-    val synVals = (0 until arity) map (n => s"a$n")
+//  final class TemplateVals(val arity: Int) {
+//    val synTypes = (0 until arity) map (n => s"A$n")
+//    val synVals = (0 until arity) map (n => s"a$n")
+//    val synTypedVals = (synVals zip synTypes) map { case (v, t) => v + ":" + t }
+//    val `A..N` = synTypes.mkString(", ")
+//    val `a..n` = synVals.mkString(", ")
+//    val `_.._` = Seq.fill(arity)("_").mkString(", ")
+//    val `(A..N)` = if (arity == 1) "Tuple1[A]" else synTypes.mkString("(", ", ", ")")
+//    val `(_.._)` = if (arity == 1) "Tuple1[_]" else Seq.fill(arity)("_").mkString("(", ", ", ")")
+//    val `(a..n)` = if (arity == 1) "Tuple1(a)" else synVals.mkString("(", ", ", ")")
+//    val `a:A..n:N` = synTypedVals mkString ", "
+//  }
+
+  final class TemplateVals(val arity: Int, prefix: String = "A") {
+    private val a = prefix.toLowerCase
+
+    val synTypes = (0 until arity) map (n => s"$prefix$n")
+    val synVals = (0 until arity) map (n => s"$a$n")
     val synTypedVals = (synVals zip synTypes) map { case (v, t) => v + ":" + t }
     val `A..N` = synTypes.mkString(", ")
     val `a..n` = synVals.mkString(", ")
     val `_.._` = Seq.fill(arity)("_").mkString(", ")
-    val `(A..N)` = if (arity == 1) "Tuple1[A]" else synTypes.mkString("(", ", ", ")")
+    val `(A..N)` = if (arity == 1) s"Tuple1[$prefix]" else synTypes.mkString("(", ", ", ")")
     val `(_.._)` = if (arity == 1) "Tuple1[_]" else Seq.fill(arity)("_").mkString("(", ", ", ")")
-    val `(a..n)` = if (arity == 1) "Tuple1(a)" else synVals.mkString("(", ", ", ")")
+    val `(a..n)` = if (arity == 1) s"Tuple1($a)" else synVals.mkString("(", ", ", ")")
     val `a:A..n:N` = synTypedVals mkString ", "
   }
 
@@ -106,39 +121,77 @@ object Boilerplate {
   object GenLifterInstances extends Template {
     override def filename(root: File): File = root / "autolift" / "LiftersGen.scala"
 
+    /**
+     * Need one less than actual max because need enough DFunctions.
+     * @return
+     */
+    override def range = 2 to (maxArity - 1)
+
     override def content(tv: TemplateVals): String = {
-      import tv._
+      import tv.arity
+
+      val obj = new TemplateVals(arity, "Obj")
+
+      val aTempVals = new TemplateVals(arity, "A")
+      val aaTempVals = new TemplateVals(arity, "AA")
+
+      val `AA >: A .. N` = (aaTempVals.synTypes zip aTempVals.synTypes).map(t => s"${t._1} >: ${t._2}").mkString(", ")
+
+      val aMonadTypes = aTempVals.synTypes.map(t => s"M[$t]")
+      val aMonadTypeVals = aTempVals.synVals.map(t => s"m$t")
+
+      val `M[A]..M[N]` = aMonadTypes.mkString(", ")
+      val `ma: M[A]..mn: M[N]` = ((aMonadTypeVals zip aMonadTypes) map { case (v, t) => s"$v: $t"}).mkString(", ")
+
+
+      val applyBinds = (aTempVals.synVals zip aMonadTypeVals zip aTempVals.synTypes) map {case ((ttv, mtv), s) =>
+        s"bind.bind($mtv) { $ttv : $s => "
+      }
+
+
+
+      def applyBind(inner: String) = {
+        val (all, last) = (aTempVals.synVals zip aMonadTypeVals zip aTempVals.synTypes).splitAt(aMonadTypeVals.size - 1)
+
+        val innerA = last.headOption.map{ case ((ttv, mtv), s) => s"bind.map($mtv) { $ttv: $s => $inner }"}.getOrElse("")
+
+        all.foldRight(innerA) { case (((ttv, mtv), s), res) =>
+         s"bind.bind($mtv) { $ttv: $s => $res }"
+        }
+      }
+
+
+      val regularApplyBind = applyBind(s"f(${aTempVals.`a..n`})")
+      val lowpriotiryApplyBind = applyBind(s"lift(${aTempVals.`a..n`}, f)")
+
 
       block"""
         |package autolift
         |
         |import scalaz.Bind
         |
-        -trait LiftM$arity[${`A..N`}, Function] extends DFunction3[Obj1, Obj2, Function]
+        |
+        -trait LiftM$arity[${obj.`A..N`}, Function] extends DFunction${arity + 1}[${obj.`A..N`}, Function]
         -
-        -object LiftM2 extends LowPriorityLiftM2 {
-        -  def apply[Obj1, Obj2, Fn](implicit lift: LiftM2[Obj1, Obj2, Fn]): Aux[Obj1, Obj2, Fn, lift.Out] = lift
+        -object LiftM$arity extends LowPriorityLiftM$arity {
+        -  def apply[${obj.`A..N`}, Fn](implicit lift: LiftM$arity[${obj.`A..N`}, Fn]): Aux[${obj.`A..N`}, Fn, lift.Out] = lift
         -
-        -  implicit def base[M[_], A, B, A1 >: A, B1 >: B, C](implicit bind: Bind[M]): Aux[M[A], M[B], (A1, B1) => C, M[C]] =
-        -    new LiftM2[M[A], M[B], (A1, B1) => C] {
+        -  implicit def base[M[_], ${aTempVals.`A..N`}, ${`AA >: A .. N`}, C](implicit bind: Bind[M]): Aux[${`M[A]..M[N]`}, ${aaTempVals.`(A..N)`} => C, M[C]] =
+        -    new LiftM$arity[${`M[A]..M[N]`}, ${aaTempVals.`(A..N)`} => C] {
         -      type Out = M[C]
         -
-        -      def apply(ma: M[A], mb: M[B], f: (A1, B1) => C) = bind.bind(ma) { a: A =>
-        -        bind.map(mb) { b: B => f(a, b) }
-        -      }
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: ${aaTempVals.`(A..N)`} => C) = $regularApplyBind
         -    }
-        -}
+        - }
         -
-        -trait LowPriorityLiftM2 {
-        -  type Aux[Obj1, Obj2, Fn, Out0] = LiftM2[Obj1, Obj2, Fn] {type Out = Out0}
+        -trait LowPriorityLiftM$arity {
+        -  type Aux[${obj.`A..N`}, Fn, Out0] = LiftM$arity[${obj.`A..N`}, Fn] {type Out = Out0}
         -
-        -  implicit def recur[M[_], A, B, Fn](implicit bind: Bind[M], lift: LiftM2[A, B, Fn]): Aux[M[A], M[B], Fn, M[lift.Out]] =
-        -    new LiftM2[M[A], M[B], Fn] {
+        -  implicit def recur[M[_], ${aTempVals.`A..N`}, Fn](implicit bind: Bind[M], lift: LiftM$arity[${aTempVals.`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
+        -    new LiftM$arity[${`M[A]..M[N]`}, Fn] {
         -      type Out = M[lift.Out]
         -
-        -      def apply(ma: M[A], mb: M[B], f: Fn) = bind.bind(ma) { a: A =>
-        -        bind.map(mb) { b: B => lift(a, b, f) }
-        -      }
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: Fn) = $lowpriotiryApplyBind
         -    }
         -}
       """
