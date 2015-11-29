@@ -100,3 +100,21 @@ import scalaz.Bind
 //    }
 //}
 
+//object Foo {
+//  def liftM2[A1, A2, C](f: (A1, A2) => C) = new LiftedM2(f)
+//
+//  sealed class LiftedM2[A1, A2, C](f: (A1, A2) => C) {
+//    def map[D](g: C => D): LiftedM2[A1, A2, D] = new LiftedM2((x: A1, y: A2) => g(f(x, y)))
+//
+//    def apply[AA1, AA2](aa1: AA1, aa2: AA2)(implicit lift: LiftM2[AA1, AA2, (A1, A2) => C]): lift.Out = lift(aa1, aa2, f)
+//  }
+//
+//  def liftM3[A, B, C, D](f: (A, B, C) => D) = new LiftedM3(f)
+//
+//  sealed class LiftedM3[A, B, C, D](f: (A, B, C) => D){
+//    def map[E](g: D => E): LiftedM3[A, B, C, E] = new LiftedM3((x: A, y: B, z: C) => g(f(x, y, z)))
+//
+//    def apply[MA, MB, MC](ma: MA, mb: MB, mc: MC)(implicit lift: LiftM3[MA, MB, MC, (A, B, C) => D]): lift.Out =
+//      lift(ma, mb, mc, f)
+//  }
+//}

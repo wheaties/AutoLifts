@@ -29,7 +29,8 @@ object Boilerplate {
 
   val templates: Seq[Template] = Seq(
     GenDFunctions,
-    GenLifterInstances
+    GenLifterInstances,
+    GenLifterMFunctions
   )
 
   val header = "// auto-generated boilerplate" // TODO: put something meaningful here?
@@ -118,6 +119,40 @@ object Boilerplate {
     }
   }
 
+  object GenLifterMFunctions extends Template {
+    override def filename(root: File): File = root / "autolift" / "LifterMFunctions.scala"
+
+    /**
+     * Need one less than actual max because need enough DFunctions.
+     * @return
+     */
+    override def range = 2 to (maxArity - 1)
+
+    override def content(tv: TemplateVals): String = {
+      import tv.arity
+
+      val aTempVals = new TemplateVals(arity, "A")
+      val aaTempVals = new TemplateVals(arity, "AA")
+
+      block"""
+        |package autolift
+        |
+        |trait LiftMFunctions {
+        |
+        -
+        -  def liftM$arity[${aTempVals.`A..N`}, C](f: (${aTempVals.`A..N`}) => C) = new LiftedM$arity(f)
+        -
+        -  sealed class LiftedM$arity[${aTempVals.`A..N`}, C](f: (${aTempVals.`A..N`}) => C) {
+        -    def map[D](g: C => D): LiftedM$arity[${aTempVals.`A..N`}, D] = new LiftedM$arity((${aTempVals.`a:A..n:N`}) => g(f(${aTempVals.`a..n`})))
+        -
+        -    def apply[${aaTempVals.`A..N`}](${aaTempVals.`a:A..n:N`})(implicit lift: LiftM$arity[${aaTempVals.`A..N`}, (${aTempVals.`A..N`}) => C]): lift.Out =
+        -      lift(${aaTempVals.`a..n`}, f)
+        -  }
+        |}
+      """
+    }
+  }
+
   object GenLifterInstances extends Template {
     override def filename(root: File): File = root / "autolift" / "LiftersGen.scala"
 
@@ -170,7 +205,7 @@ object Boilerplate {
         |
         |import scalaz.Bind
         |
-        |
+        -
         -trait LiftM$arity[${obj.`A..N`}, Function] extends DFunction${arity + 1}[${obj.`A..N`}, Function]
         -
         -object LiftM$arity extends LowPriorityLiftM$arity {
