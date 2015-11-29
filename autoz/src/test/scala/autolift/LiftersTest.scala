@@ -287,10 +287,6 @@ class LiftersTest extends FlatSpec{
 		same[Option[Int]](out, Option(1))
 	}
 
-	"liftM4" should "work with functions" in {
-//		val lf = liftM4
-	}
-
 	"liftA2" should "work on a pair of List" in{
 		val lf = liftA2(intintF)
 		val out = lf(List(0, 1), List(1, 2))
