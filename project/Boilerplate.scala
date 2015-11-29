@@ -28,7 +28,9 @@ object Boilerplate {
 
 
   val templates: Seq[Template] = Seq(
-    GenDFunctions
+    GenDFunctions,
+    GenLifterInstances,
+    GenLifterMFunctions
   )
 
   val header = "// auto-generated boilerplate" // TODO: put something meaningful here?
@@ -43,26 +45,25 @@ object Boilerplate {
 
   val maxArity = 22
 
-  final class TemplateVals(val arity: Int) {
-    val synTypes = (0 until arity) map (n => s"A$n")
-    val synVals = (0 until arity) map (n => s"a$n")
+  final class TemplateVals(val arity: Int, prefix: String = "A") {
+    private val a = prefix.toLowerCase
+
+    val synTypes = (0 until arity) map (n => s"$prefix$n")
+    val synVals = (0 until arity) map (n => s"$a$n")
     val synTypedVals = (synVals zip synTypes) map { case (v, t) => v + ":" + t }
     val `A..N` = synTypes.mkString(", ")
     val `a..n` = synVals.mkString(", ")
     val `_.._` = Seq.fill(arity)("_").mkString(", ")
-    val `(A..N)` = if (arity == 1) "Tuple1[A]" else synTypes.mkString("(", ", ", ")")
+    val `(A..N)` = if (arity == 1) s"Tuple1[$prefix]" else synTypes.mkString("(", ", ", ")")
     val `(_.._)` = if (arity == 1) "Tuple1[_]" else Seq.fill(arity)("_").mkString("(", ", ", ")")
-    val `(a..n)` = if (arity == 1) "Tuple1(a)" else synVals.mkString("(", ", ", ")")
+    val `(a..n)` = if (arity == 1) s"Tuple1($a)" else synVals.mkString("(", ", ", ")")
     val `a:A..n:N` = synTypedVals mkString ", "
   }
 
   trait Template {
     def filename(root: File): File
-
     def content(tv: TemplateVals): String
-
     def range = 1 to maxArity
-
     def body: String = {
       val headerLines = header split '\n'
       val rawContents = range map { n => content(new TemplateVals(n)) split '\n' filterNot (_.isEmpty) }
@@ -104,5 +105,107 @@ object Boilerplate {
     }
   }
 
-}
+  object GenLifterMFunctions extends Template {
+    override def filename(root: File): File = root / "autolift" / "LiftMFunctions.scala"
 
+    /* Need to account for arity + 1 DFunction. */
+    override def range = 2 to (maxArity - 1)
+
+    override def content(tv: TemplateVals): String = {
+      import tv._
+
+      val AA = new TemplateVals(arity, "AA")
+
+      block"""
+        |package autolift
+        |
+        |trait LiftMFunctions {
+        |
+        -
+        -  def liftM$arity[${`A..N`}, C](f: (${`A..N`}) => C) = new LiftedM$arity(f)
+        -
+        -  sealed class LiftedM$arity[${`A..N`}, C](f: (${`A..N`}) => C) {
+        -    def map[D](g: C => D): LiftedM$arity[${`A..N`}, D] = new LiftedM$arity((${`a:A..n:N`}) => g(f(${`a..n`})))
+        -
+        -    def apply[${AA.`A..N`}](${AA.`a:A..n:N`})(implicit lift: LiftM$arity[${AA.`A..N`}, (${`A..N`}) => C]): lift.Out =
+        -      lift(${AA.`a..n`}, f)
+        -  }
+        |}
+      """
+    }
+  }
+
+  object GenLifterInstances extends Template {
+    override def filename(root: File): File = root / "autolift" / "LiftersGen.scala"
+
+    /* Need to account for arity + 1 DFunction. */
+    override def range = 2 to (maxArity - 1)
+
+    override def content(tv: TemplateVals): String = {
+      import tv._
+
+      val `Obj..N` = ((0 until arity) map (n => s"Obj$n")).mkString(", ")
+
+      val altSynTypes = (0 until arity) map (n => s"AA$n")
+
+      val `AA..N` = altSynTypes.mkString(", ")
+
+      val `AA >: A..N` = (altSynTypes zip synTypes).map(t => s"${t._1} >: ${t._2}").mkString(", ")
+
+      val synMTypes = synTypes.map(t => s"M[$t]")
+      val synMVals = synVals.map(t => s"m$t")
+
+      val `M[A]..M[N]` = synMTypes.mkString(", ")
+      val `ma: M[A]..mn: M[N]` = ((synMVals zip synMTypes) map { case (v, t) => s"$v: $t"}).mkString(", ")
+
+      def liftMApply(inner: String) = {
+        val (all, last) = (synVals zip synMVals zip synTypes).splitAt(synMVals.size - 1)
+
+        val innerBind = {
+          val ((sv, smv), st) = last.head
+          s"bind.map($smv) { $sv: $st => $inner }"
+        }
+
+        all.foldRight(innerBind) { case (((sv, smv), st), res) =>
+          s"bind.bind($smv) { $sv: $st => $res }"
+        }
+      }
+
+      val apply = liftMApply(s"f(${`a..n`})")
+      val lowPriorityBind = liftMApply(s"lift(${`a..n`}, f)")
+
+
+      block"""
+        |package autolift
+        |
+        |import scalaz.Bind
+        |
+        -
+        -trait LiftM$arity[${`Obj..N`}, Function] extends DFunction${arity + 1}[${`Obj..N`}, Function]
+        -
+        -object LiftM$arity extends LowPriorityLiftM$arity {
+        -  def apply[${`Obj..N`}, Fn](implicit lift: LiftM$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
+        -
+        -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit bind: Bind[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
+        -    new LiftM$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
+        -      type Out = M[C]
+        -
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: (${`AA..N`}) => C) = $apply
+        -    }
+        -}
+        -
+        -trait LowPriorityLiftM$arity {
+        -  type Aux[${`Obj..N`}, Fn, Out0] = LiftM$arity[${`Obj..N`}, Fn] {type Out = Out0}
+        -
+        -  implicit def recur[M[_], ${`A..N`}, Fn](implicit bind: Bind[M], lift: LiftM$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
+        -    new LiftM$arity[${`M[A]..M[N]`}, Fn] {
+        -      type Out = M[lift.Out]
+        -
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: Fn) = $lowPriorityBind
+        -    }
+        -}
+      """
+    }
+  }
+
+}
