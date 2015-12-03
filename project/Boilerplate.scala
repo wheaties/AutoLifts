@@ -27,17 +27,30 @@ object Boilerplate {
   }
 
 
-  val templates: Seq[Template] = Seq(
+  val coreTemplates: Seq[Template] = Seq(
     GenDFunctions,
-    GenLifterInstances,
-    GenLifterMFunctions
+    GenCoreLiftM,
+    GenCoreLiftA
   )
+
+  def genCore(dir: File) = gen(dir)(coreTemplates)
+
+  val scalazTemplates = Seq(
+    GenScalazLiftMInstances, 
+    GenScalazLiftAInstances
+  )
+
+  def genScalaz(dir: File) = gen(dir)(scalazTemplates)
+
+  val algebirdTemplates = Seq(GenAlgebirdLiftMInstances)
+
+  def genAlgebird(dir: File) = gen(dir)(algebirdTemplates)
 
   val header = "// auto-generated boilerplate" // TODO: put something meaningful here?
 
 
   /** Returns a seq of the generated files.  As a side-effect, it actually generates them... */
-  def gen(dir: File) = for (t <- templates) yield {
+  def gen(dir: File)(templates: Seq[Template]) = for (t <- templates) yield {
     val tgtFile = t.filename(dir)
     IO.write(tgtFile, t.body)
     tgtFile
@@ -105,8 +118,8 @@ object Boilerplate {
     }
   }
 
-  object GenLifterMFunctions extends Template {
-    override def filename(root: File): File = root / "autolift" / "LiftMFunctions.scala"
+  object GenCoreLiftM extends Template{
+    override def filename(root: File): File = root / "autolift" / "LiftMGen.scala"
 
     /* Need to account for arity + 1 DFunction. */
     override def range = 2 to (maxArity - 1)
@@ -114,29 +127,73 @@ object Boilerplate {
     override def content(tv: TemplateVals): String = {
       import tv._
 
+      val `Obj..N` = ((0 until arity) map (n => s"Obj$n")).mkString(", ")
       val AA = new TemplateVals(arity, "AA")
 
       block"""
         |package autolift
         |
-        |trait LiftMFunctions {
+        |import export._
         |
         -
+        -trait LiftM$arity[${`Obj..N`}, Fn] extends DFunction${arity + 1}[${`Obj..N`}, Fn]
+        -
+        -@imports[LiftM$arity]
+        -object LiftM$arity
+        -
+        -final class LiftedM$arity[${`A..N`}, C](f: (${`A..N`}) => C) {
+        -  def map[D](g: C => D): LiftedM$arity[${`A..N`}, D] = new LiftedM$arity((${`a:A..n:N`}) => g(f(${`a..n`})))
+        -
+        -  def apply[${AA.`A..N`}](${AA.`a:A..n:N`})(implicit lift: LiftM$arity[${AA.`A..N`}, (${`A..N`}) => C]): lift.Out =
+        -    lift(${AA.`a..n`}, f)
+        -}
+        -
+        -trait LiftM${arity}Context{
         -  def liftM$arity[${`A..N`}, C](f: (${`A..N`}) => C) = new LiftedM$arity(f)
-        -
-        -  sealed class LiftedM$arity[${`A..N`}, C](f: (${`A..N`}) => C) {
-        -    def map[D](g: C => D): LiftedM$arity[${`A..N`}, D] = new LiftedM$arity((${`a:A..n:N`}) => g(f(${`a..n`})))
-        -
-        -    def apply[${AA.`A..N`}](${AA.`a:A..n:N`})(implicit lift: LiftM$arity[${AA.`A..N`}, (${`A..N`}) => C]): lift.Out =
-        -      lift(${AA.`a..n`}, f)
-        -  }
-        |}
+        -}
       """
     }
   }
 
-  object GenLifterInstances extends Template {
-    override def filename(root: File): File = root / "autolift" / "LiftersGen.scala"
+  object GenCoreLiftA extends Template{
+    override def filename(root: File): File = root / "autolift" / "LiftAGen.scala"
+
+    /* Need to account for arity + 1 DFunction. */
+    override def range = 2 to (maxArity - 1)
+
+    override def content(tv: TemplateVals): String = {
+      import tv._
+
+      val `Obj..N` = ((0 until arity) map (n => s"Obj$n")).mkString(", ")
+      val AA = new TemplateVals(arity, "AA")
+
+      block"""
+        |package autolift
+        |
+        |import export._
+        |
+        -
+        -trait LiftA$arity[${`Obj..N`}, Fn] extends DFunction${arity + 1}[${`Obj..N`}, Fn]
+        -
+        -@imports[LiftA$arity]
+        -object LiftA$arity
+        -
+        -final class LiftedA$arity[${`A..N`}, C](f: (${`A..N`}) => C) {
+        -  def map[D](g: C => D): LiftedA$arity[${`A..N`}, D] = new LiftedA$arity((${`a:A..n:N`}) => g(f(${`a..n`})))
+        -
+        -  def apply[${AA.`A..N`}](${AA.`a:A..n:N`})(implicit lift: LiftA$arity[${AA.`A..N`}, (${`A..N`}) => C]): lift.Out =
+        -    lift(${AA.`a..n`}, f)
+        -}
+        -
+        -trait LiftA${arity}Context{
+        -  def liftA$arity[${`A..N`}, C](f: (${`A..N`}) => C) = new LiftedA$arity(f)
+        -}
+      """
+    }
+  }
+
+  object GenScalazLiftMInstances extends Template {
+    override def filename(root: File): File = root / "autolift" / "scalaz" / "LiftersGen.scala"
 
     /* Need to account for arity + 1 DFunction. */
     override def range = 2 to (maxArity - 1)
@@ -176,32 +233,192 @@ object Boilerplate {
 
 
       block"""
-        |package autolift
+        |package autolift.scalaz
         |
         |import scalaz.Bind
+        |import export._
         |
         -
-        -trait LiftM$arity[${`Obj..N`}, Function] extends DFunction${arity + 1}[${`Obj..N`}, Function]
+        -trait ScalazLiftM$arity[${`Obj..N`}, Fn] extends LiftM$arity[${`Obj..N`}, Fn]
         -
-        -object LiftM$arity extends LowPriorityLiftM$arity {
-        -  def apply[${`Obj..N`}, Fn](implicit lift: LiftM$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
+        _@exports(Subclass)
+        -object ScalazLiftM$arity extends LowPriorityScalazLiftM$arity {
+        -  def apply[${`Obj..N`}, Fn](implicit lift: ScalazLiftM$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
         -
+        _  @export(Subclass)
         -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit bind: Bind[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
-        -    new LiftM$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
+        -    new ScalazLiftM$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
         -      type Out = M[C]
         -
         -      def apply(${`ma: M[A]..mn: M[N]`}, f: (${`AA..N`}) => C) = $apply
         -    }
         -}
         -
-        -trait LowPriorityLiftM$arity {
-        -  type Aux[${`Obj..N`}, Fn, Out0] = LiftM$arity[${`Obj..N`}, Fn] {type Out = Out0}
+        -trait LowPriorityScalazLiftM$arity {
+        -  type Aux[${`Obj..N`}, Fn, Out0] = ScalazLiftM$arity[${`Obj..N`}, Fn] {type Out = Out0}
         -
+        -  @export(Subclass)
         -  implicit def recur[M[_], ${`A..N`}, Fn](implicit bind: Bind[M], lift: LiftM$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
-        -    new LiftM$arity[${`M[A]..M[N]`}, Fn] {
+        -    new ScalazLiftM$arity[${`M[A]..M[N]`}, Fn] {
         -      type Out = M[lift.Out]
         -
         -      def apply(${`ma: M[A]..mn: M[N]`}, f: Fn) = $lowPriorityBind
+        -    }
+        -}
+      """
+    }
+  }
+
+  object GenAlgebirdLiftMInstances extends Template {
+    override def filename(root: File): File = root / "autolift" / "algebird" / "LiftersGen.scala"
+
+    /* Need to account for arity + 1 DFunction. */
+    override def range = 2 to (maxArity - 1)
+
+    override def content(tv: TemplateVals): String = {
+      import tv._
+
+      val `Obj..N` = ((0 until arity) map (n => s"Obj$n")).mkString(", ")
+
+      val altSynTypes = (0 until arity) map (n => s"AA$n")
+
+      val `AA..N` = altSynTypes.mkString(", ")
+
+      val `AA >: A..N` = (altSynTypes zip synTypes).map(t => s"${t._1} >: ${t._2}").mkString(", ")
+
+      val synMTypes = synTypes.map(t => s"M[$t]")
+      val synMVals = synVals.map(t => s"m$t")
+
+      val `M[A]..M[N]` = synMTypes.mkString(", ")
+      val `ma: M[A]..mn: M[N]` = ((synMVals zip synMTypes) map { case (v, t) => s"$v: $t"}).mkString(", ")
+
+      def liftMApply(inner: String) = {
+        val (all, last) = (synVals zip synMVals zip synTypes).splitAt(synMVals.size - 1)
+
+        val innerBind = {
+          val ((sv, smv), st) = last.head
+          s"fm.map($smv) { $sv: $st => $inner }"
+        }
+
+        all.foldRight(innerBind) { case (((sv, smv), st), res) =>
+          s"fm.flatMap($smv) { $sv: $st => $res }"
+        }
+      }
+
+      val apply = liftMApply(s"f(${`a..n`})")
+      val lowPriorityBind = liftMApply(s"lift(${`a..n`}, f)")
+
+
+      block"""
+        |package autolift.algebird
+        |
+        |import com.twitter.algebird.Monad
+        |import export._
+        |
+        -
+        -trait AlgeLiftM$arity[${`Obj..N`}, Fn] extends LiftM$arity[${`Obj..N`}, Fn]
+        -
+        _@exports(Subclass)
+        -object AlgeLiftM$arity extends LowPriorityAlgeLiftM$arity {
+        -  def apply[${`Obj..N`}, Fn](implicit lift: AlgeLiftM$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
+        -
+        _  @export(Subclass)
+        -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit fm: Monad[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
+        -    new AlgeLiftM$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
+        -      type Out = M[C]
+        -
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: (${`AA..N`}) => C) = $apply
+        -    }
+        -}
+        -
+        -trait LowPriorityAlgeLiftM$arity {
+        -  type Aux[${`Obj..N`}, Fn, Out0] = AlgeLiftM$arity[${`Obj..N`}, Fn] {type Out = Out0}
+        -
+        -  @export(Subclass)
+        -  implicit def recur[M[_], ${`A..N`}, Fn](implicit fm: Monad[M], lift: LiftM$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
+        -    new AlgeLiftM$arity[${`M[A]..M[N]`}, Fn] {
+        -      type Out = M[lift.Out]
+        -
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: Fn) = $lowPriorityBind
+        -    }
+        -}
+      """
+    }
+  }
+
+  object GenScalazLiftAInstances extends Template {
+    override def filename(root: File): File = root / "autolift" / "scalaz" / "LiftMGen.scala"
+
+    /* Need to account for arity + 1 DFunction. */
+    override def range = 2 to (maxArity - 1)
+
+    override def content(tv: TemplateVals): String = {
+      import tv._
+
+      val `Obj..N` = ((0 until arity) map (n => s"Obj$n")).mkString(", ")
+
+      val altSynTypes = (0 until arity) map (n => s"AA$n")
+
+      val `AA..N` = altSynTypes.mkString(", ")
+
+      val `AA >: A..N` = (altSynTypes zip synTypes).map(t => s"${t._1} >: ${t._2}").mkString(", ")
+
+      val synMTypes = synTypes.map(t => s"M[$t]")
+      val synMVals = synVals.map(t => s"m$t")
+
+      val `M[A]..M[N]` = synMTypes.mkString(", ")
+      val `ma: M[A]..mn: M[N]` = ((synMVals zip synMTypes) map { case (v, t) => s"$v: $t"}).mkString(", ")
+
+      def liftAApply(inner: String) = {
+        val (init, last) = (synVals.init, synVals.last)
+
+        val innerMap = s"ap.map($last) { $inner }"
+
+        init.foldRight(innerMap) { case (smv, res) =>
+          s"ap.ap($smv) { $res }"
+        }
+      }
+
+      def fargs(inner: String) = (synVals zip synTypes).foldRight(inner){ case ((sv, smv), res) =>
+        s"$sv: $smv => $res"
+      }
+
+      //TODO: these are wrong
+      val apply = liftAApply(fargs(s"f(${`a..n`})"))
+      val lowPriorityAp = liftAApply(fargs(s"lift(${`a..n`}, f)"))
+
+
+      block"""
+        |package autolift.scalaz
+        |
+        |import scalaz.Apply
+        |import export._
+        |
+        -
+        -trait ScalazLiftA$arity[${`Obj..N`}, Fn] extends LiftA$arity[${`Obj..N`}, Fn]
+        -
+        _@exports(Subclass)
+        -object ScalazLiftA$arity extends LowPriorityScalazLiftA$arity {
+        -  def apply[${`Obj..N`}, Fn](implicit lift: ScalazLiftA$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
+        -
+        _  @export(Subclass)
+        -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit fm: Monad[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
+        -    new ScalazLiftM$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
+        -      type Out = M[C]
+        -
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: (${`AA..N`}) => C) = $apply
+        -    }
+        -}
+        -
+        -trait LowPriorityScalazLiftA$arity {
+        -  type Aux[${`Obj..N`}, Fn, Out0] = ScalazLiftA$arity[${`Obj..N`}, Fn] {type Out = Out0}
+        -
+        -  @export(Subclass)
+        -  implicit def recur[M[_], ${`A..N`}, Fn](implicit ap: Apply[M], lift: LiftA$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
+        -    new ScalazLiftA$arity[${`M[A]..M[N]`}, Fn] {
+        -      type Out = M[lift.Out]
+        -
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: Fn) = $lowPriorityAp
         -    }
         -}
       """

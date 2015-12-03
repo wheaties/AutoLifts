@@ -75,7 +75,7 @@ trait LiftFunctions{ //These are autolifting contexts
  * @tparam Obj2 The second object over which to apply the function.
  * @tparam Function The function to be used to map values.
  */
-trait LiftM2[Obj1, Obj2, Function] extends DFunction3[Obj1, Obj2, Function]
+/*trait LiftM2[Obj1, Obj2, Function] extends DFunction3[Obj1, Obj2, Function]
 
 object LiftM2 extends LowPriorityLiftM2{
 	def apply[Obj1, Obj2, Fn](implicit lift: LiftM2[Obj1, Obj2, Fn]): Aux[Obj1, Obj2, Fn, lift.Out] = lift
@@ -101,7 +101,7 @@ trait LowPriorityLiftM2{
 				bind.map(mb){ b: B => lift(a, b, f) }
 			}
 		}
-}
+}*/
 
 /**
  * Typeclass supporting lifting a function of airity 3 and applying it to the inner types through a combination of
@@ -114,7 +114,7 @@ trait LowPriorityLiftM2{
  * @tparam Obj3 The third object over which to apply the function.
  * @tparam Function The function to be used to map values.
  */
-trait LiftM3[Obj1, Obj2, Obj3, Function] extends DFunction4[Obj1, Obj2, Obj3, Function]
+/*trait LiftM3[Obj1, Obj2, Obj3, Function] extends DFunction4[Obj1, Obj2, Obj3, Function]
 
 object LiftM3 extends LowPriorityLiftM3{
 	def apply[Obj1, Obj2, Obj3, Fn](implicit lift: LiftM3[Obj1, Obj2, Obj3, Fn]): Aux[Obj1, Obj2, Obj3, Fn, lift.Out] = lift
@@ -146,7 +146,7 @@ trait LowPriorityLiftM3{
 					}
 				}
 			}
-}
+}*/
 
 /**
  * Typeclass supporting lifting a function of airity 2 and applying it to the inner types through a combination of

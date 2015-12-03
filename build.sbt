@@ -11,7 +11,7 @@ lazy val core = build("autolift-core", "autolift-core").settings(
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
-  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.gen),
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCore),
   sonatypeProfileName := "wheaties"
 )
 
@@ -23,6 +23,7 @@ lazy val autoAlge = build("autolift-algebird", "auto-algebird").settings(
     "com.twitter" %% "algebird-test" % "0.11.0" % "test", //check if actually needed
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genAlgebird),
   sonatypeProfileName := "wheaties"
 )
 .dependsOn(core)
@@ -34,6 +35,7 @@ lazy val autoScalaz = build("autolift-scalaz", "autolift-scalaz").settings(
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genScalaz),
   sonatypeProfileName := "wheaties"
 )
 .dependsOn(core)
