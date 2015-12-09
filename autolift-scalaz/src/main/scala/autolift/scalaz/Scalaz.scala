@@ -3,7 +3,8 @@ package autolift
 import export._
 import autolift.scalaz._
 
-@reexports[ScalazLiftF, ScalazLiftAp, ScalazLiftB, ScalazLiftFoldLeft, ScalazLiftFoldRight, ScalazLiftFold, ScalazLiftFoldMap, ScalazLiftFoldAt, ScalazLiftFlatten, ScalazLiftFilter]
+@reexports[ScalazLiftF, ScalazLiftAp, ScalazLiftB, ScalazLiftFoldLeft, ScalazLiftFoldRight, ScalazLiftFold, ScalazLiftFoldMap, 
+		   ScalazLiftFoldAt, ScalazLiftFlatten, ScalazLiftFilter]
 object Scalaz{
 	implicit def mkM[Obj, Fn](implicit lift: ScalazLiftF[Obj, Fn]): ScalazLiftF.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkAp[Obj, Fn](implicit lift: ScalazLiftAp[Obj, Fn]): ScalazLiftAp.Aux[Obj, Fn, lift.Out] = lift
