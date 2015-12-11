@@ -4,7 +4,7 @@ import xerial.sbt.Sonatype._
 
 object AutoLift{
 	val ScalaVersion = "2.11.7"
-	val ScalaZ = "7.1.1"
+	val ScalaZ = "7.2.0"
 
 	def build(pjName: String, base: String) = Project(
     id = pjName, 
