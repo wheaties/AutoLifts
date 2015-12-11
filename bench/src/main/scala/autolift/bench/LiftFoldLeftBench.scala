@@ -3,7 +3,7 @@ package autolift.bench
 import scalaz._
 import Scalaz._
 import autolift._
-import AutoLift._
+import autolift.Scalaz._
 import org.openjdk.jmh.annotations.{Benchmark, Scope, State}
 
 /** 11/19/15 timing

@@ -1,6 +1,6 @@
 package autolift.scalaz
 
-import scalaz.{Functor, Foldable, MonadPlus, Monoid, Applicative}
+import scalaz.{Functor, MonadPlus}
 import autolift.LiftFilter
 import export._
 
@@ -17,18 +17,7 @@ object ScalazLiftFilter extends LowPriorityScalazLiftFilter{
 		}
 }
 
-trait LowPriorityScalazLiftFilter extends LowPriorityScalazLiftFilter1{
-
-	@export(Subclass)
-	implicit def foldable[F[_], A, B >: A](implicit fold: Foldable[F], m: Monoid[F[A]], ap: Applicative[F]) =
-		new ScalazLiftFilter[F[A], B => Boolean]{
-			def apply(fa: F[A], pred: B => Boolean) = fold.foldRight(fa, m.zero){
-				(a, res) => if(pred(a)) m.append(ap.pure(a), res) else res
-			}
-		}
-}
-
-trait LowPriorityScalazLiftFilter1{
+trait LowPriorityScalazLiftFilter{
 
 	@export(Subclass)
 	implicit def recur[F[_], G, Fn](implicit lift: LiftFilter[G, Fn], functor: Functor[F]) =

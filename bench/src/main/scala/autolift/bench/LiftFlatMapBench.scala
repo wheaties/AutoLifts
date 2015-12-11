@@ -3,7 +3,6 @@ package autolift.bench
 import scalaz._
 import Scalaz._
 import autolift._
-import AutoLift._
 import autolift.Scalaz._
 import org.openjdk.jmh.annotations.{Benchmark, Scope, State}
 
@@ -24,13 +23,13 @@ class LiftFlatMapBench{
 	val four = Option(three)
 
 	@Benchmark
-	def twoDeep() = two.liftFlatMap{ x: Int => List(x + 1) }
+	def twoDeep() = two.liftBind{ x: Int => List(x + 1) }
 
 	@Benchmark
-	def threeDeep() = three.liftFlatMap{ x: Int => List(x + 1) }
+	def threeDeep() = three.liftBind{ x: Int => List(x + 1) }
 
 	@Benchmark
-	def fourDeep() = four.liftFlatMap{ x: Int => List(x + 1) }
+	def fourDeep() = four.liftBind{ x: Int => List(x + 1) }
 
 	@Benchmark
 	def basicTwoDeep() = two.map{ 

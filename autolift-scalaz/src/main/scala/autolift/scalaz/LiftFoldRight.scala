@@ -38,3 +38,11 @@ trait LiftFoldRightSyntax{
 			lift(fa, f, z)
 	}
 }
+
+final class LiftedFoldRight[B, Z](z: Z, f: (B, => Z) => Z){
+	def apply[That](that: That)(implicit lift: LiftFoldRight[That, (B, => Z) => Z, Z]): lift.Out = lift(that, f, z)
+}
+
+trait LiftFoldRightContext{
+	def liftFoldRight[B, Z](z: Z)(f: (B, => Z) => Z) = new LiftedFoldRight(z, f)
+}
