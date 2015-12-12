@@ -14,7 +14,7 @@ lazy val core = build("autolift-core", "autolift-core").settings(
   sonatypeProfileName := "wheaties"
 )
 
-lazy val autoAlge = build("autolift-algebird", "auto-algebird").settings(
+lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
   libraryDependencies ++= Seq(
     "com.twitter" %% "algebird-core" % "0.11.0",
     "com.twitter" %% "algebird-util" % "0.11.0",
