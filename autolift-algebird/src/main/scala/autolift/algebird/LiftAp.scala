@@ -31,14 +31,14 @@ trait LowPriorityAlgeLiftAp{
 		}
 }
 
-final class LiftedAp[A, B, F[_]](protected val f: F[A => B])(implicit ap: Applicative[F]){
-	def andThen[C >: B, D](lf: LiftedAp[C, D, F]) = new LiftedAp(ap.joinWith(f, lf.f){
+final class LiftedAp[F[_], A, B](protected val f: F[A => B])(implicit ap: Applicative[F]){
+	def andThen[C >: B, D](lf: LiftedAp[F, C, D]) = new LiftedAp(ap.joinWith(f, lf.f){
 		(f1, f2) => f1 andThen f2
 	})
 
-	def compose[C, D <: A](lf: LiftedAp[C, D, F]) = lf andThen this
+	def compose[C, D <: A](lf: LiftedAp[F, C, D]) = lf andThen this
 
-	def map[C](g: B => C): LiftedAp[A, C, F] = new LiftedAp(ap.map(f){ _ andThen g })
+	def map[C](g: B => C): LiftedAp[F, A, C] = new LiftedAp(ap.map(f){ _ andThen g })
 
 	def apply[That](that: That)(implicit lift: LiftAp[That, F[A => B]]): lift.Out = lift(that, f)
 }

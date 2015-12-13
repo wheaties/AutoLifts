@@ -10,10 +10,10 @@ import export._
  * @tparam Obj The type to be lifted into.
  * @tparam Funciton The function to be lifted.
  */
-trait LiftB[Obj, Function] extends DFunction2[Obj, Function]
+trait LiftFlatMap[Obj, Function] extends DFunction2[Obj, Function]
 
-@imports[LiftB]
-object LiftB
+@imports[LiftFlatMap]
+object LiftFlatMap
 
 trait LiftFlatMapSyntax{
 
@@ -29,7 +29,7 @@ trait LiftFlatMapSyntax{
 		 * @tparam C the inner type of the return type of the function.
 		 * @tparam M the higher-kinded type of the return type of the function which has a Monad.
 		 */
-		def liftFlatMap[B, C, M[_]](f: B => M[C])(implicit lift: LiftB[F[A], B => M[C]]): lift.Out = lift(fa, f)
+		def liftFlatMap[B, C, M[_]](f: B => M[C])(implicit lift: LiftFlatMap[F[A], B => M[C]]): lift.Out = lift(fa, f)
 	}
 }
 

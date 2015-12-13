@@ -10,10 +10,10 @@ import export._
  * @tparam Obj the type to be lifted into.
  * @tparam Function the function to be lifted.
  */
-trait LiftF[Obj, Function] extends DFunction2[Obj, Function]
+trait LiftMap[Obj, Function] extends DFunction2[Obj, Function]
 
-@imports[LiftF]
-object LiftF
+@imports[LiftMap]
+object LiftMap
 
 trait LiftMapSyntax{
 
@@ -28,7 +28,7 @@ trait LiftMapSyntax{
 		 * @tparam B the argument type of the function.
 		 * @tparam C the return type of the function.
 		 */
-		def liftMap[B, C](f: B => C)(implicit lift: LiftF[F[A], B => C]): lift.Out = lift(fa, f)
+		def liftMap[B, C](f: B => C)(implicit lift: LiftMap[F[A], B => C]): lift.Out = lift(fa, f)
 	}
 }
 
@@ -39,7 +39,7 @@ final class LiftedMap[A, B](f: A => B){
 
 	def map[C](g: B => C): LiftedMap[A, C] = new LiftedMap(f andThen g)
 
-	def apply[That](that: That)(implicit lift: LiftF[That, A => B]): lift.Out = lift(that, f)
+	def apply[That](that: That)(implicit lift: LiftMap[That, A => B]): lift.Out = lift(that, f)
 }
 
 trait LiftMapContext{
