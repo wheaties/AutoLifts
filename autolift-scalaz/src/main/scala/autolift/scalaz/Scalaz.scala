@@ -4,7 +4,7 @@ import export._
 import autolift.scalaz._
 
 @reexports[ScalazLiftF, ScalazLiftAp, ScalazLiftB, ScalazLiftFoldLeft, ScalazLiftFoldRight, ScalazLiftFold, ScalazLiftFoldMap, 
-		   ScalazLiftFoldAt, ScalazLiftFlatten, ScalazLiftFilter, 
+		   ScalazLiftFoldAt, ScalazLiftFlatten, ScalazLiftFilter, ScalazLiftForAll, ScalazLiftExists,
 		   ScalazLiftA2, ScalazLiftA3, ScalazLiftA4, ScalazLiftA5,
 		   ScalazLiftM2, ScalazLiftM3, ScalazLiftM4, ScalazLiftM5]
 object Scalaz extends Syntax with Context{
@@ -17,4 +17,6 @@ object Scalaz extends Syntax with Context{
 	implicit def mkFlM[Obj, Fn](implicit lift: ScalazLiftFoldMap[Obj, Fn]): ScalazLiftFoldMap.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkFlA[M[_], Obj](implicit lift: ScalazLiftFoldAt[M, Obj]): ScalazLiftFoldAt.Aux[M, Obj, lift.Out] = lift
 	implicit def mkFl[M[_], Obj](implicit lift: ScalazLiftFlatten[M, Obj]): ScalazLiftFlatten.Aux[M, Obj, lift.Out] = lift
+	implicit def mkAll[Obj, Fn](implicit lift: ScalazLiftForAll[Obj, Fn]): ScalazLiftForAll.Aux[Obj, Fn, lift.Out] = lift
+	implicit def mkAny[Obj, Fn](implicit lift: ScalazLiftExists[Obj, Fn]): ScalazLiftExists.Aux[Obj, Fn, lift.Out] = lift
 }

@@ -9,6 +9,8 @@ trait Context extends LiftMapContext
 	with LiftFoldLeftContext
 	with LiftFoldRightContext
 	with LiftFoldMapContext
+	with LiftAnyContext
+	with LiftAllContext
 	with LiftA2Context
 	with LiftA3Context
 	with LiftA4Context
@@ -17,3 +19,4 @@ trait Context extends LiftMapContext
 	with LiftM3Context
 	with LiftM4Context
 	with LiftM5Context
+	with FoldWithContext
