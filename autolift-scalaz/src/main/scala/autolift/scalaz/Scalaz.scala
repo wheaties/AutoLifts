@@ -5,8 +5,9 @@ import autolift.scalaz._
 
 @reexports[ScalazLiftMap, ScalazLiftAp, ScalazLiftFlatMap, ScalazLiftFoldLeft, ScalazLiftFoldRight, ScalazLiftFold, 
 		   ScalazLiftFoldMap, ScalazLiftFoldAt, ScalazLiftFlatten, ScalazLiftFilter, ScalazLiftForAll, ScalazLiftExists,
+		   ScalazFoldAll, ScalazFoldAny, ScalazFoldComplete, ScalazFoldWith, ScalazFoldOver,
 		   ScalazLiftA2, ScalazLiftA3, ScalazLiftA4, ScalazLiftA5,
-		   ScalazLiftM2, ScalazLiftM3, ScalazLiftM4, ScalazLiftM5] //TODO: boilerplate the implicit defs for liftA* and liftM*
+		   ScalazLiftM2, ScalazLiftM3, ScalazLiftM4, ScalazLiftM5]
 object Scalaz extends Syntax with Context with Reexports{
 	implicit def mkM[Obj, Fn](implicit lift: ScalazLiftMap[Obj, Fn]): ScalazLiftMap.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkAp[Obj, Fn](implicit lift: ScalazLiftAp[Obj, Fn]): ScalazLiftAp.Aux[Obj, Fn, lift.Out] = lift
@@ -19,4 +20,7 @@ object Scalaz extends Syntax with Context with Reexports{
 	implicit def mkFl[M[_], Obj](implicit lift: ScalazLiftFlatten[M, Obj]): ScalazLiftFlatten.Aux[M, Obj, lift.Out] = lift
 	implicit def mkAll[Obj, Fn](implicit lift: ScalazLiftForAll[Obj, Fn]): ScalazLiftForAll.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkAny[Obj, Fn](implicit lift: ScalazLiftExists[Obj, Fn]): ScalazLiftExists.Aux[Obj, Fn, lift.Out] = lift
+	implicit def mkFC[Obj](implicit lift: ScalazFoldComplete[Obj]): ScalazFoldComplete.Aux[Obj, lift.Out] = lift
+	implicit def mkFW[Obj, Fn](implicit lift: ScalazFoldWith[Obj, Fn]): ScalazFoldWith.Aux[Obj, Fn, lift.Out] = lift
+	implicit def mkFO[M[_], Obj](implicit lift: ScalazFoldOver[M, Obj]): ScalazFoldOver.Aux[M, Obj, lift.Out] = lift
 }

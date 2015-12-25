@@ -1,8 +1,11 @@
 package autolift.scalaz
 
+import org.scalatest.FlatSpec
+
 trait BaseSpec extends FlatSpec{
 	def same[A](x: A, y: A) = assert(x == y)
 
+	val s2i = {x: String => x.toInt }
 	val intF = {x: Int => x+1}
 	def intintF(x: Int, y: Int) = x + y
 	def anyanyF(x: Any, y: Any) = 1
