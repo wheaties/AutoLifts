@@ -7,7 +7,7 @@ import autolift.scalaz._
 		   ScalazLiftFoldMap, ScalazLiftFoldAt, ScalazLiftFlatten, ScalazLiftFilter, ScalazLiftForAll, ScalazLiftExists,
 		   ScalazLiftA2, ScalazLiftA3, ScalazLiftA4, ScalazLiftA5,
 		   ScalazLiftM2, ScalazLiftM3, ScalazLiftM4, ScalazLiftM5] //TODO: boilerplate the implicit defs for liftA* and liftM*
-object Scalaz extends Syntax with Context{
+object Scalaz extends Syntax with Context with Reexports{
 	implicit def mkM[Obj, Fn](implicit lift: ScalazLiftMap[Obj, Fn]): ScalazLiftMap.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkAp[Obj, Fn](implicit lift: ScalazLiftAp[Obj, Fn]): ScalazLiftAp.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkFM[Obj, Fn](implicit lift: ScalazLiftFlatMap[Obj, Fn]): ScalazLiftFlatMap.Aux[Obj, Fn, lift.Out] = lift

@@ -15,7 +15,7 @@ object ScalazLiftExists extends LowPriorityScalazLiftExists {
 		new ScalazLiftExists[F[A], C => Boolean]{
 			type Out = Boolean
 
-			def apply(fa: F[A], f: C => Boolean) = fold.all(fa)(f)
+			def apply(fa: F[A], f: C => Boolean) = fold.any(fa)(f)
 		}
 }
 

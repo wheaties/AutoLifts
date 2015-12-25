@@ -267,6 +267,10 @@ object Boilerplate {
         -      def apply(${`ma: M[A]..mn: M[N]`}, f: Fn) = $lowPriorityBind
         -    }
         -}
+        -
+        -trait LiftM${arity}Reexport{
+        -  implicit def mkLM${arity}[${`Obj..N`}, Fn](implicit lift: ScalazLiftM${arity}[${`Obj..N`}, Fn]): ScalazLiftM${arity}.Aux[${`Obj..N`}, Fn, lift.Out] = lift
+        -}
       """
     }
   }
@@ -422,6 +426,10 @@ object Boilerplate {
         -
         -      def apply(${`ma: M[A]..mn: M[N]`}, f: Fn) = $lowPriorityAp
         -    }
+        -}
+        -
+        -trait LiftA${arity}Reexport{
+        -  implicit def mkLA${arity}[${`Obj..N`}, Fn](implicit lift: ScalazLiftA${arity}[${`Obj..N`}, Fn]): ScalazLiftA${arity}.Aux[${`Obj..N`}, Fn, lift.Out] = lift
         -}
       """
     }
