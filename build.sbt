@@ -3,6 +3,12 @@ import com.typesafe.sbt.SbtSite.SiteKeys._
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 import sbtunidoc.Plugin.UnidocKeys._
 
+lazy val root = (project in file(".")).settings(
+  scalaVersion := AutoLift.ScalaVersion,
+  publishArtifact := false
+)
+.aggregate(core, autoAlge, autoScalaz, docs)
+
 lazy val core = build("autolift-core", "autolift-core").settings(
   libraryDependencies ++= Seq(
     "org.typelevel" %% "export-hook" % "1.1.1-SNAPSHOT",
@@ -64,8 +70,5 @@ lazy val bench = build("bench", "bench")
   )
   .dependsOn(core, autoScalaz)
   .enablePlugins(JmhPlugin)
-
-
-scalaVersion := AutoLift.ScalaVersion
 
 addCommandAlias("gen-site", "unidoc;tut;make-site")
