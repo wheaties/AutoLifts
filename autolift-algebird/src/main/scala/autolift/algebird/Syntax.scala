@@ -7,5 +7,5 @@ trait Syntax extends LiftMapSyntax
 	with LiftFlatMapSyntax
 	with LiftFilterSyntax 
 	with LiftFlattenSyntax
-	with LiftJoinSyntax
-	with LiftJoinWithSyntax
+	//with LiftJoinSyntax
+	//with LiftJoinWithSyntax

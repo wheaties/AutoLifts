@@ -23,8 +23,6 @@ lazy val core = build("autolift-core", "autolift-core").settings(
 lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
   libraryDependencies ++= Seq(
     "com.twitter" %% "algebird-core" % "0.11.0",
-    "com.twitter" %% "algebird-util" % "0.11.0",
-    "com.twitter" %% "algebird-test" % "0.11.0" % "test", //check if actually needed
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
