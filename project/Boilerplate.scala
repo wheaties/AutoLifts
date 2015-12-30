@@ -354,7 +354,7 @@ object Boilerplate {
   }
 
   object GenScalazLiftAInstances extends Template {
-    override def filename(root: File): File = root / "autolift" / "scalaz" / "LiftMGen.scala"
+    override def filename(root: File): File = root / "autolift" / "scalaz" / "LiftAGen.scala"
 
     /* Need to account for arity + 1 DFunction. */
     override def range = 2 to (maxExportedArity - 1)
