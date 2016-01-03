@@ -36,6 +36,7 @@ lazy val autoScalaz = build("autolift-scalaz", "autolift-scalaz").settings(
     "org.scalaz" %% "scalaz-core" % ScalaZ,
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genScalaz),

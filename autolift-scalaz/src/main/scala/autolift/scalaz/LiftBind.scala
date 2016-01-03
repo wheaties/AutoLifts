@@ -59,6 +59,12 @@ final class LiftedBind[A, B, M[_]](protected val f: A => M[B])(implicit bind: Bi
 	def apply[That](that: That)(implicit lift: LiftFlatMap[That, A => M[B]]): lift.Out = lift(that, f)
 }
 
+trait LiftedBindImplicits{
+	implicit def liftedBindFunctor[A, M[_]] = new Functor[LiftedBind[A, ?, M]]{
+		def map[B, C](lb: LiftedBind[A, B, M])(f: B => C) = lb map f
+	}
+}
+
 trait LiftBindContext{
 	def liftBind[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedBind(f)
 }

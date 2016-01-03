@@ -1,7 +1,7 @@
 package autolift.scalaz
 
 import scalaz.Functor
-import autolift.LiftMap
+import autolift.{LiftMap, LiftedMap}
 import export._
 
 trait ScalazLiftMap[Obj, Fn] extends LiftMap[Obj, Fn]
@@ -29,4 +29,10 @@ trait LowPriorityScalazLiftMap{
 
 			def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }
 		}
+}
+
+trait LiftedMapImplicits{
+	implicit def liftedMapFunctor[A] = new Functor[LiftedMap[A, ?]]{
+		def map[B, C](lm: LiftedMap[A, B])(f: B => C) = lm map f
+	}
 }

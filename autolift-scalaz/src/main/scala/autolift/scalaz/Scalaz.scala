@@ -8,7 +8,7 @@ import autolift.scalaz._
 		   ScalazFoldAll, ScalazFoldAny, ScalazFoldComplete, ScalazFoldWith, ScalazFoldOver,
 		   ScalazLiftA2, ScalazLiftA3, ScalazLiftA4, ScalazLiftA5,
 		   ScalazLiftM2, ScalazLiftM3, ScalazLiftM4, ScalazLiftM5]
-object Scalaz extends Syntax with Context with Reexports{
+object Scalaz extends Syntax with Context with Reexports with Implicits{
 	implicit def mkM[Obj, Fn](implicit lift: ScalazLiftMap[Obj, Fn]): ScalazLiftMap.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkAp[Obj, Fn](implicit lift: ScalazLiftAp[Obj, Fn]): ScalazLiftAp.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkFM[Obj, Fn](implicit lift: ScalazLiftFlatMap[Obj, Fn]): ScalazLiftFlatMap.Aux[Obj, Fn, lift.Out] = lift
