@@ -2,29 +2,30 @@ import sbt._
 import sbt.Keys._
 import xerial.sbt.Sonatype._
 
-object AutoLift{
-	val ScalaVersion = "2.11.6"
-	val ScalaZ = "7.1.1"
+object AutoLift {
+  val ScalaVersion = "2.11.6"
+  val ScalaZ = "7.1.1"
 
-	def build(pjName: String, base: String) = Project(
-    id = pjName, 
-    base = file(base), 
+  def build(pjName: String, base: String) = Project(
+    id = pjName,
+    base = file(base),
     settings = sonatypeSettings ++
-  	  Seq(
-  	    scalaVersion := ScalaVersion,
-  	    name := pjName,
+      Seq(
+        scalaVersion := ScalaVersion,
+        name := pjName,
         organization := "com.github.wheaties",
-  	    scalacOptions := Seq(
+        scalacOptions := Seq(
           "-deprecation",
           "-encoding", "UTF-8",
           "-feature",
-          "-language:higherKinds", 
+          "-language:higherKinds",
           "-language:existentials",
           "-unchecked",
           "-Xfatal-warnings",
-    		  "-Yno-adapted-args",
-    		  "-Ywarn-dead-code",
-    		  "-Ywarn-value-discard"),
+          "-Yno-adapted-args",
+          "-Ywarn-dead-code",
+          "-Ywarn-unused-import",
+          "-Ywarn-value-discard"),
         pomExtra := autoliftPom,
         publishTo <<= version { v: String =>
           val nexus = "https://oss.sonatype.org/"
@@ -38,26 +39,26 @@ object AutoLift{
         publishMavenStyle := true,
         publishArtifact in Test := false
       )
-    )
+  )
 
   val autoliftPom =
     <url>http://github.com/wheaties/AutoLifts</url>
-    <licenses>
-      <license>
-        <name>Apache 2</name>
-        <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-        <distribution>repo</distribution>
-      </license>
-    </licenses>
-    <scm>
-      <url>git@github.com:wheaties/AutoLifts.git</url>
-      <connection>scm:git:git@github.com:wheaties/AutoLifts.git</connection>
-    </scm>
-    <developers>
-      <developer>
-           <id>wheaties</id>
-           <name>Owein Reese</name>
-           <url>www.github.com/wheaties</url>
-      </developer>
-    </developers>
+      <licenses>
+        <license>
+          <name>Apache 2</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+          <distribution>repo</distribution>
+        </license>
+      </licenses>
+      <scm>
+        <url>git@github.com:wheaties/AutoLifts.git</url>
+        <connection>scm:git:git@github.com:wheaties/AutoLifts.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>wheaties</id>
+          <name>Owein Reese</name>
+          <url>www.github.com/wheaties</url>
+        </developer>
+      </developers>
 }
