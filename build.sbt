@@ -24,6 +24,7 @@ lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
   libraryDependencies ++= Seq(
     "com.twitter" %% "algebird-core" % "0.11.0",
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genAlgebird),

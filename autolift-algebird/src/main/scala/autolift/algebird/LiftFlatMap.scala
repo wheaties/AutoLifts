@@ -41,6 +41,12 @@ final class LiftedFlatMap[A, B, M[_]](protected val f: A => M[B])(implicit fm: M
 	def apply[That](that: That)(implicit lift: LiftFlatMap[That, A => M[B]]): lift.Out = lift(that, f)
 }
 
+trait LiftedFlatMapImplicits{
+	implicit def liftedFlatMapFunctor[A, M[_]] = new Functor[LiftedFlatMap[A, ?, M]]{
+		def map[B, C](lb: LiftedFlatMap[A, B, M])(f: B => C) = lb map f
+	}
+}
+
 trait LiftFlatMapContext{
 	def liftFlatMap[A, B, M[_]](f: A => M[B])(implicit fm: Monad[M]) = new LiftedFlatMap(f)
 }

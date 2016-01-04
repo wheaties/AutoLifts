@@ -3,9 +3,9 @@ package autolift
 import export._
 import autolift.algebird._
 
-@reexports[AlgeLiftMap, AlgeLiftAp, AlgeLiftFlatMap, AlgeLiftFlatten, /*AlgeLiftFilter, LiftJoin, LiftJoinWith, */
+@reexports[AlgeLiftMap, AlgeLiftAp, AlgeLiftFlatMap, AlgeLiftFlatten, AlgeLiftFilter, /*LiftJoin, LiftJoinWith, */
 		   AlgeLiftM2, AlgeLiftM3, AlgeLiftM4, AlgeLiftM5]
-object Algebird extends Syntax with Context{
+object Algebird extends Syntax with Context with Implicits{
 	implicit def mkF[Obj, Fn](implicit lift: AlgeLiftMap[Obj, Fn]): AlgeLiftMap.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkAp[Obj, Fn](implicit lift: AlgeLiftAp[Obj, Fn]): AlgeLiftAp.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkFM[Obj, Fn](implicit lift: AlgeLiftFlatMap[Obj, Fn]): AlgeLiftFlatMap.Aux[Obj, Fn, lift.Out] = lift

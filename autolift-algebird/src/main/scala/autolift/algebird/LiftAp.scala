@@ -43,6 +43,12 @@ final class LiftedAp[F[_], A, B](protected val f: F[A => B])(implicit ap: Applic
 	def apply[That](that: That)(implicit lift: LiftAp[That, F[A => B]]): lift.Out = lift(that, f)
 }
 
+trait LiftedApImplicits{
+	implicit def liftedApFunctor[F[_], A] = new Functor[LiftedAp[F, A, ?]]{
+		def map[B, C](lap: LiftedAp[F, A, B])(f: B => C) = lap map f
+	}
+}
+
 trait LiftApContext{
 	def liftAp[A, B, F[_]](f: F[A => B])(implicit ap: Applicative[F]) = new LiftedAp(f)
 }

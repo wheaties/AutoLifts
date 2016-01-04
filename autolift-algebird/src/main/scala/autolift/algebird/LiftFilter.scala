@@ -4,10 +4,9 @@ import autolift.LiftFilter
 import com.twitter.algebird.{Functor, Monoid, Monad}
 import export._
 
-//TODO: Something in the definition of Algebird or this causes the compiler to enter a loop.
 trait AlgeLiftFilter[Obj, Fn] extends LiftFilter[Obj, Fn]
 
-/*@exports
+@exports
 object AlgeLiftFilter extends LowPriorityAlgeLiftFilter{
 	def apply[Obj, Fn](implicit lift: AlgeLiftFilter[Obj, Fn]) = lift
 
@@ -27,4 +26,4 @@ trait LowPriorityAlgeLiftFilter{
 		new AlgeLiftFilter[F[G], Fn]{
 			def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }
 		}
-}*/
+}
