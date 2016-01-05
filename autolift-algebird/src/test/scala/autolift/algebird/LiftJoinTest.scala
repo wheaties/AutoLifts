@@ -6,7 +6,7 @@ import org.scalatest._
 import com.twitter.algebird._
 
 class LiftJoinTest extends BaseSpec{
-	"liftJoin on a Foo[Int] from a Foo[Int]" should "work" in{
+	/*"liftJoin on a Foo[Int] from a Foo[Int]" should "work" in{
 		val in = Foo(1)
 		val out = in liftJoin in
 
@@ -17,5 +17,5 @@ class LiftJoinTest extends BaseSpec{
 		val out = in liftJoin List(1)
 
 		same[Foo[List[(Int,Int)]]](out, Foo(List((1, 1))))
-	}
+	}*/
 }

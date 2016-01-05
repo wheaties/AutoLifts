@@ -27,6 +27,7 @@ lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
     compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
+  scalacOptions in Test ++= Seq("-verbose"),
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genAlgebird),
   sonatypeProfileName := "wheaties"
 )
