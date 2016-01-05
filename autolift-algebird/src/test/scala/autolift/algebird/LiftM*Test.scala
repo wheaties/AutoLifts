@@ -1,10 +1,14 @@
-package autolift.algebird
+package autolift.test.algebird
 
 import autolift._
 import Algebird._
 import org.scalatest._
+import com.twitter.algebird._
 
 class `LiftM*Test` extends BaseSpec{
+	def intintF(x: Int, y: Int) = x + y
+	def anyanyF(x: Any, y: Any) = 1
+
 	"liftM2" should "work on a pair of List" in{
 		val lf = liftM2(intintF)
 		val out = lf(List(0, 1), List(1, 2))

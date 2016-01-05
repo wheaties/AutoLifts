@@ -1,4 +1,4 @@
-package autolift.algebird
+package autolift.test.algebird
 
 import org.scalatest.FlatSpec
 import com.twitter.algebird.{Monad, Functor}

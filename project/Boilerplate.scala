@@ -349,6 +349,10 @@ object Boilerplate {
         -      def apply(${`ma: M[A]..mn: M[N]`}, f: Fn) = $lowPriorityBind
         -    }
         -}
+        -
+        -trait LiftM${arity}Reexport{
+        -  implicit def mkLM${arity}[${`Obj..N`}, Fn](implicit lift: AlgeLiftM${arity}[${`Obj..N`}, Fn]): AlgeLiftM${arity}.Aux[${`Obj..N`}, Fn, lift.Out] = lift
+        -}
       """
     }
   }

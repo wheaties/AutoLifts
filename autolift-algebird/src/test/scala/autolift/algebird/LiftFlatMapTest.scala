@@ -1,4 +1,4 @@
-package autolift.algebird
+package autolift.test.algebird
 
 import autolift._
 import Algebird._
