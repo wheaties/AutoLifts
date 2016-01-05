@@ -7,7 +7,7 @@ import export._
 //TODO: There is something either defined here or in Algebird which causes the compiler to enter a loop.
 trait LiftJoin[Obj1, Obj2] extends DFunction2[Obj1, Obj2]
 
-/*@exports
+@exports
 object LiftJoin extends LowPriorityLiftJoin{
 	def apply[Obj1, Obj2](implicit lift: LiftJoin[Obj1, Obj2]): Aux[Obj1, Obj2, lift.Out] = lift
 
@@ -37,4 +37,4 @@ trait LiftJoinSyntax{
 	implicit class LiftJoinOps[F[_], A](fa: F[A]){
 		def liftJoin[That](that: That)(implicit lift: LiftJoin[F[A], That]): lift.Out = lift(fa, that)
 	}
-}*/
+}

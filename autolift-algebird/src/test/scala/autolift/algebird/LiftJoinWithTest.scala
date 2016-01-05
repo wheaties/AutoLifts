@@ -1,12 +1,14 @@
 package autolift.algebird
 
-import autolift.Algebird._
-import com.twitter.algebird.Monad
+import autolift._
+import Algebird._
+import org.scalatest._
+import com.twitter.algebird._
 
 class LiftJoinWithTest extends BaseSpec{
 	def intintF(x: Int, y: Int) = x + y
 
-	/*"liftJoinWith on a Foo[Int] from a Foo[Int]" should "work" in{
+	"liftJoinWith on a Foo[Int] from a Foo[Int]" should "work" in{
 		val in = Foo(1)
 		val out = in.liftJoinWith(Foo(1))(intintF)
 
@@ -17,5 +19,5 @@ class LiftJoinWithTest extends BaseSpec{
 		val out = in.liftJoinWith(List(1))(intintF)
 
 		same[Foo[List[Int]]](out, Foo(List(2)))
-	}*/
+	}
 }

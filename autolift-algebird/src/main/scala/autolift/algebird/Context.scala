@@ -4,11 +4,11 @@ import autolift._
 
 //TODO: ScalaDocs
 
-trait Context //extends LiftJoinWithContext 
-	extends LiftApContext
+trait Context extends LiftApContext
 	with LiftMapContext
 	with LiftFlatMapContext
 	with LiftFilterContext
+	with LiftJoinWithContext 
 	//with LiftA2Context
 	//with LiftA3Context
 	//with LiftA4Context
