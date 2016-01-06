@@ -2,7 +2,6 @@ package autolift.test.algebird
 
 import autolift._
 import Algebird._
-import org.scalatest._
 
 class LiftFlatMapTest extends BaseSpec{
 	val intF = { x: Int => Foo(x+1) }

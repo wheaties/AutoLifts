@@ -2,8 +2,6 @@ package autolift.test.algebird
 
 import autolift._
 import Algebird._
-import org.scalatest._
-import com.twitter.algebird._
 
 class `LiftM*Test` extends BaseSpec{
 	def intintF(x: Int, y: Int) = x + y

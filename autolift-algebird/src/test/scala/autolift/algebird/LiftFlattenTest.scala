@@ -2,7 +2,6 @@ package autolift.test.algebird
 
 import autolift._
 import Algebird._
-import org.scalatest._
 
 class LiftFlattenTest extends BaseSpec{
 	"liftFlatten on a Foo[Foo]" should "work" in{

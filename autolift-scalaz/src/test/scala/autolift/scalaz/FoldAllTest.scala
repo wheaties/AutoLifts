@@ -1,8 +1,7 @@
-package autolift.scalaz
+package autolift.test.scalaz
 
 import scalaz._
 import Scalaz._
-import autolift._
 import autolift.Scalaz._
 
 class FoldAllTest extends BaseSpec{

@@ -2,7 +2,6 @@ package autolift.test.algebird
 
 import autolift._
 import Algebird._
-import org.scalatest._
 
 class LiftFilterTest extends BaseSpec{
 	val intF = { x: Int => x % 2 == 0 }

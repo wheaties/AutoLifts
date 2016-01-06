@@ -2,7 +2,6 @@ package autolift.test.algebird
 
 import autolift._
 import Algebird._
-import org.scalatest._
 import com.twitter.algebird.Monad._
 
 class LiftJoinWithTest extends BaseSpec{

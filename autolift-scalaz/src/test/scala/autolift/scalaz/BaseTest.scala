@@ -1,4 +1,4 @@
-package autolift.scalaz
+package autolift.test.scalaz
 
 import org.scalatest.FlatSpec
 
