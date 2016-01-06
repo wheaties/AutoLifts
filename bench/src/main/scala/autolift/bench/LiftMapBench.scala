@@ -41,6 +41,9 @@ class LiftMapBench{
 	val trans2 = mkOOL(List(1, 2, 3, 4, 5))
 
 	@Benchmark
+	def oneDeep() = Option(1).liftMap{ x: Any => 2 }
+
+	@Benchmark
 	def twoDeep() = two.liftMap{ x: Int => x + 1 }
 
 	@Benchmark

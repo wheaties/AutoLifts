@@ -2,7 +2,6 @@ package autolift.bench
 
 import scalaz._
 import Scalaz._
-import autolift._
 import autolift.Scalaz._
 import org.openjdk.jmh.annotations.{Benchmark, Scope, State}
 
@@ -22,6 +21,9 @@ class LiftFoldLeftBench{
 	val three = Option(two)
 	val four = Option(three)
 	val sum = { (x: Int, y: Int) => x + y }
+
+	@Benchmark
+	def oneDeep() = Option(1).liftFoldLeft(0)(sum)
 
 	@Benchmark
 	def twoDeep() = two.liftFoldLeft(0)(sum)

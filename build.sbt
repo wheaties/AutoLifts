@@ -16,6 +16,7 @@ lazy val core = build("autolift-core", "autolift-core").settings(
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
+  scalacOptions += "-Ywarn-unused-import",
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCore),
   sonatypeProfileName := "wheaties"
 )
@@ -23,10 +24,12 @@ lazy val core = build("autolift-core", "autolift-core").settings(
 lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
   libraryDependencies ++= Seq(
     "com.twitter" %% "algebird-core" % "0.11.0",
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
     compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
+  scalacOptions += "-Ywarn-unused-import",
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genAlgebird),
   sonatypeProfileName := "wheaties"
 )
@@ -40,6 +43,7 @@ lazy val autoScalaz = build("autolift-scalaz", "autolift-scalaz").settings(
     compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
+  scalacOptions += "-Ywarn-unused-import",
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genScalaz),
   sonatypeProfileName := "wheaties"
 )

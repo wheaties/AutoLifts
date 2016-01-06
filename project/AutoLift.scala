@@ -24,7 +24,6 @@ object AutoLift{
           "-Xfatal-warnings",
           "-Yno-adapted-args",
           "-Ywarn-dead-code",
-          "-Ywarn-unused-import",
           "-Ywarn-value-discard",
           "-Xfuture"),
         pomExtra := autoliftPom,

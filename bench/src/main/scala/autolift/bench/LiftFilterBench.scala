@@ -2,7 +2,7 @@ package autolift.bench
 
 import scalaz._
 import Scalaz._
-import autolift._
+//import autolift._
 import autolift.Scalaz._
 import org.openjdk.jmh.annotations.{Benchmark, Scope, State}
 
@@ -21,6 +21,9 @@ class LiftFilterBench{
 	val two = Option(List(1, 2, 3, 4, 5))
 	val three = Option(two)
 	val four = Option(three)
+
+	@Benchmark
+	def oneDeep() = Option(1).liftFilter{ x: Int => x == 2 }
 
 	@Benchmark
 	def twoDeep() = two.liftFilter{ x: Int => x == 1 }

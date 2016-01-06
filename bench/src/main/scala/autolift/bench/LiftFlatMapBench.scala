@@ -2,7 +2,6 @@ package autolift.bench
 
 import scalaz._
 import Scalaz._
-import autolift._
 import autolift.Scalaz._
 import org.openjdk.jmh.annotations.{Benchmark, Scope, State}
 
@@ -21,6 +20,9 @@ class LiftFlatMapBench{
 	val two = Option(List(1, 2, 3, 4, 5))
 	val three = Option(two)
 	val four = Option(three)
+
+	@Benchmark
+	def oneDeep() = Option(1).liftBind{ x: Int => Option(x+1) }
 
 	@Benchmark
 	def twoDeep() = two.liftBind{ x: Int => List(x + 1) }
