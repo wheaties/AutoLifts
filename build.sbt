@@ -3,17 +3,47 @@ import com.typesafe.sbt.SbtSite.SiteKeys._
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 import sbtunidoc.Plugin.UnidocKeys._
 
-lazy val autoz = build("autolift", "autoz")
-  .settings(libraryDependencies ++= Seq(
-    "org.scalaz" %% "scalaz-core" % ScalaZ,
-    "org.scalatest" %% "scalatest" % "2.2.1" % "test"),
-    sonatypeProfileName := "wheaties"
-  )
-  .settings(
-    sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.gen)
-  )
+lazy val root = (project in file(".")).settings(
+  scalaVersion := AutoLift.ScalaVersion,
+  publishArtifact := false
+)
+.aggregate(core, autoAlge, autoScalaz, docs)
 
-//.settings(genjavadocSettings: _*)
+lazy val core = build("autolift-core", "autolift-core").settings(
+  libraryDependencies ++= Seq(
+    "org.typelevel" %% "export-hook" % "1.1.1-SNAPSHOT",
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+    "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+  ),
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCore),
+  sonatypeProfileName := "wheaties"
+)
+
+lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
+  libraryDependencies ++= Seq(
+    "com.twitter" %% "algebird-core" % "0.11.0",
+    compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
+    "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+  ),
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genAlgebird),
+  sonatypeProfileName := "wheaties"
+)
+.dependsOn(core)
+
+lazy val autoScalaz = build("autolift-scalaz", "autolift-scalaz").settings(
+  libraryDependencies ++= Seq(
+    "org.scalaz" %% "scalaz-core" % ScalaZ,
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
+    "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+  ),
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genScalaz),
+  sonatypeProfileName := "wheaties"
+)
+.dependsOn(core)
 
 lazy val docs = build("docs", "docs")
   .settings(tutSettings: _*)
@@ -30,18 +60,15 @@ lazy val docs = build("docs", "docs")
     includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.md"
   )
   .settings(site.includeScaladoc(): _*)
-  //.settings(site.jekyllSupport(): _*)
+  .settings(site.jekyllSupport(): _*)
   .settings(unidocSettings: _*)
-  .dependsOn(autoz)
+  .dependsOn(core, autoAlge, autoScalaz)
 
 lazy val bench = build("bench", "bench")
   .settings(
     publishArtifact := false
   )
-  .dependsOn(autoz)
+  .dependsOn(core, autoScalaz)
   .enablePlugins(JmhPlugin)
-
-
-scalaVersion := AutoLift.ScalaVersion
 
 addCommandAlias("gen-site", "unidoc;tut;make-site")

@@ -19,37 +19,6 @@ The Lifters package provides for some convenience syntax upon any instance of a 
 
 There is no requirement that the type signature of the syntax target contain multiply nested types. Some methods require additional type classes to be defined in order to be used, such as any `fold` variants.
 
-## 1. liftMap
-
-LiftMap is a more general `map` with the ability to auto-deduce where a given function should be mapped based upon the type signature of the function. Or, said another way, `liftMap` can lift a function into the first suitable context for which it can be applied. In practice, it operates as if it were successive calls of `map` over nested types that have an instance of a `Functor`. 
-
-To demonstrate, given the following code:
-
-```tut
-import scala.concurrent._
-import scala.concurrent.ExecutionContext.Implicits.global
-
-val listOptFut = Future(Option(List(1, 2, 3)))
-val out = listOptFut map { listOpt: Option[List[Int]] =>
-  listOpt map { ls: List[Int] =>
-    ls map { x: Int => x.toString }
-  }
-}
-```
-
-using `liftMap` it could be re-expressed in a single line
-
-```tut
-import autolift._
-import AutoLift._
-import scalaz._
-import Scalaz._
-import scala.concurrent._
-import scala.concurrent.ExecutionContext.Implicits.global
-
-val listOptFut = Future(Option(List(1, 2, 3)))
-val out = listOptFut liftMap { x: Int => x.toString }
-```
 
 ## 2. liftFlatMap
 
@@ -80,30 +49,7 @@ and still produce the same exact output.
 
 ## 3. liftAp
 
-`Applicatives` are [a structure intermediate between a Functor and a Monad](https://hackage.haskell.org/package/base-4.8.0.0/docs/Control-Applicative.html). LiftAp is the correlary to `Applicative`s in this library. If you don't know what an `Applicative` is, don't worry, you don't have to use it.
 
-Demonstrating it use
-
-```tut
-import scalaz._
-import Scalaz._
-
-def apOver(optList: List[Option[Int]], f: Option[Int => Int])(implicit ap: Apply[Option]) = 
-  optList map { opt: Option[Int] => 
-    ap.ap(opt)(f)
-  }
-```
-
-which could be redone as
-
-```tut
-import autolift._
-import AutoLift._
-import scalaz._
-import Scalaz._
-
-def apOver(optList: List[Option[Int]], f: Option[Int => Int]) = optList liftAp f
-```
 
 ## 4. liftFoldLeft and liftFoldRight
 
