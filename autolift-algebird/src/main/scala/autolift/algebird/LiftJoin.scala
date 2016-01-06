@@ -4,14 +4,11 @@ import autolift.DFunction2
 import com.twitter.algebird.{Functor, Applicative}
 import export._
 
-//TODO: There is something either defined here or in Algebird which causes the compiler to enter a loop.
 trait LiftJoin[Obj1, Obj2] extends DFunction2[Obj1, Obj2]
 
-@exports
 object LiftJoin extends LowPriorityLiftJoin{
 	def apply[Obj1, Obj2](implicit lift: LiftJoin[Obj1, Obj2]): Aux[Obj1, Obj2, lift.Out] = lift
 
-	@export(Subclass)
 	implicit def base[F[_], G, H](implicit ap: Applicative[F]): Aux[F[G], F[H], F[(G, H)]] =
 		new LiftJoin[F[G], F[H]]{
 			type Out = F[(G, H)]
@@ -24,7 +21,6 @@ object LiftJoin extends LowPriorityLiftJoin{
 trait LowPriorityLiftJoin{
 	type Aux[Obj1, Obj2, Out0] = LiftJoin[Obj1, Obj2]{ type Out = Out0 }
 
-	@export(Subclass)
 	implicit def recur[F[_], G, H](implicit lift: LiftJoin[G, H], functor: Functor[F]): Aux[F[G], H, F[lift.Out]] =
 		new LiftJoin[F[G], H]{
 			type Out = F[lift.Out]
