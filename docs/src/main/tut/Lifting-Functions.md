@@ -7,63 +7,11 @@ category: Lifters
 
 The Lifters group contains several context transforming functions which form the corrolary of auto-lifting logic. Wherein lifting syntax was concerned with a specific type and arbitrary functions, the lifting functions are concerned with specific function types and arbitrarily nested types. Included in the package are the following transformations:
 
- * liftFlatMap - takes a function of the form `A => M[B]` and places it into an auto-lifting `flatMap` context
  * liftFoldMap - places a function into an auto-lifting context that folds
  * liftM2 - places a function of airity 2 into an auto-lifting context
 
 All context wrappers require that the types operated on have at least a `Functor` defined for them. Several of these context wrappers require additional type classes, such a `liftFoldMap` requiring a `Foldable`.
 
-
-## liftFlatMap
-
-The `liftFlatMap` function wrapper is more of an extension on `flatMap` . Hence, it takes a function of the form `A => M[B]` and operates on an arbitrarily nested set of types which must contain a `M[A]`. It operates by calling successive `map` operations until it finds the first type is may `flatMap` over.
-
-To demonstrate:
-
-```tut
-import autolift._
-import Lifters._
-import scalaz._
-import Scalaz._
-
-val lifted = liftFlatMap{ x: Int => Option(x+1) }
-val single = lifted(Option(1))
-val doubly = lifted(List(Some(1), None, Some(3)))
-```
-
-## LiftFoldMap
-
-The `liftFoldMap` is analogous to the `foldMap` method of `Foldable` only within an auto-lifting context. In order to work, it requires that the function which is wrapped produce a type that has a defined `Monoid`. It operates by calling successive `map` operations until it finds the first type which the function matches and can be folded over.
-
-To demonstrate:
-
-```tut
-import autolift._
-import Lifters._
-import scalaz._
-import Scalaz._
-
-val lifted = liftFoldMap{ x: Any => x.toString.size }
-val single = lifted(List(1, 2, 3))
-val doubly = lifted(List(Option(1), None))
-```
-
-## LiftFilter
-
-The `liftFilter` is analogous to the `filter` method on many collection types only within an auto-lifting context. In order to work, it requires that the object acted upon have defined a `Foldable`, `Monoid` and `Applicative`. It operates by calling successive `map` operations until it is able to filter.
-
-To demonstrate:
-
-```tut
-import autolift._
-import Lifters._
-import scalaz._
-import Scalaz._
-
-val lifted = liftFilter{ x: Any => x.toString.size < 2 }
-val single = lifted(List(1, 10, 100))
-val doubly = lifted(NonEmptyList(List(1, 10, 100)))
-```
 
 ## liftM2, liftM3
 

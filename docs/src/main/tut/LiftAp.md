@@ -16,7 +16,6 @@ The syntax extension adds the method `liftAp` to any object of whose type can be
 ```tut
 import scalaz._
 import Scalaz._
-import autolift._
 import autolift.Scalaz._
 
 val lifted = liftAp(List({ x: Int => x+1 }, { x: Int => x+4 }))
@@ -26,7 +25,7 @@ val doubly = lifted(Option(List(1, 2, 3)))
 
 ## Context
 
-The context allows a "function" of the form `G[A => B]` to work on any object of the form `F[A]` where `A` may in fact be some higher-kinded type. The context acts similar to a function providing `andThen`, `compose` and `map` functions besides an `apply`. It should be noted that each pluggable back-end supplies its own variation of the context which works with that back-end's `Applicative` and will not be compatible.
+The context allows a "function" of the form `G[A => B]` to work on any object of the form `F[A]` where `A` may in fact be some higher-kinded type. The context acts similar to a function providing `andThen`, `compose` and `map` functions besides an `apply`. It should be noted that each pluggable back-end supplies its own variation of the context which works with that back-end's `Applicative` and will not be compatible with other back-end contexts.
 
 To demonstrate:
 
@@ -45,7 +44,6 @@ which could be redone as
 ```tut
 import scalaz._
 import Scalaz._
-import autolift._
 import autolift.Scalaz._
 
 def apOver(optList: List[Option[Int]], f: Option[Int => Int]) = optList liftAp f
