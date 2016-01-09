@@ -3,27 +3,27 @@ package autolift.cats
 import autolift.{LiftForAll, LiftedForAll}
 import export._
 
-trait ScalazLiftForAll[Obj, Fn] extends LiftForAll[Obj, Fn]
+trait CatsLiftForAll[Obj, Fn] extends LiftForAll[Obj, Fn]
 
 @exports(Subclass)
-object ScalazLiftForAll extends LowPriorityScalazLiftForAll {
-	def apply[Obj, Fn](implicit lift: ScalazLiftForAll[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
+object CatsLiftForAll extends LowPriorityCatsLiftForAll {
+	def apply[Obj, Fn](implicit lift: CatsLiftForAll[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
 
 	@export(Subclass)
 	implicit def base[F[_], A, C >: A](implicit fold: Foldable[F]): Aux[F[A], C => Boolean, Boolean] =
-		new ScalazLiftForAll[F[A], C => Boolean]{
+		new CatsLiftForAll[F[A], C => Boolean]{
 			type Out = Boolean
 
 			def apply(fa: F[A], f: C => Boolean) = fold.all(fa)(f)
 		}
 }
 
-trait LowPriorityScalazLiftForAll{
-	type Aux[Obj, Fn, Out0] = ScalazLiftForAll[Obj, Fn]{ type Out = Out0 }
+trait LowPriorityCatsLiftForAll{
+	type Aux[Obj, Fn, Out0] = CatsLiftForAll[Obj, Fn]{ type Out = Out0 }
 
 	@export(Subclass)
 	implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftForAll[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
-		new ScalazLiftForAll[F[G], Fn]{
+		new CatsLiftForAll[F[G], Fn]{
 			type Out = F[lift.Out]
 
 			def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }

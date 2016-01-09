@@ -4,27 +4,27 @@ import autolift.LiftFlatMap
 import export._
 
 
-trait ScalazLiftFlatMap[Obj, Fn] extends LiftFlatMap[Obj, Fn]
+trait CatsLiftFlatMap[Obj, Fn] extends LiftFlatMap[Obj, Fn]
 
 @exports(Subclass)
-object ScalazLiftFlatMap extends LowPriorityScalazLiftFlatMap {
-	def apply[Obj, Fn](implicit lift: ScalazLiftFlatMap[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
+object CatsLiftFlatMap extends LowPriorityCatsLiftFlatMap {
+	def apply[Obj, Fn](implicit lift: CatsLiftFlatMap[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
 
 	@export(Subclass)
 	implicit def base[M[_], A, C >: A, B](implicit bind: Bind[M]): Aux[M[A], C => M[B], M[B]] =
-		new ScalazLiftFlatMap[M[A], C => M[B]]{
+		new CatsLiftFlatMap[M[A], C => M[B]]{
 			type Out = M[B]
 
 			def apply(fa: M[A], f: C => M[B]) = bind.bind(fa)(f)
 		}
 }
 
-trait LowPriorityScalazLiftFlatMap{
-	type Aux[Obj, Fn, Out0] = ScalazLiftFlatMap[Obj, Fn]{ type Out = Out0 }
+trait LowPriorityCatsLiftFlatMap{
+	type Aux[Obj, Fn, Out0] = CatsLiftFlatMap[Obj, Fn]{ type Out = Out0 }
 
 	@export(Subclass)
 	implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftFlatMap[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
-		new ScalazLiftFlatMap[F[G], Fn]{
+		new CatsLiftFlatMap[F[G], Fn]{
 			type Out = F[lift.Out]
 
 			def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }

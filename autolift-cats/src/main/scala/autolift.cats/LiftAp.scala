@@ -4,27 +4,27 @@ import autolift.LiftAp
 import export._
 
 
-trait ScalazLiftAp[Obj, Fn] extends LiftAp[Obj, Fn]
+trait CatsLiftAp[Obj, Fn] extends LiftAp[Obj, Fn]
 
 @exports(Subclass)
-object ScalazLiftAp extends LowPriorityScalazLiftAp {
-	def apply[Obj, Fn](implicit lift: ScalazLiftAp[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
+object CatsLiftAp extends LowPriorityCatsLiftAp {
+	def apply[Obj, Fn](implicit lift: CatsLiftAp[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
 
 	@export(Subclass)
 	implicit def base[F[_], A, B](implicit ap: Apply[F]): Aux[F[A], F[A => B], F[B]] =
-		new ScalazLiftAp[F[A], F[A => B]]{
+		new CatsLiftAp[F[A], F[A => B]]{
 			type Out = F[B]
 
 			def apply(fa: F[A], f: F[A => B]) = ap.ap(fa)(f)
 		}
 }
 
-trait LowPriorityScalazLiftAp{
-	type Aux[Obj, Fn, Out0] = ScalazLiftAp[Obj, Fn]{ type Out = Out0 }
+trait LowPriorityCatsLiftAp{
+	type Aux[Obj, Fn, Out0] = CatsLiftAp[Obj, Fn]{ type Out = Out0 }
 
 	@export(Subclass)
 	implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftAp[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
-		new ScalazLiftAp[F[G], Fn]{
+		new CatsLiftAp[F[G], Fn]{
 			type Out = F[lift.Out]
 
 			def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }
