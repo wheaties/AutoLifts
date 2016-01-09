@@ -4,24 +4,24 @@ import cats.implicits._
 import autolift.Cats._
 
 class FoldAnyTest extends BaseSpec{
-  "foldAny on a List" should "work" in{
+  "foldExists on a List" should "work" in{
     val in = List(1, 2, 3)
 
-    assert(in.foldAny{x: Int => x < 2})
-    assert(!in.foldAny{x: Int => x < 0})
+    assert(in.foldExists{x: Int => x < 2})
+    assert(!in.foldExists{x: Int => x < 0})
   }
 
-  "foldAny on a List" should "work with functions" in{
+  "foldExists on a List" should "work with functions" in{
     val in = List(1, 2, 3)
 
-    assert(in.foldAny{x: Any => true})
-    assert(!in.foldAny{x: Any => false})
+    assert(in.foldExists{x: Any => true})
+    assert(!in.foldExists{x: Any => false})
   }
 
-  "foldAny on a List[Option]" should "work" in{
+  "foldExists on a List[Option]" should "work" in{
     val in = List(Option(1), None, Option(2))
 
-    assert(in.foldAny{x: Int => x < 2})
-    assert(!in.foldAny{x: Int => x < 0})
+    assert(in.foldExists{x: Int => x < 2})
+    assert(!in.foldExists{x: Int => x < 0})
   }
 }

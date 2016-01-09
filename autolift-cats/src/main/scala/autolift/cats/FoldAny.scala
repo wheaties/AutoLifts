@@ -1,7 +1,7 @@
 package autolift.cats
 
 import cats.Foldable
-import autolift.FoldAny
+import autolift.{FoldedAny, FoldAny}
 import export._
 
 trait CatsFoldAny[Obj, Fn] extends FoldAny[Obj, Fn]
@@ -26,4 +26,14 @@ trait LowPriorityCatsFoldAny{
 		}
 }
 
-//TODO: Come back to add more 'cats-like' syntax of `exists` vs `Any` as exposed in FoldAny
+trait FoldExistsSyntax {
+	implicit class FoldExistsOps[F[_], A](fa: F[A]) {
+		def foldExists[B](f: B => Boolean)(implicit fold: FoldAny[F[A], B => Boolean]) = fold(fa, f)
+	}
+}
+
+trait FoldExistsContext {
+	def foldExists[A](f: A => Boolean): FoldedExists[A] = new FoldedAny(f)
+
+	type FoldedExists[A] = FoldedAny[A]
+}
