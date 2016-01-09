@@ -12,21 +12,21 @@ class LiftForAllTest extends BaseSpec{
 	}
 
 	"liftForAll" should "work on a List" in{
-		val out = List(1, 2, 3).liftAll(even)
+		val out = List(1, 2, 3).liftForAll(even)
 
 		same[Boolean](out, false)
 	}
 
 	"liftForAll" should "work on a List[Option]" in{
 		val in = List(Option(1), None, Option(3))
-		val out = in liftAll even
+		val out = in liftForAll even
 
 		same[List[Boolean]](out, List(false, true, false))
 	}
 
 	"liftForAll" should "work with functions" in{
 		val in = Bar(List(1, 2, 3))
-		val out = in liftAll any
+		val out = in liftForAll any
 
 		same[Bar[Boolean]](out, Bar(false))
 	}

@@ -4,6 +4,7 @@ import cats.{Functor, Foldable}
 import autolift.{LiftForAll, LiftedForAll}
 import export._
 
+//TODO: syntax is currently forAll vs forall. Make consistent?
 trait CatsLiftForAll[Obj, Fn] extends LiftForAll[Obj, Fn]
 
 @exports(Subclass)
@@ -29,17 +30,4 @@ trait LowPriorityCatsLiftForAll{
 
 			def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }
 		}
-}
-
-trait LiftAllSyntax{
-	implicit class LiftAllOps[F[_], A](fa: F[A]){
-		def liftAll[B](f: B => Boolean)(implicit lift: LiftForAll[F[A], B => Boolean]): lift.Out = lift(fa, f)
-	}
-}
-
-//TODO: Revisit syntax to be more cat-like
-trait LiftAllContext{
-	def liftAll[A](f: A => Boolean): LiftedAll[A] = new LiftedForAll(f)
-
-	type LiftedAll[A] = LiftedForAll[A]
 }
