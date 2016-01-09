@@ -4,7 +4,7 @@ import autolift._
 
 trait Context extends LiftMapContext
 	with LiftApContext
-	with LiftBindContext
+	with LiftFlatMapContext
 	with LiftFilterContext
 	with LiftFoldLeftContext
 	with LiftFoldRightContext

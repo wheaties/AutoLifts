@@ -8,7 +8,7 @@ import export._
  * @author Owein Reese
  *
  * @tparam Obj The type to be lifted into.
- * @tparam Funciton The function to be lifted.
+ * @tparam Function The function to be lifted.
  */
 trait LiftFlatMap[Obj, Function] extends DFunction2[Obj, Function]
 
