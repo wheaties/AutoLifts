@@ -1,5 +1,9 @@
 package autolift.cats
 
+import cats._
+import cats.implicits._
+import autolift.cats._
+
 class FoldOverTest extends BaseSpec{
 	"foldOver on a List[Option] w/ List" should "work" in{
 		val in = List(Option(1), None)

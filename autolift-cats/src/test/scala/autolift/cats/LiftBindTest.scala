@@ -1,5 +1,9 @@
 package autolift.cats
 
+import cats._
+import cats.implicits._
+import autolift.cats._
+
 class LiftBindTest extends BaseSpec{
 	"liftBind on an Option[List]" should "work" in{
 		val in = Option(List(1))

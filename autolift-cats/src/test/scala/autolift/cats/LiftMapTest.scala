@@ -1,5 +1,9 @@
 package autolift.cats
 
+import cats._
+import cats.implicits._
+import autolift.cats._
+
 class LiftMapTest extends BaseSpec{
 	"liftMap on an Option[List]" should "work" in{
 		val in = Option(List(1))
