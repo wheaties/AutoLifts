@@ -46,8 +46,3 @@ scala> nested.foldWith{ x: String => x.toInt }
 res4: Int = 21
 ```
 
-## Differences:
-
-FlatMap (cats, algebird) vs Bind (scalaZ)
-LiftForAll syntax: `liftForAll` (cats) vs scalaZ (`liftAll`)
-
