@@ -25,9 +25,11 @@ lazy val autoCats = build("autolift-cats", "autolift-cats").settings(
   libraryDependencies ++= Seq(
     "org.spire-math" %% "cats" % "0.3.0",
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
     "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   ),
-  //sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCats),
+  scalacOptions += "-Ywarn-unused-import",
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCats),
   sonatypeProfileName := "wheaties"
 )
   .dependsOn(core)
