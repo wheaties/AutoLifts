@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.{FlatMap, Functor}
 import autolift.LiftFlatten
 import export._
 
@@ -10,11 +11,11 @@ object CatsLiftFlatten extends LowPriorityCatsLiftFlatten{
 	def apply[M[_], Obj](implicit lift: CatsLiftFlatten[M, Obj]): Aux[M, Obj, lift.Out] = lift
 
 	@export(Subclass)
-	implicit def base[M[_], A](implicit bind: Bind[M]): Aux[M, M[M[A]], M[A]] =
+	implicit def base[M[_], A](implicit flatMap: FlatMap[M]): Aux[M, M[M[A]], M[A]] =
 		new CatsLiftFlatten[M, M[M[A]]]{
 			type Out = M[A]
 
-			def apply(mma: M[M[A]]) = bind.bind(mma){ ma: M[A] => ma }
+			def apply(mma: M[M[A]]) = flatMap.flatMap(mma){ ma: M[A] => ma }
 		}
 }
 

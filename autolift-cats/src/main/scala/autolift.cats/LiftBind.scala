@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.{FlatMap, Functor}
 import autolift.LiftFlatMap
 import export._
 
@@ -11,11 +12,11 @@ object CatsLiftFlatMap extends LowPriorityCatsLiftFlatMap {
 	def apply[Obj, Fn](implicit lift: CatsLiftFlatMap[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
 
 	@export(Subclass)
-	implicit def base[M[_], A, C >: A, B](implicit bind: Bind[M]): Aux[M[A], C => M[B], M[B]] =
+	implicit def base[M[_], A, C >: A, B](implicit flatMap: FlatMap[M]): Aux[M[A], C => M[B], M[B]] =
 		new CatsLiftFlatMap[M[A], C => M[B]]{
 			type Out = M[B]
 
-			def apply(fa: M[A], f: C => M[B]) = bind.bind(fa)(f)
+			def apply(fa: M[A], f: C => M[B]) = flatMap.flatMap(fa)(f)
 		}
 }
 
@@ -36,7 +37,7 @@ trait LiftBindSyntax{
 	implicit class LiftBindOps[F[_], A](fa: F[A]){
 
 		/**
-		 * Automatic lifting and flattening of the contained function `f` such that the application point is dicated by the
+		 * Automatic lifting and flattening of the contained function `f` such that the application point is dictated by the
 		 * argument and return type of the function.
 		 *
 		 * @param f the function that returns a type with a Bind.
@@ -45,19 +46,21 @@ trait LiftBindSyntax{
 		 * @tparam M the higher-kinded type of the return type of the function which has a Bind.
 		 */
 		def liftBind[B, C, M[_]](f: B => M[C])(implicit lift: LiftFlatMap[F[A], B => M[C]]): lift.Out = lift(fa, f)
+		//TODO: Add liftFlatMap syntax to be more cat-like
 	}
 }
 
-final class LiftedBind[A, B, M[_]](protected val f: A => M[B])(implicit bind: Bind[M]){
-	def andThen[C >: B, D](that: LiftedBind[C, D, M]) = new LiftedBind({ x: A => bind.bind(f(x))(that.f) })
+final class LiftedBind[A, B, M[_]](protected val f: A => M[B])(implicit flatMap: FlatMap[M]){
+	def andThen[C >: B, D](that: LiftedBind[C, D, M]) = new LiftedBind({ x: A => flatMap.flatMap(f(x))(that.f) })
 
 	def compose[C, D <: A](that: LiftedBind[C, D, M]) = that andThen this
 
-	def map[C](g: B => C): LiftedBind[A, C, M] = new LiftedBind({ x: A => bind.map(f(x))(g) })
+	def map[C](g: B => C): LiftedBind[A, C, M] = new LiftedBind({ x: A => flatMap.map(f(x))(g) })
 
 	def apply[That](that: That)(implicit lift: LiftFlatMap[That, A => M[B]]): lift.Out = lift(that, f)
 }
 
+//TODO: Rename liftFlatMap syntax to be more cat-like
 trait LiftedBindImplicits{
 	implicit def liftedBindFunctor[A, M[_]] = new Functor[LiftedBind[A, ?, M]]{
 		def map[B, C](lb: LiftedBind[A, B, M])(f: B => C) = lb map f
@@ -65,5 +68,5 @@ trait LiftedBindImplicits{
 }
 
 trait LiftBindContext{
-	def liftBind[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedBind(f)
+	def liftBind[A, B, M[_]](f: A => M[B])(implicit bind: FlatMap[M]) = new LiftedBind(f)
 }

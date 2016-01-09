@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.{Monoid, Foldable}
 import autolift.FoldOver
 import export._
 

@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.{Functor, Foldable}
 import autolift.{LiftForAll, LiftedForAll}
 import export._
 
@@ -14,7 +15,7 @@ object CatsLiftForAll extends LowPriorityCatsLiftForAll {
 		new CatsLiftForAll[F[A], C => Boolean]{
 			type Out = Boolean
 
-			def apply(fa: F[A], f: C => Boolean) = fold.all(fa)(f)
+			def apply(fa: F[A], f: C => Boolean) = fold.forall(fa)(f)
 		}
 }
 
@@ -36,6 +37,7 @@ trait LiftAllSyntax{
 	}
 }
 
+//TODO: Revisit syntax to be more cat-like
 trait LiftAllContext{
 	def liftAll[A](f: A => Boolean): LiftedAll[A] = new LiftedForAll(f)
 

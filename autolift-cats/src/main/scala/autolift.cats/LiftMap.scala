@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.Functor
 import autolift.{LiftMap, LiftedMap}
 import export._
 

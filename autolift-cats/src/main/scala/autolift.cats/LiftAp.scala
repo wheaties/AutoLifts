@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.{Functor, Apply}
 import autolift.LiftAp
 import export._
 

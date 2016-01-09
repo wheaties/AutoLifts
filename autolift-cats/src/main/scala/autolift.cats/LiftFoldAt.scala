@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.{Functor, Monoid, Foldable}
 import autolift.LiftFoldAt
 import export._
 

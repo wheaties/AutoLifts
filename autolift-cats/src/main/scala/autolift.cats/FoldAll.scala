@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.Foldable
 import autolift.FoldAll
 import export._
 
@@ -12,7 +13,7 @@ object CatsFoldAll extends LowPriorityCatsFoldAll{
 	@export(Subclass)
 	implicit def base[F[_], A, C >: A](implicit fold: Foldable[F]) =
 		new CatsFoldAll[F[A], C => Boolean]{
-			def apply(fa: F[A], f: C => Boolean) = fold.all(fa)(f)
+			def apply(fa: F[A], f: C => Boolean) = fold.forall(fa)(f)
 		}
 }
 
@@ -21,6 +22,8 @@ trait LowPriorityCatsFoldAll{
 	@export(Subclass)
 	implicit def recur[F[_], G, Fn](implicit fold: Foldable[F], all: FoldAll[G, Fn]) =
 		new CatsFoldAll[F[G], Fn]{
-			def apply(fg: F[G], f: Fn) = fold.all(fg){ g: G => all(g, f) }
+			def apply(fg: F[G], f: Fn) = fold.forall(fg){ g: G => all(g, f) }
 		}
 }
+
+//TODO: Come back to add more 'cats-like' syntax of `forall` vs `all` as exposed in FoldAll

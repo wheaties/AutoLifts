@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.{Functor, Foldable}
 import autolift.{LiftExists, LiftedExists}
 import export._
 
@@ -14,7 +15,7 @@ object CatsLiftExists extends LowPriorityCatsLiftExists {
 		new CatsLiftExists[F[A], C => Boolean]{
 			type Out = Boolean
 
-			def apply(fa: F[A], f: C => Boolean) = fold.any(fa)(f)
+			def apply(fa: F[A], f: C => Boolean) = fold.exists(fa)(f)
 		}
 }
 
@@ -36,6 +37,7 @@ trait LiftAnySyntax{
 	}
 }
 
+//TODO: Update syntax more cat-like
 trait LiftAnyContext{
 	def liftAny[A](f: A => Boolean): LiftedAny[A] = new LiftedExists(f)
 

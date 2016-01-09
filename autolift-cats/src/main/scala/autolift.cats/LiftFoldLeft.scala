@@ -1,5 +1,6 @@
 package autolift.cats
 
+import cats.{Functor, Foldable}
 import autolift.LiftFoldLeft
 import export._
 
