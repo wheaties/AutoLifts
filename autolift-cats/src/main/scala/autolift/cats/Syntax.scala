@@ -12,7 +12,7 @@ trait Syntax extends LiftMapSyntax
 	with LiftFlattenSyntax
 	with LiftFoldSyntax
 	with LiftFoldMapSyntax
-	with LiftAnySyntax
+	with LiftExistsSyntax
 	with LiftAllSyntax
 	with FoldAllSyntax
 	with FoldAnySyntax

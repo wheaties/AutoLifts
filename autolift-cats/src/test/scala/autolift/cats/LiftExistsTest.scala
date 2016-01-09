@@ -12,21 +12,21 @@ class LiftExistsTest extends BaseSpec{
 	}
 
 	"liftExists" should "work on a List" in{
-		val out = List(1, 2, 3).liftAny(even)
+		val out = List(1, 2, 3).liftExists(even)
 
 		same[Boolean](out, true)
 	}
 
 	"liftExists" should "work on a List[Option]" in{
 		val in = List(Option(1), None, Option(3))
-		val out = in liftAny even
+		val out = in liftExists even
 
 		same[List[Boolean]](out, List(false, false, false))
 	}
 
 	"liftExists" should "work with functions" in{
 		val in = Bar(List(1, 2, 3))
-		val out = in liftAny any
+		val out = in liftExists any
 
 		same[Bar[Boolean]](out, Bar(true))
 	}

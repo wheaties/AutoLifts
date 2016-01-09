@@ -9,7 +9,7 @@ trait Context extends LiftMapContext
 	with LiftFoldLeftContext
 	with LiftFoldRightContext
 	with LiftFoldMapContext
-	with LiftAnyContext
+	with LiftExistsContext
 	with LiftAllContext
 	with LiftA2Context
 	with LiftA3Context
