@@ -2,6 +2,7 @@ package autolift.cats
 
 import org.scalatest.FlatSpec
 
+//TODO: This and the one from ScalaZ package should prob be moved up a level to Core
 trait BaseSpec extends FlatSpec{
 	def same[A](x: A, y: A) = assert(x == y)
 

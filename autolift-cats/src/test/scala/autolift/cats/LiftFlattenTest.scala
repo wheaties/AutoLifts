@@ -1,8 +1,7 @@
 package autolift.cats
 
-import cats._
 import cats.implicits._
-import autolift.cats._
+import autolift.Cats._
 
 class LiftFlattenTest extends BaseSpec{
 	"liftFlatten" should "work on a List of Lists" in{

@@ -1,4 +1,6 @@
-package autolift.cats
+package autolift
+
+import autolift.cats._
 
 object Cats extends Syntax with Context with Reexports with Implicits{
 	implicit def mkM[Obj, Fn](implicit lift: CatsLiftMap[Obj, Fn]): CatsLiftMap.Aux[Obj, Fn, lift.Out] = lift

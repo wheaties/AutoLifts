@@ -1,8 +1,8 @@
 package autolift.cats
 
-import cats._
+import cats.Functor
 import cats.implicits._
-import autolift.cats._
+import autolift.Cats._
 
 class LiftForAllTest extends BaseSpec{
 	case class Bar[A](a: A)
