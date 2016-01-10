@@ -3,7 +3,7 @@ package autolift.cats
 import cats.implicits._
 import autolift.Cats._
 
-class FoldAnyTest extends BaseSpec{
+class FoldExistsTest extends BaseSpec {
   "foldExists on a List" should "work" in{
     val in = List(1, 2, 3)
 

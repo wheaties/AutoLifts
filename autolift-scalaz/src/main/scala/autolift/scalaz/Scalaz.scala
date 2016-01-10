@@ -14,7 +14,7 @@ object Scalaz extends Syntax with Context with Reexports with Implicits{
 	implicit def mkFl[M[_], Obj](implicit lift: ScalazLiftFlatten[M, Obj]): ScalazLiftFlatten.Aux[M, Obj, lift.Out] = lift
 	implicit def mkFil[Obj, Fn](implicit lift: ScalazLiftFilter[Obj, Fn]): ScalazLiftFilter[Obj, Fn] = lift
 	implicit def mkFAll[Obj, Fn](implicit lift: ScalazFoldAll[Obj, Fn]): ScalazFoldAll[Obj, Fn] = lift
-	implicit def mkFAny[Obj, Fn](implicit lift: ScalazFoldAny[Obj, Fn]): ScalazFoldAny[Obj, Fn] = lift
+	implicit def mkFAny[Obj, Fn](implicit lift: ScalazFoldExists[Obj, Fn]): ScalazFoldExists[Obj, Fn] = lift
 	implicit def mkAll[Obj, Fn](implicit lift: ScalazLiftForAll[Obj, Fn]): ScalazLiftForAll.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkAny[Obj, Fn](implicit lift: ScalazLiftExists[Obj, Fn]): ScalazLiftExists.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkFC[Obj](implicit lift: ScalazFoldComplete[Obj]): ScalazFoldComplete.Aux[Obj, lift.Out] = lift
