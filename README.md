@@ -45,3 +45,4 @@ scala> val nested = List(List("1", "2", "3"), Nil, List("4", "5", "6"))
 scala> nested.foldWith{ x: String => x.toInt }
 res4: Int = 21
 ```
+

@@ -7,7 +7,7 @@ lazy val root = (project in file(".")).settings(
   scalaVersion := AutoLift.ScalaVersion,
   publishArtifact := false
 )
-.aggregate(core, autoAlge, autoScalaz, docs)
+.aggregate(core, autoAlge, autoScalaz, autoCats, docs)
 
 lazy val core = build("autolift-core", "autolift-core").settings(
   libraryDependencies ++= Seq(
@@ -20,6 +20,19 @@ lazy val core = build("autolift-core", "autolift-core").settings(
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCore),
   sonatypeProfileName := "wheaties"
 )
+
+lazy val autoCats = build("autolift-cats", "autolift-cats").settings(
+  libraryDependencies ++= Seq(
+    "org.spire-math" %% "cats" % "0.3.0",
+    compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
+    "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+  ),
+  scalacOptions += "-Ywarn-unused-import",
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCats),
+  sonatypeProfileName := "wheaties"
+)
+  .dependsOn(core)
 
 lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
   libraryDependencies ++= Seq(

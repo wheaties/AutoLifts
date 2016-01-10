@@ -7,7 +7,7 @@ import export._
  *
  * @author Owein Reese
  *
- * @tparam Obj The type to be lifted into.
+ * @tparam FA The type to be lifted into.
  * @tparam Function The 2-airy function to be lifted.
  * @tparam Z The initial value of the fold.
  */
