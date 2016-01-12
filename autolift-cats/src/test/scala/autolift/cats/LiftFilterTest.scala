@@ -1,6 +1,7 @@
 package autolift.cats
 
 import cats.implicits._
+import cats.data.NonEmptyList
 import autolift.Cats._
 
 class LiftFilterTest extends BaseSpec{
@@ -19,13 +20,10 @@ class LiftFilterTest extends BaseSpec{
   }
 
   "liftFilter on an NonEmptyList[List]" should "work work with functions" in{
-    pending
-    ()
-    //TODO: Having trouble with NonEmptyList/OneAnd
+    val in: NonEmptyList[List[Int]] = NonEmptyList(List(1, 2, 3))
+    val out = in.liftFilter{x: Any => false}
 
-    //    val in = NonEmptyList(List(1, 2, 3))
-    //    val out = in.liftFilter{x: Any => false}
-    //
-    //    same[NonEmptyList[List[Int]]](out, NonEmptyList(Nil))
+    same[NonEmptyList[List[Int]]](out, NonEmptyList(Nil))
+
   }
 }
