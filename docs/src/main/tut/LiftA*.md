@@ -7,7 +7,7 @@ The `liftA2`, `liftA3`, `liftA4` and `liftA5` set of functions are similar to th
 
 Unlike `LiftMap` there are no syntax extensions, only contexts.
 
-Contains: *Scalaz*
+Contains: *Scalaz*, *Cats*
 
 ## Context
 

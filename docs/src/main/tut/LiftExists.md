@@ -7,7 +7,7 @@ title: LiftExists
 
 Underneath the hood, `LiftExists` operates by calling successive `map` operations until it finds the first type for which `A => Boolean` may act. If the argument type, `A`, is a general type such as `Any`, it will be applied to the first correct type such `F[B]` that `A >: B`. There is currently no forcing mechanism to coerce the application point lower in the type structure.
 
-Contains: *Scalaz*
+Contains: *Scalaz*, *Cats*
 
 ## Syntax Extension
 

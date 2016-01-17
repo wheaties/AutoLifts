@@ -7,7 +7,7 @@ title: LiftAp
 
 Underneath the hood, `LiftAp` works by calling successive `map` operations on the encountered type structure until it finds a suitable place where the "function" `F[A => B]` can be applied. This allows `LiftAp` to operate on types `F[A]`, `F[G[A]]` and all the way up to `F1[F2[...Fn[A]...]]`. Unlike other operations in this library, the type application is very specific and will not work with variance or inheritance.
 
-Contained: *Scalaz*, *Algebird*
+Contained: *Scalaz*, *Algebird*, *Cats*
 
 ## Syntax Extension
 

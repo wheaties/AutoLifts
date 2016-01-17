@@ -7,7 +7,7 @@ Like `LiftFoldLeft` and `LiftFoldRight`, `LiftFold` finds the first type contain
 
 Unlike `LiftFoldLeft` and `LiftFoldRight`, there is no associated Context as there is no user supplied function which is being lifted. The operation is strictly determined by the first applicable type for which there is a `Monoid` and is foldable.
 
-Contained: *Scalaz*
+Contained: *Scalaz*, *Cats*
 
 ## Syntax Extension
 

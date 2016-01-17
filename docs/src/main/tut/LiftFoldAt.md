@@ -7,7 +7,7 @@ Another variant of `LiftFold`, `LiftFoldAt` exists to circumvent the type eager 
 
 Unlike `LiftFoldLeft` and `LiftFoldRight` but like `LiftFold`, there is no associated Context as there is no user supplied function which is being lifted.
 
-Contained: *Scalaz*
+Contained: *Scalaz*, *Cats*
 
 ## Syntax Extension
 

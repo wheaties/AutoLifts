@@ -3,21 +3,6 @@ layout: default
 title: Folders
 category: Folders
 ---
-# Folders
-
-The second group of functionality that the AutoLifts library adds is is a set of function wrappers and syntax extensions for type based automatic functional folding. These components can be imported one of two ways, the first by importing all library functionality via the `AutoLift` object:
-
-```tut:silent
-import autolift._
-import AutoLift._
-```
-
-and the second, by importing only the `Folders` object:
-
-```tut:silent
-import autolift._
-import Folders._
-```
 
 ## Brief Introduction to Folding
 
@@ -31,7 +16,7 @@ def any[A](value: List[A])(pred: A => Boolean): Boolean = value.foldLeft(false){
 
 For a more indepth discussion of folding, see the [Haskell wiki page](https://wiki.haskell.org/Fold).
 
-## Using Folders
+## Folding in AutoLifts
 
 For cases where nested folds are clear cut and/or the application of a `foldMap`, 'exists' or 'forall' within a fold is clear, but the actual written code is less clear, AutoLifts beings to shine. As an example, given a list of lists of integers, determining if there exists an integer less than 1 within it could be written as:
 
@@ -42,13 +27,12 @@ val out = items.exists{
 }
 ```
 
-or using the `Folders` it could be rewritten using syntax extensions:
+Using the syntax extensions of AutoLifts it could be rewritten:
 
 ```tut:silent
-import autolift._
-import AutoLift._
 import scalaz._
 import Scalaz._
+import autolift.Scalaz._
 
 val items = List(List(1, 2, 3), List(1, 2, 3), List(1))
 val out = items.foldAny{ x: Int => x < 0 }
