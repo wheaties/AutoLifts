@@ -7,7 +7,7 @@ title: LiftFlatten
 
 Unlike a more traditional lifting such as `LiftMap`, there is no associated Context as there is no direct function being lifted.
 
-Contains: *Scalaz*, *Algebird*
+Contains: *Scalaz*, *Algebird*, *Cats*
 
 ## Syntax Extension
 

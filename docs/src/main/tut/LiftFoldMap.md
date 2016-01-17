@@ -5,7 +5,7 @@ title: LiftFoldMap
 
 `LiftFoldMap` is another variation on `LiftFold` similar in nature to `LiftMap`. Given a function of the form `A => B` where there exists a `Monoid` for `B`, it lifts the fold to the first applicable level such that `A => B` is transformed into `F[G[A]] => F[B]` where `G` is foldable. However, unlike a traditional lift which is restricted to a single fixed type, that constraint is removed.
 
-Contained: *Scalaz*
+Contained: *Scalaz*, *Cats*
 
 ## Syntax Extension
 
