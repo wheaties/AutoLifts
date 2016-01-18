@@ -7,7 +7,7 @@ The `liftM2`, `liftM3`, `liftM4` and `liftM5` set of operations are analogous to
 
 Unlike `LiftMap` there are no syntax extensions, only contexts.
 
-Contains: *Scalaz*, *Algebird*
+Contains: *Scalaz*, *Algebird*, *Cats*
 
 ## Context
 

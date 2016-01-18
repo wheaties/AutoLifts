@@ -7,7 +7,7 @@ On an object which is foldable of type `F[A]`, `foldRight` takes a function of t
 
 For the implementation backed by Scalaz, the function must have the form `(A, => B) => B` since it applies the operations in a lazy manner.
 
-Contained: *Scalaz*
+Contained: *Scalaz*, *Cats*
 
 ## Syntax Extension
 

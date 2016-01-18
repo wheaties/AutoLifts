@@ -5,7 +5,7 @@ title: LiftFlatMap
 
 LiftFlatMap is a more general `flatMap` with the ability to auto-deduce where a function should be applied based upon the type signature of that function in relation to some object. It is to `flatMap` what `liftMap` is to `map`. It operates like `liftMap` by calling `map` repeatedly until it reaches the point where it should call `flatMap`. Hence, it allows a function of type `A => F[B]` to operate on types like `F[A]`, `F1[F2[A]]` and beyond `F1[F2[...Fn[A]...]]`.
 
-Contained: *Scalaz*, *Algebird*
+Contained: *Scalaz*, *Algebird*, *Cats*
 
 ## Syntax Extension
 
