@@ -20,6 +20,11 @@ The current released branch is 0.4 and compiled against Scala version 2.11. If u
 
 ```scala
 libraryDependencies += "com.github.wheaties" %% "autolift-[backend]" % "0.4"
+
+resolvers ++= Seq(
+  Resolver.sonatypeRepo("releases"),
+  Resolver.sonatypeRepo("snapshots")
+)
 ```
 
 where "backend" is one of *algebird*, *cats* or *scalaz*. As stated above, *core* will be downloaded as a dependency.
