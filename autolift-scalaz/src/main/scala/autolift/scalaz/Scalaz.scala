@@ -20,5 +20,8 @@ object Scalaz extends Syntax with Context with Reexports with Implicits{
 	implicit def mkFC[Obj](implicit lift: ScalazFoldComplete[Obj]): ScalazFoldComplete.Aux[Obj, lift.Out] = lift
 	implicit def mkFW[Obj, Fn](implicit lift: ScalazFoldWith[Obj, Fn]): ScalazFoldWith.Aux[Obj, Fn, lift.Out] = lift
 	implicit def mkFO[M[_], Obj](implicit lift: ScalazFoldOver[M, Obj]): ScalazFoldOver.Aux[M, Obj, lift.Out] = lift
+	implicit def mkZip[Obj1, Obj2](implicit lift: ScalazLiftZip[Obj1, Obj2]): ScalazLiftZip.Aux[Obj1, Obj2, lift.Out] = lift
+	implicit def mkZW[Obj1, Obj2, Fn](implicit lift: ScalazLiftZipWith[Obj1, Obj2, Fn]): ScalazLiftZipWith.Aux[Obj1, Obj2, Fn, lift.Out] = lift
+	implicit def mkJ[Obj1, Obj2](implicit lift: ScalazLiftJoin[Obj1, Obj2]): ScalazLiftJoin.Aux[Obj1, Obj2, lift.Out] = lift
+	implicit def mkJw[Obj1, Obj2, Fn](implicit lift: ScalazLiftJoinWith[Obj1, Obj2, Fn]): ScalazLiftJoinWith.Aux[Obj1, Obj2, Fn, lift.Out] = lift
 }
-

@@ -13,9 +13,9 @@ class LiftJoinTest extends BaseSpec{
 	}
 
 	"liftJoin on a Foo[List[Int]] on a List[Int]" should "work" in{
-		val in = Foo(List(1))
-		val out = in liftJoin List(1)
+		val in = Foo(List(1, 2))
+		val out = in liftJoin List(1, 2)
 
-		same[Foo[List[(Int,Int)]]](out, Foo(List((1, 1))))
+		same[Foo[List[(Int,Int)]]](out, Foo(List((1, 1), (1, 2), (2, 1), (2, 2))))
 	}
 }
