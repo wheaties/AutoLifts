@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting the mapping over an arbitrary nesting of type constructors.
@@ -11,9 +10,6 @@ import export._
  * @tparam Function the function to be lifted.
  */
 trait LiftMap[Obj, Function] extends DFunction2[Obj, Function]
-
-@imports[LiftMap]
-object LiftMap
 
 trait LiftMapSyntax{
 
@@ -45,3 +41,4 @@ final class LiftedMap[A, B](f: A => B){
 trait LiftMapContext{
 	def liftMap[A, B](f: A => B) = new LiftedMap(f)
 }
+
