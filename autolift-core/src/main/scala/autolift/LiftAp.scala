@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting the applicative mapping of a type over another type of arbitrary nested type constructors.
@@ -12,8 +11,6 @@ import export._
  */
 trait LiftAp[Obj, Function] extends DFunction2[Obj, Function]
 
-@imports[LiftAp]
-object LiftAp
 
 trait LiftApSyntax{
 
@@ -34,3 +31,4 @@ trait LiftApSyntax{
 }
 
 //See individual implementations for liftAp Context.
+

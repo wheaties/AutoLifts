@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting folding over a nested type constructor up to and including a type constructor.
@@ -11,9 +10,6 @@ import export._
  * @tparam Obj The type over which to lift the folding.
  */
 trait LiftFoldAt[F[_], Obj] extends DFunction1[Obj]
-
-@imports[LiftFoldAt]
-object LiftFoldAt
 
 trait LiftFoldAtSyntax{
 
@@ -31,3 +27,4 @@ trait LiftFoldAtSyntax{
 }
 
 //There does not exist Context for liftFoldAt.
+

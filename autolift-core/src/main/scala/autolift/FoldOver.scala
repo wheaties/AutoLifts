@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting folding on a stack of type constructors up to and included a type `F` but nothing more.
@@ -12,7 +11,6 @@ import export._
  */
 trait FoldOver[F[_], Obj] extends DFunction1[Obj]
 
-@imports[FoldOver]
 object FoldOver{
 	type Aux[F[_], Obj, Out0] = FoldOver[F, Obj]{ type Out = Out0 }
 }
@@ -24,3 +22,4 @@ trait FoldOverSyntax{
 }
 
 //Contexts for foldOver do not exist.
+

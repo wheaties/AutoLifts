@@ -2,15 +2,12 @@ package autolift.algebird
 
 import autolift.LiftFlatMap
 import com.twitter.algebird.{Functor, Monad}
-import export._
 
 trait AlgeLiftFlatMap[Obj, Fn] extends LiftFlatMap[Obj, Fn]
 
-@exports(Subclass)
 object AlgeLiftFlatMap extends LowPriorityAlgeLiftFlatMap {
 	def apply[Obj, Fn](implicit lift: AlgeLiftFlatMap[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
 
-	@export(Subclass)
 	implicit def base[M[_], A, C >: A, B](implicit fm: Monad[M]): Aux[M[A], C => M[B], M[B]] =
 		new AlgeLiftFlatMap[M[A], C => M[B]]{
 			type Out = M[B]
@@ -22,7 +19,6 @@ object AlgeLiftFlatMap extends LowPriorityAlgeLiftFlatMap {
 trait LowPriorityAlgeLiftFlatMap{
 	type Aux[Obj, Fn, Out0] = AlgeLiftFlatMap[Obj, Fn]{ type Out = Out0 }
 
-	@export(Subclass)
 	implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftFlatMap[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
 		new AlgeLiftFlatMap[F[G], Fn]{
 			type Out = F[lift.Out]
@@ -50,3 +46,4 @@ trait LiftedFlatMapImplicits{
 trait LiftFlatMapContext{
 	def liftFlatMap[A, B, M[_]](f: A => M[B])(implicit fm: Monad[M]) = new LiftedFlatMap(f)
 }
+

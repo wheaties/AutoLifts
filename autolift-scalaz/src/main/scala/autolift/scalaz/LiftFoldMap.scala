@@ -2,15 +2,12 @@ package autolift.scalaz
 
 import autolift.LiftFoldMap
 import scalaz.{Foldable, Functor, Monoid}
-import export._
 
 trait ScalazLiftFoldMap[FA, Fn] extends LiftFoldMap[FA, Fn]
 
-@exports(Subclass)
 object ScalazLiftFoldMap extends LowPriorityScalazLiftFoldMap{
 	def apply[FA, Fn](implicit lift: ScalazLiftFoldMap[FA, Fn]): Aux[FA, Fn, lift.Out] = lift
 
-	@export(Subclass)
 	implicit def base[F[_], A, C >: A, B](implicit fold: Foldable[F], ev: Monoid[B]): Aux[F[A], C => B, B] =
 		new ScalazLiftFoldMap[F[A], C => B]{
 			type Out = B
@@ -22,7 +19,6 @@ object ScalazLiftFoldMap extends LowPriorityScalazLiftFoldMap{
 trait LowPriorityScalazLiftFoldMap{
 	type Aux[FA, Fn, Out0] = ScalazLiftFoldMap[FA, Fn]{ type Out = Out0 }
 
-	@export(Subclass)
 	implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftFoldMap[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
 		new ScalazLiftFoldMap[F[G], Fn]{
 			type Out = F[lift.Out]
@@ -44,3 +40,4 @@ final class LiftedFoldMap[A, B : Monoid](f: A => B){
 trait LiftFoldMapContext{
 	def liftFoldMap[A, B : Monoid](f: A => B) = new LiftedFoldMap(f)
 }
+

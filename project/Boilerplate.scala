@@ -140,12 +140,10 @@ object Boilerplate {
       block"""
         |package autolift
         |
-        |import export._
         |
         -
         -trait LiftM$arity[${`Obj..N`}, Fn] extends DFunction${arity + 1}[${`Obj..N`}, Fn]
         -
-        -@imports[LiftM$arity]
         -object LiftM$arity
         -
         -final class LiftedM$arity[${`A..N`}, C](f: (${`A..N`}) => C) {
@@ -177,12 +175,10 @@ object Boilerplate {
       block"""
         |package autolift
         |
-        |import export._
         |
         -
         -trait LiftA$arity[${`Obj..N`}, Fn] extends DFunction${arity + 1}[${`Obj..N`}, Fn]
         -
-        -@imports[LiftA$arity]
         -object LiftA$arity
         -
         -final class LiftedA$arity[${`A..N`}, C](f: (${`A..N`}) => C) {
@@ -243,17 +239,14 @@ object Boilerplate {
          |package autolift.cats
          |
          |import cats.FlatMap
-         |import export._
          |
         -import autolift.LiftM$arity
         -
         -trait CatsLiftM$arity[${`Obj..N`}, Fn] extends LiftM$arity[${`Obj..N`}, Fn]
         -
-        -@exports(Subclass)
         -object CatsLiftM$arity extends LowPriorityCatsLiftM$arity {
         -  def apply[${`Obj..N`}, Fn](implicit lift: CatsLiftM$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
         -
-        -  @export(Subclass)
         -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit bind: FlatMap[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
         -    new CatsLiftM$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
         -      type Out = M[C]
@@ -265,7 +258,6 @@ object Boilerplate {
         -trait LowPriorityCatsLiftM$arity {
         -  type Aux[${`Obj..N`}, Fn, Out0] = CatsLiftM$arity[${`Obj..N`}, Fn] {type Out = Out0}
         -
-        -  @export(Subclass)
         -  implicit def recur[M[_], ${`A..N`}, Fn](implicit bind: FlatMap[M], lift: LiftM$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
         -    new CatsLiftM$arity[${`M[A]..M[N]`}, Fn] {
         -      type Out = M[lift.Out]
@@ -324,17 +316,14 @@ object Boilerplate {
         |package autolift.scalaz
         |
         |import scalaz.Bind
-        |import export._
         |
         -import autolift.LiftM$arity
         -
         -trait ScalazLiftM$arity[${`Obj..N`}, Fn] extends LiftM$arity[${`Obj..N`}, Fn]
         -
-        -@exports(Subclass)
         -object ScalazLiftM$arity extends LowPriorityScalazLiftM$arity {
         -  def apply[${`Obj..N`}, Fn](implicit lift: ScalazLiftM$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
         -
-        -  @export(Subclass)
         -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit bind: Bind[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
         -    new ScalazLiftM$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
         -      type Out = M[C]
@@ -346,7 +335,6 @@ object Boilerplate {
         -trait LowPriorityScalazLiftM$arity {
         -  type Aux[${`Obj..N`}, Fn, Out0] = ScalazLiftM$arity[${`Obj..N`}, Fn] {type Out = Out0}
         -
-        -  @export(Subclass)
         -  implicit def recur[M[_], ${`A..N`}, Fn](implicit bind: Bind[M], lift: LiftM$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
         -    new ScalazLiftM$arity[${`M[A]..M[N]`}, Fn] {
         -      type Out = M[lift.Out]
@@ -406,17 +394,14 @@ object Boilerplate {
         |package autolift.algebird
         |
         |import com.twitter.algebird.Monad
-        |import export._
         |
         -import autolift.LiftM$arity
         -
         -trait AlgeLiftM$arity[${`Obj..N`}, Fn] extends LiftM$arity[${`Obj..N`}, Fn]
         -
-        -@exports(Subclass)
         -object AlgeLiftM$arity extends LowPriorityAlgeLiftM$arity {
         -  def apply[${`Obj..N`}, Fn](implicit lift: AlgeLiftM$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
         -
-        -  @export(Subclass)
         -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit fm: Monad[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
         -    new AlgeLiftM$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
         -      type Out = M[C]
@@ -428,7 +413,6 @@ object Boilerplate {
         -trait LowPriorityAlgeLiftM$arity {
         -  type Aux[${`Obj..N`}, Fn, Out0] = AlgeLiftM$arity[${`Obj..N`}, Fn] {type Out = Out0}
         -
-        -  @export(Subclass)
         -  implicit def recur[M[_], ${`A..N`}, Fn](implicit fm: Monad[M], lift: LiftM$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
         -    new AlgeLiftM$arity[${`M[A]..M[N]`}, Fn] {
         -      type Out = M[lift.Out]
@@ -488,17 +472,14 @@ object Boilerplate {
          |package autolift.cats
          |
          |import cats.Apply
-         |import export._
          |
         -import autolift.LiftA$arity
         -
         -trait CatsLiftA$arity[${`Obj..N`}, Fn] extends LiftA$arity[${`Obj..N`}, Fn]
         -
-        -@exports(Subclass)
         -object CatsLiftA$arity extends LowPriorityCatsLiftA$arity {
         -  def apply[${`Obj..N`}, Fn](implicit lift: CatsLiftA$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
         -
-        -  @export(Subclass)
         -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit ap: Apply[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
         -    new CatsLiftA$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
         -      type Out = M[C]
@@ -510,7 +491,6 @@ object Boilerplate {
         -trait LowPriorityCatsLiftA$arity {
         -  type Aux[${`Obj..N`}, Fn, Out0] = CatsLiftA$arity[${`Obj..N`}, Fn] {type Out = Out0}
         -
-        -  @export(Subclass)
         -  implicit def recur[M[_], ${`A..N`}, Fn](implicit ap: Apply[M], lift: LiftA$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
         -    new CatsLiftA$arity[${`M[A]..M[N]`}, Fn] {
         -      type Out = M[lift.Out]
@@ -570,17 +550,14 @@ object Boilerplate {
         |package autolift.scalaz
         |
         |import scalaz.Apply
-        |import export._
         |
         -import autolift.LiftA$arity
         -
         -trait ScalazLiftA$arity[${`Obj..N`}, Fn] extends LiftA$arity[${`Obj..N`}, Fn]
         -
-        -@exports(Subclass)
         -object ScalazLiftA$arity extends LowPriorityScalazLiftA$arity {
         -  def apply[${`Obj..N`}, Fn](implicit lift: ScalazLiftA$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
         -
-        -  @export(Subclass)
         -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit ap: Apply[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
         -    new ScalazLiftA$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
         -      type Out = M[C]
@@ -592,7 +569,6 @@ object Boilerplate {
         -trait LowPriorityScalazLiftA$arity {
         -  type Aux[${`Obj..N`}, Fn, Out0] = ScalazLiftA$arity[${`Obj..N`}, Fn] {type Out = Out0}
         -
-        -  @export(Subclass)
         -  implicit def recur[M[_], ${`A..N`}, Fn](implicit ap: Apply[M], lift: LiftA$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
         -    new ScalazLiftA$arity[${`M[A]..M[N]`}, Fn] {
         -      type Out = M[lift.Out]

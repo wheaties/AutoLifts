@@ -2,15 +2,12 @@ package autolift.cats
 
 import cats.{Functor, Monoid, Foldable}
 import autolift.LiftFoldMap
-import export._
 
 trait CatsLiftFoldMap[FA, Fn] extends LiftFoldMap[FA, Fn]
 
-@exports(Subclass)
 object CatsLiftFoldMap extends LowPriorityCatsLiftFoldMap{
   def apply[FA, Fn](implicit lift: CatsLiftFoldMap[FA, Fn]): Aux[FA, Fn, lift.Out] = lift
 
-  @export(Subclass)
   implicit def base[F[_], A, C >: A, B](implicit fold: Foldable[F], ev: Monoid[B]): Aux[F[A], C => B, B] =
     new CatsLiftFoldMap[F[A], C => B]{
       type Out = B
@@ -22,7 +19,6 @@ object CatsLiftFoldMap extends LowPriorityCatsLiftFoldMap{
 trait LowPriorityCatsLiftFoldMap{
   type Aux[FA, Fn, Out0] = CatsLiftFoldMap[FA, Fn]{ type Out = Out0 }
 
-  @export(Subclass)
   implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftFoldMap[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
     new CatsLiftFoldMap[F[G], Fn]{
       type Out = F[lift.Out]
@@ -44,3 +40,4 @@ final class LiftedFoldMap[A, B : Monoid](f: A => B){
 trait LiftFoldMapContext{
   def liftFoldMap[A, B : Monoid](f: A => B) = new LiftedFoldMap(f)
 }
+

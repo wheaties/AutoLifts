@@ -2,7 +2,6 @@ package autolift.algebird
 
 import autolift.DFunction3
 import com.twitter.algebird.{Functor, Applicative}
-import export._
 
 trait LiftJoinWith[Obj1, Obj2, Fn] extends DFunction3[Obj1, Obj2, Fn]
 
@@ -17,7 +16,6 @@ object LiftJoinWith extends LowPriorityLiftJoinWith{
 		}
 }
 
-@imports[LiftJoinWith]
 trait LowPriorityLiftJoinWith{
 	type Aux[Obj1, Obj2, Fn, Out0] = LiftJoinWith[Obj1, Obj2, Fn]{ type Out = Out0 }
 
@@ -46,3 +44,4 @@ final class LiftedJoinWith[A, B, C](f: (A, B) => C){
 trait LiftJoinWithContext{
 	def liftJoinWith[A, B, C](f: (A, B) => C) = new LiftedJoinWith(f)
 }
+
