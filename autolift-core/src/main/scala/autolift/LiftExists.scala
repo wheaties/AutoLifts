@@ -1,11 +1,7 @@
 package autolift
 
-import export._
 
 trait LiftExists[Obj, Fn] extends DFunction2[Obj, Fn]
-
-@imports[LiftExists]
-object LiftExists
 
 trait LiftExistsSyntax{
 	implicit class LiftExistsOps[F[_], A](fa: F[A]){
@@ -20,3 +16,4 @@ final class LiftedExists[A](f: A => Boolean){
 trait LiftExistsContext{
 	def liftExists[A](f: A => Boolean) = new LiftedExists(f)
 }
+

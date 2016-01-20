@@ -1,7 +1,5 @@
 package autolift
 
-import export._
-
 /**
  * Type class supporting checking if all of some type defined by `Fn` evaluate to `true` within a nested stack of type
  * constructors.
@@ -12,9 +10,6 @@ import export._
  * @tparam Fn The boolean producing predicate which will be iterated over the first applicable type with type stack.
  */
 trait FoldAll[Obj, Fn] extends ((Obj, Fn) => Boolean)
-
-@imports[FoldAll]
-object FoldAll
 
 trait FoldAllSyntax{
 	implicit class FoldAllOps[F[_], A](fa: F[A]){
@@ -29,3 +24,4 @@ final class FoldedAll[A](f: A => Boolean){
 trait FoldAllContext{
 	def foldAll[A](f: A => Boolean) = new FoldedAll(f)
 }
+

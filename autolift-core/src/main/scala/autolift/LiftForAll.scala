@@ -1,11 +1,7 @@
 package autolift
 
-import export._
 
 trait LiftForAll[Obj, Fn] extends DFunction2[Obj, Fn]
-
-@imports[LiftForAll]
-object LiftForAll
 
 trait LiftForAllSyntax{
 	implicit class LiftForAllOps[F[_], A](fa: F[A]){
@@ -20,3 +16,4 @@ final class LiftedForAll[A](f: A => Boolean){
 trait LiftForAllContext{
 	def liftForAll[A](f: A => Boolean) = new LiftedForAll(f)
 }
+

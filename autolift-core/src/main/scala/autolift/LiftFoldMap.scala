@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting fold over an arbitrary nesting of type constructors given a function which maps initial types to
@@ -12,9 +11,6 @@ import export._
  * @tparam Function The function to be used to map values.
  */
 trait LiftFoldMap[FA, Function] extends DFunction2[FA, Function]
-
-@imports[LiftFoldMap]
-object LiftFoldMap
 
 trait LiftFoldMapSyntax{
 
@@ -34,3 +30,4 @@ trait LiftFoldMapSyntax{
 }
 
 //See individual instances for liftFoldMap Context.
+

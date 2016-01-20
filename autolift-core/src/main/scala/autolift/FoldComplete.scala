@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting folding over a stack of nested type constructors given that the inner most type has an instance of
@@ -12,7 +11,6 @@ import export._
  */
 trait FoldComplete[Obj] extends DFunction1[Obj]
 
-@imports[FoldComplete]
 object FoldComplete
 
 trait FoldCompleteSyntax{
@@ -22,3 +20,4 @@ trait FoldCompleteSyntax{
 }
 
 //Contexts for foldComplete do not exist
+

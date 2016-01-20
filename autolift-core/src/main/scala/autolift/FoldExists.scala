@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting checking if at least one of a type defined by `Function` evaluate to `true` within a nested stack of 
@@ -12,9 +11,6 @@ import export._
  * @tparam Function The boolean producing function which will be iterated over the first applicable type with type stack.
  */
 trait FoldExists[Obj, Function] extends ((Obj, Function) => Boolean)
-
-@imports[FoldExists]
-object FoldExists
 
 trait FoldExistsSyntax{
   implicit class FoldExistsOps[F[_], A](fa: F[A]){
@@ -29,3 +25,4 @@ final class FoldedExists[A](f: A => Boolean){
 trait FoldExistsContext{
   def foldExists[A](f: A => Boolean) = new FoldedExists(f)
 }
+

@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting folding over a nested stack of type constructors given a mapping from a type to something which
@@ -13,8 +12,7 @@ import export._
  */
 trait FoldWith[Obj, Function] extends DFunction2[Obj, Function]
 
-@imports[FoldWith]
-object FoldWith{
+object FoldWith {
 	type Aux[Obj, Fn, Out0] = FoldWith[Obj, Fn]{ type Out = Out0 }
 }
 
@@ -25,3 +23,4 @@ trait FoldWithSyntax{
 }
 
 //See individual instances for implementations of Context.
+

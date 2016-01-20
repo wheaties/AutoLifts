@@ -2,16 +2,13 @@ package autolift.cats
 
 import cats.{Eval, Functor, Foldable}
 import autolift.LiftFoldRight
-import export._
 
 
 trait CatsLiftFoldRight[FA, Fn, Z] extends LiftFoldRight[FA, Fn, Z]
 
-@exports(Subclass)
 object CatsLiftFoldRight extends LowPriorityCatsLiftFoldRight{
   def apply[FA, Fn, Z](implicit lift: CatsLiftFoldRight[FA, Fn, Z]): Aux[FA, Fn, Z, lift.Out] = lift
 
-  @export(Subclass)
   implicit def base[F[_], A, C >: A, B](implicit fold: Foldable[F]): Aux[F[A], (C, Eval[B]) => Eval[B], Eval[B], Eval[B]] =
     new CatsLiftFoldRight[F[A], (C, Eval[B]) => Eval[B], Eval[B]]{
       type Out = Eval[B]
@@ -23,7 +20,6 @@ object CatsLiftFoldRight extends LowPriorityCatsLiftFoldRight{
 trait LowPriorityCatsLiftFoldRight{
   type Aux[FA, Fn, Z, Out0] = CatsLiftFoldRight[FA, Fn, Z]{ type Out = Out0 }
 
-  @export(Subclass)
   implicit def recur[F[_], G, Fn, Z](implicit functor: Functor[F], lift: LiftFoldRight[G, Fn, Z]): Aux[F[G], Fn, Z, F[lift.Out]] =
     new CatsLiftFoldRight[F[G], Fn, Z]{
       type Out = F[lift.Out]
@@ -46,3 +42,4 @@ final class LiftedFoldRight[B, Z](z: Eval[Z], f: (B, Eval[Z]) => Eval[Z]) {
 trait LiftFoldRightContext {
   def liftFoldRight[B, Z](z: Eval[Z])(f: (B, Eval[Z]) => Eval[Z]) = new LiftedFoldRight(z, f)
 }
+

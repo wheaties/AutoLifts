@@ -2,15 +2,12 @@ package autolift.scalaz
 
 import autolift.FoldWith
 import scalaz.{Monoid, Foldable}
-import export._
 
 trait ScalazFoldWith[Obj, Function] extends FoldWith[Obj, Function]
 
-@exports(Subclass)
 object ScalazFoldWith extends LowPriorityScalazFoldWith{
 	def apply[Obj, Function](implicit lift: ScalazFoldWith[Obj, Function]): Aux[Obj, Function, lift.Out] = lift
 
-	@export(Subclass)
 	implicit def base[F[_], A, C >: A, B](implicit fold: Foldable[F], ev: Monoid[B]): Aux[F[A], C => B, B] =
 		new ScalazFoldWith[F[A], C => B]{
 			type Out = B
@@ -22,7 +19,6 @@ object ScalazFoldWith extends LowPriorityScalazFoldWith{
 trait LowPriorityScalazFoldWith{
 	type Aux[Obj, Function, Out0] = ScalazFoldWith[Obj, Function]{ type Out = Out0 }
 
-	@export(Subclass)
 	implicit def recur[F[_], G, Function, Out0](implicit fold: Foldable[F], 
 														 lift: FoldWith.Aux[G, Function, Out0], 
 														 ev: Monoid[Out0]): Aux[F[G], Function, Out0] =
@@ -46,3 +42,4 @@ final class FoldedWith[A, B : Monoid](f: A => B){
 trait FoldWithContext{
 	def foldWith[A, B : Monoid](f: A => B) = new FoldedWith(f)
 }
+

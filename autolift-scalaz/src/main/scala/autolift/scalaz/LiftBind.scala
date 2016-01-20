@@ -2,16 +2,13 @@ package autolift.scalaz
 
 import scalaz.{Functor, Bind}
 import autolift.LiftFlatMap
-import export._
 
 
 trait ScalazLiftFlatMap[Obj, Fn] extends LiftFlatMap[Obj, Fn]
 
-@exports(Subclass)
 object ScalazLiftFlatMap extends LowPriorityScalazLiftFlatMap {
 	def apply[Obj, Fn](implicit lift: ScalazLiftFlatMap[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
 
-	@export(Subclass)
 	implicit def base[M[_], A, C >: A, B](implicit bind: Bind[M]): Aux[M[A], C => M[B], M[B]] =
 		new ScalazLiftFlatMap[M[A], C => M[B]]{
 			type Out = M[B]
@@ -23,7 +20,6 @@ object ScalazLiftFlatMap extends LowPriorityScalazLiftFlatMap {
 trait LowPriorityScalazLiftFlatMap{
 	type Aux[Obj, Fn, Out0] = ScalazLiftFlatMap[Obj, Fn]{ type Out = Out0 }
 
-	@export(Subclass)
 	implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftFlatMap[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
 		new ScalazLiftFlatMap[F[G], Fn]{
 			type Out = F[lift.Out]
@@ -68,3 +64,4 @@ trait LiftedBindImplicits{
 trait LiftBindContext{
 	def liftBind[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedBind(f)
 }
+

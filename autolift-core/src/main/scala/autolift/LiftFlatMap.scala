@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting flat mapping a function over an arbitrary nesting of type constructors.
@@ -11,9 +10,6 @@ import export._
  * @tparam Function The function to be lifted.
  */
 trait LiftFlatMap[Obj, Function] extends DFunction2[Obj, Function]
-
-@imports[LiftFlatMap]
-object LiftFlatMap
 
 trait LiftFlatMapSyntax{
 
@@ -34,3 +30,4 @@ trait LiftFlatMapSyntax{
 }
 
 //See individual implementations for liftFlatMap Context.
+

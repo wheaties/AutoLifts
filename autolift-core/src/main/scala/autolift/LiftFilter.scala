@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Typeclass supporting filtering a set of values within a nested type constructor.
@@ -11,9 +10,6 @@ import export._
  * @tparam Function The predicate which determines if a value is included in the final result
  */
 trait LiftFilter[Obj, Function] extends ((Obj, Function) => Obj)
-
-@imports[LiftFilter]
-object LiftFilter
 
 trait LiftFilterSyntax{
 
@@ -37,3 +33,4 @@ final class LiftedFilter[A](f: A => Boolean){
 trait LiftFilterContext{
 	def liftFilter[A](f: A => Boolean) = new LiftedFilter(f)
 }
+

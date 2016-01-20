@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Type class supporting foldLeft over an arbitrary nesting of type constructors given an initial value and a function.
@@ -13,7 +12,6 @@ import export._
  */
 trait LiftFoldLeft[Obj, Function, Z] extends DFunction3[Obj, Function, Z]
 
-@imports[LiftFoldLeft]
 object LiftFoldLeft
 
 trait LiftFoldLeftSyntax{
@@ -41,3 +39,4 @@ final class LiftedFoldLeft[B, Z](z: Z, f: (Z, B) => Z){
 trait LiftFoldLeftContext{
 	def liftFoldLeft[B, Z](z: Z)(f: (Z, B) => Z) = new LiftedFoldLeft(z, f)
 }
+

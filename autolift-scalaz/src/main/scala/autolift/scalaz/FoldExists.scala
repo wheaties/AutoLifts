@@ -2,15 +2,12 @@ package autolift.scalaz
 
 import autolift.{FoldedExists, FoldExists}
 import scalaz.Foldable
-import export._
 
 trait ScalazFoldExists[Obj, Fn] extends FoldExists[Obj, Fn]
 
-@exports(Subclass)
 object ScalazFoldExists extends LowPriorityScalazFoldExists {
   def apply[Obj, Fn](implicit fold: ScalazFoldExists[Obj, Fn]) = fold
 
-  @export(Subclass)
   implicit def base[F[_], A, C >: A](implicit fold: Foldable[F]) =
     new ScalazFoldExists[F[A], C => Boolean]{
       def apply(fa: F[A], f: C => Boolean) = fold.any(fa)(f)
@@ -19,7 +16,6 @@ object ScalazFoldExists extends LowPriorityScalazFoldExists {
 
 trait LowPriorityScalazFoldExists {
 
-  @export(Subclass)
   implicit def recur[F[_], G, Fn](implicit fold: Foldable[F], exists: FoldExists[G, Fn]) =
     new ScalazFoldExists[F[G], Fn]{
       def apply(fg: F[G], f: Fn) = fold.any(fg){ g: G => exists(g, f) }
@@ -37,3 +33,4 @@ trait FoldAnyContext {
 
   type FoldedAny[A] = FoldedExists[A]
 }
+

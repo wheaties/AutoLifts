@@ -2,15 +2,12 @@ package autolift.scalaz
 
 import scalaz.{Functor, Foldable}
 import autolift.{LiftForAll, LiftedForAll}
-import export._
 
 trait ScalazLiftForAll[Obj, Fn] extends LiftForAll[Obj, Fn]
 
-@exports(Subclass)
 object ScalazLiftForAll extends LowPriorityScalazLiftForAll {
 	def apply[Obj, Fn](implicit lift: ScalazLiftForAll[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift
 
-	@export(Subclass)
 	implicit def base[F[_], A, C >: A](implicit fold: Foldable[F]): Aux[F[A], C => Boolean, Boolean] =
 		new ScalazLiftForAll[F[A], C => Boolean]{
 			type Out = Boolean
@@ -22,7 +19,6 @@ object ScalazLiftForAll extends LowPriorityScalazLiftForAll {
 trait LowPriorityScalazLiftForAll{
 	type Aux[Obj, Fn, Out0] = ScalazLiftForAll[Obj, Fn]{ type Out = Out0 }
 
-	@export(Subclass)
 	implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftForAll[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
 		new ScalazLiftForAll[F[G], Fn]{
 			type Out = F[lift.Out]
@@ -42,3 +38,4 @@ trait LiftAllContext{
 
 	type LiftedAll[A] = LiftedForAll[A]
 }
+

@@ -1,6 +1,5 @@
 package autolift
 
-import export._
 
 /**
  * Typeclass supporting flattening a double nested type within a nested type constructor.
@@ -11,9 +10,6 @@ import export._
  * @tparam Obj The object over which to lift the flatten.
  */
 trait LiftFlatten[M[_], Obj] extends DFunction1[Obj]
-
-@imports[LiftFlatten]
-object LiftFlatten
 
 trait LiftFlattenSyntax{
 
@@ -31,3 +27,4 @@ trait LiftFlattenSyntax{
 }
 
 //There does not exist Context for liftFlatten.
+
