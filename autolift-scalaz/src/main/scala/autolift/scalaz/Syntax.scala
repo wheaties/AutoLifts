@@ -14,6 +14,10 @@ trait Syntax extends LiftMapSyntax
 	with LiftFoldMapSyntax
 	with LiftAnySyntax
 	with LiftAllSyntax
+	with LiftZipSyntax
+	with LiftZipWithSyntax
+	with LiftMergeSyntax
+	with LiftMergeWithSyntax
 	with FoldAllSyntax
 	with FoldAnySyntax
 	with FoldCompleteSyntax
