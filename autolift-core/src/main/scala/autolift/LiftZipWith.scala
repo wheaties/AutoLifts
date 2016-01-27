@@ -1,5 +1,15 @@
 package autolift
 
+/**
+ * Typeclass supporting the zipping and then application of a function on the zipped results over an arbitrary nesting 
+ * of type constructors.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj1 The type which will be lifted and zipped into the left hand side
+ * @tparam Obj2 The type which will be lifted and zipped into the right hand side
+ * @tparam Fn The function which will be lifted and applied to the results
+ */
 trait LiftZipWith[Obj1, Obj2, Fn] extends DFunction3[Obj1, Obj2, Fn]
 
 trait LiftZipWithSyntax{

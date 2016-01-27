@@ -11,7 +11,7 @@ trait Context extends LiftMapContext
   with LiftFoldMapContext
   with LiftExistsContext
   with LiftForAllContext
-  with LiftJoinWithContext
+  with LiftMergeWithContext
   with LiftA2Context
   with LiftA3Context
   with LiftA4Context
