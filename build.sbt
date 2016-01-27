@@ -10,47 +10,39 @@ lazy val root = (project in file(".")).settings(
 .aggregate(core, autoAlge, autoScalaz, autoCats, docs)
 
 lazy val core = build("autolift-core", "autolift-core").settings(
-  libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "2.2.1" % "test"
-  ),
-  scalacOptions += "-Ywarn-unused-import",
-  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCore),
-  sonatypeProfileName := "wheaties"
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCore)
 )
 
 lazy val autoCats = build("autolift-cats", "autolift-cats").settings(
   libraryDependencies ++= Seq(
     "org.spire-math" %% "cats" % "0.3.0",
-    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
-    "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
   ),
-  scalacOptions += "-Ywarn-unused-import",
-  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCats),
-  sonatypeProfileName := "wheaties"
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCats)
 )
   .dependsOn(core)
 
 lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
   libraryDependencies ++= Seq(
     "com.twitter" %% "algebird-core" % "0.11.0",
-    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
-    "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
   ),
-  scalacOptions += "-Ywarn-unused-import",
-  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genAlgebird),
-  sonatypeProfileName := "wheaties"
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genAlgebird)
 )
 .dependsOn(core)
 
 lazy val autoScalaz = build("autolift-scalaz", "autolift-scalaz").settings(
   libraryDependencies ++= Seq(
     "org.scalaz" %% "scalaz-core" % ScalaZ,
-    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3"),
-    "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
   ),
-  scalacOptions += "-Ywarn-unused-import",
-  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genScalaz),
-  sonatypeProfileName := "wheaties"
+  initialCommands in console := """
+    import scalaz._
+    import scalaz.Scalaz._
+    import autolift.scalaz._
+    import autolift.Scalaz._
+  """,
+  sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genScalaz)
 )
 .dependsOn(core)
 

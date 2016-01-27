@@ -1,6 +1,7 @@
 import sbt._
 import sbt.Keys._
 import xerial.sbt.Sonatype._
+import xerial.sbt.Sonatype.SonatypeKeys._
 
 object AutoLift{
 	val ScalaVersion = "2.11.7"
@@ -25,8 +26,17 @@ object AutoLift{
           "-Yno-adapted-args",
           "-Ywarn-dead-code",
           "-Ywarn-value-discard",
-          "-Xfuture"),
+          "-Xfuture",
+          "-Ywarn-unused-import"),
+        scalacOptions in (Compile, console) ~= { defaultOptions =>
+          val unwantedOptions = Set("-Ywarn-unused-import", "-Xfatal-warnings")
+          defaultOptions filterNot unwantedOptions
+        },
+        libraryDependencies ++= Seq(
+          "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+        ),
         pomExtra := autoliftPom,
+        sonatypeProfileName := "wheaties",
         publishTo <<= version { v: String =>
           val nexus = "https://oss.sonatype.org/"
           if (v.trim.endsWith("SNAPSHOT"))
@@ -66,3 +76,4 @@ object AutoLift{
         </developer>
       </developers>
 }
+
