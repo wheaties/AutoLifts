@@ -18,6 +18,11 @@ lazy val autoCats = module("autolift-cats").settings(
     "org.spire-math" %% "cats" % "0.3.0",
     compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
   ),
+  initialCommands in console := """
+    import cats._
+    import cats.implicits._
+    import autolift.Cats._
+  """,
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCats)
 )
   .dependsOn(core)
