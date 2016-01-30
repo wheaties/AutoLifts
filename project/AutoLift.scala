@@ -1,10 +1,28 @@
 import sbt._
 import sbt.Keys._
 import xerial.sbt.Sonatype._
+import xerial.sbt.Sonatype.SonatypeKeys._
 
 object AutoLift{
 	val ScalaVersion = "2.11.7"
 	val ScalaZ = "7.2.0"
+
+  def module(name: String) =
+    build(name, name).
+    settings(
+      scalacOptions ++= Seq(
+        "-Xfatal-warnings",
+        "-Ywarn-unused-import"
+      ),
+      scalacOptions in (Compile, console) ~= { defaultOptions =>
+        val unwantedOptions = Set("-Ywarn-unused-import", "-Xfatal-warnings")
+        defaultOptions filterNot unwantedOptions
+      },
+      libraryDependencies ++= Seq(
+        "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+      ),
+      sonatypeProfileName := "wheaties"
+    )
 
   def build(pjName: String, base: String) = Project(
     id = pjName,
@@ -21,7 +39,6 @@ object AutoLift{
           "-language:higherKinds",
           "-language:existentials",
           "-unchecked",
-          "-Xfatal-warnings",
           "-Yno-adapted-args",
           "-Ywarn-dead-code",
           "-Ywarn-value-discard",
@@ -66,3 +83,4 @@ object AutoLift{
         </developer>
       </developers>
 }
+
