@@ -9,11 +9,11 @@ lazy val root = (project in file(".")).settings(
 )
 .aggregate(core, autoAlge, autoScalaz, autoCats, docs)
 
-lazy val core = build("autolift-core", "autolift-core").settings(
+lazy val core = module("autolift-core").settings(
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCore)
 )
 
-lazy val autoCats = build("autolift-cats", "autolift-cats").settings(
+lazy val autoCats = module("autolift-cats").settings(
   libraryDependencies ++= Seq(
     "org.spire-math" %% "cats" % "0.3.0",
     compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
@@ -22,7 +22,7 @@ lazy val autoCats = build("autolift-cats", "autolift-cats").settings(
 )
   .dependsOn(core)
 
-lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
+lazy val autoAlge = module("autolift-algebird").settings(
   libraryDependencies ++= Seq(
     "com.twitter" %% "algebird-core" % "0.11.0",
     compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
@@ -31,7 +31,7 @@ lazy val autoAlge = build("autolift-algebird", "autolift-algebird").settings(
 )
 .dependsOn(core)
 
-lazy val autoScalaz = build("autolift-scalaz", "autolift-scalaz").settings(
+lazy val autoScalaz = module("autolift-scalaz").settings(
   libraryDependencies ++= Seq(
     "org.scalaz" %% "scalaz-core" % ScalaZ,
     compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
