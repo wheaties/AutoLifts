@@ -12,9 +12,9 @@ object CatsLiftMerge extends LowPriorityCatsLiftMerge{
 		new CatsLiftMerge[F[G], F[H]]{
 			type Out = F[(G, H)]
 
-			def apply(fg: F[G], fh: F[H]) = ap.ap(fg){ 
-				ap.map(fh){ h: H => (_, h) }
-			}
+			def apply(fg: F[G], fh: F[H]) = ap.ap{
+				ap.map(fh){ h: H => (_: G, h) }
+			}(fg)
 		}
 }
 

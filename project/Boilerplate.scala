@@ -457,7 +457,7 @@ object Boilerplate {
         val innerMap = s"ap.map($last) { $inner }"
 
         init.foldRight(innerMap) { case (smv, res) =>
-          s"ap.ap($smv) { $res }"
+          s"ap.ap($res) { $smv }"
         }
       }
 
