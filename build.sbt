@@ -15,7 +15,7 @@ lazy val core = module("autolift-core").settings(
 
 lazy val autoCats = module("autolift-cats").settings(
   libraryDependencies ++= Seq(
-    "org.spire-math" %% "cats" % "0.3.0",
+    "org.typelevel" %% "cats" % "0.4.0",
     compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
   ),
   initialCommands in console := """

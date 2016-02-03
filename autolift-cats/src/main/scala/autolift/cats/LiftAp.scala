@@ -13,7 +13,7 @@ object CatsLiftAp extends LowPriorityCatsLiftAp {
     new CatsLiftAp[F[A], F[A => B]]{
       type Out = F[B]
 
-      def apply(fa: F[A], f: F[A => B]) = ap.ap(fa)(f)
+      def apply(fa: F[A], f: F[A => B]) = ap.ap(f)(fa)
     }
 }
 
@@ -30,11 +30,11 @@ trait LowPriorityCatsLiftAp{
 
 
 final class LiftedAp[A, B, F[_]](protected val f: F[A => B])(implicit ap: Apply[F]){
-  def andThen[C >: B, D](lf: LiftedAp[C, D, F]) = new LiftedAp(ap.ap(f)(
+  def andThen[C >: B, D](lf: LiftedAp[C, D, F]) = new LiftedAp(ap.ap(
     ap.map(lf.f){
       y: (C => D) => { x: (A => B) => x andThen y }
     }
-  ))
+  )(f))
 
   def compose[C, D <: A](lf: LiftedAp[C, D, F]) = lf andThen this
 
