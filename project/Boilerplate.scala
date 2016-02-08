@@ -42,7 +42,9 @@ object Boilerplate {
 
   def genScalaz(dir: File) = gen(dir)(scalazTemplates)
 
-  val algebirdTemplates = Seq(GenAlgebirdLiftMInstances)
+  val algebirdTemplates = Seq(
+    GenAlgebirdLiftMInstances,
+    GenAlgebirdLiftAInstances)
 
   def genAlgebird(dir: File) = gen(dir)(algebirdTemplates)
 
@@ -63,7 +65,7 @@ object Boilerplate {
   }
 
   val maxArity = 22
-  val maxExportedArity = 6 //export-hook limitation
+  val maxExportedArity = 22
 
   final class TemplateVals(val arity: Int, prefix: String = "A") {
     private val a = prefix.toLowerCase
@@ -579,6 +581,82 @@ object Boilerplate {
         -
         -trait LiftA${arity}Reexport{
         -  implicit def mkLA${arity}[${`Obj..N`}, Fn](implicit lift: ScalazLiftA${arity}[${`Obj..N`}, Fn]): ScalazLiftA${arity}.Aux[${`Obj..N`}, Fn, lift.Out] = lift
+        -}
+      """
+    }
+  }
+
+  object GenAlgebirdLiftAInstances extends Template{
+    override def filename(root: File): File = root / "autolift" / "algebird" / "LiftAGen.scala"
+
+    /* Need to account for arity + 1 DFunction. */
+    override def range = 2 to (maxExportedArity - 1)
+
+    override def content(tv: TemplateVals): String = {
+      import tv._
+
+      val `Obj..N` = ((0 until arity) map (n => s"Obj$n")).mkString(", ")
+      val altSynTypes = (0 until arity) map (n => s"AA$n")
+      val `AA..N` = altSynTypes.mkString(", ")
+      val `AA >: A..N` = (altSynTypes zip synTypes).map(t => s"${t._1} >: ${t._2}").mkString(", ")
+      val synMTypes = synTypes.map(t => s"M[$t]")
+      val synMVals = synVals.map(t => s"m$t")
+
+      val `M[A]..M[N]` = synMTypes.mkString(", ")
+      val `ma: M[A]..mn: M[N]` = ((synMVals zip synMTypes) map { case (v, t) => s"$v: $t"}).mkString(", ")
+
+      val caseStmt ={
+        def casedef(cur: List[String]): String = cur match{
+          case v1 :: v2 :: Nil => s"($v1, $v2)"
+          case h :: t => s"($h, ${casedef(t)})"
+        }
+        s"case ${casedef(synVals.toList)} =>"
+      }
+
+      val joinStmt = {
+        def joindef(cur: List[String], acc: String = ""): String = cur match{
+          case v1 :: v2 :: Nil => s"$acc ap.join($v1, $v2)"
+          case h :: t => joindef(t, s"$acc ap.join($h,")
+        }
+        s"""${joindef(synMVals.toList)}${")"*(arity - 2)}"""
+      }
+
+      val apply = s"ap.map(${joinStmt}){ ${caseStmt} f(${`a..n`}) }"
+      val lowPriorityAp = s"ap.map(${joinStmt}){ ${caseStmt} lift(${`a..n`}, f) }" 
+
+      block"""
+        |package autolift.algebird
+        |
+        |import com.twitter.algebird.Applicative
+        |
+        -import autolift.LiftA$arity
+        -
+        -trait AlgeLiftA$arity[${`Obj..N`}, Fn] extends LiftA$arity[${`Obj..N`}, Fn]
+        -
+        -object AlgeLiftA$arity extends LowPriorityAlgeLiftA$arity {
+        -  def apply[${`Obj..N`}, Fn](implicit lift: AlgeLiftA$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
+        -
+        -  implicit def base[M[_], ${`A..N`}, ${`AA >: A..N`}, C](implicit ap: Applicative[M]): Aux[${`M[A]..M[N]`}, (${`AA..N`}) => C, M[C]] =
+        -    new AlgeLiftA$arity[${`M[A]..M[N]`}, (${`AA..N`}) => C] {
+        -      type Out = M[C]
+        -
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: (${`AA..N`}) => C) = $apply
+        -    }
+        -}
+        -
+        -trait LowPriorityAlgeLiftA$arity {
+        -  type Aux[${`Obj..N`}, Fn, Out0] = AlgeLiftA$arity[${`Obj..N`}, Fn] {type Out = Out0}
+        -
+        -  implicit def recur[M[_], ${`A..N`}, Fn](implicit ap: Applicative[M], lift: LiftA$arity[${`A..N`}, Fn]): Aux[${`M[A]..M[N]`}, Fn, M[lift.Out]] =
+        -    new AlgeLiftA$arity[${`M[A]..M[N]`}, Fn] {
+        -      type Out = M[lift.Out]
+        -
+        -      def apply(${`ma: M[A]..mn: M[N]`}, f: Fn) = $lowPriorityAp
+        -    }
+        -}
+        -
+        -trait LiftA${arity}Reexport{
+        -  implicit def mkLA${arity}[${`Obj..N`}, Fn](implicit lift: AlgeLiftA${arity}[${`Obj..N`}, Fn]): AlgeLiftA${arity}.Aux[${`Obj..N`}, Fn, lift.Out] = lift
         -}
       """
     }

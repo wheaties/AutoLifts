@@ -16,10 +16,42 @@ trait Context extends LiftMapContext
   with LiftA3Context
   with LiftA4Context
   with LiftA5Context
+  with LiftA6Context
+  with LiftA7Context
+  with LiftA8Context
+  with LiftA9Context
+  with LiftA10Context
+  with LiftA11Context
+  with LiftA12Context
+  with LiftA13Context
+  with LiftA14Context
+  with LiftA15Context
+  with LiftA16Context
+  with LiftA17Context
+  with LiftA18Context
+  with LiftA19Context
+  with LiftA20Context
+  with LiftA21Context
   with LiftM2Context
   with LiftM3Context
   with LiftM4Context
   with LiftM5Context
+  with LiftM6Context
+  with LiftM7Context
+  with LiftM8Context
+  with LiftM9Context
+  with LiftM10Context
+  with LiftM11Context
+  with LiftM12Context
+  with LiftM13Context
+  with LiftM14Context
+  with LiftM15Context
+  with LiftM16Context
+  with LiftM17Context
+  with LiftM18Context
+  with LiftM19Context
+  with LiftM20Context
+  with LiftM21Context
   with FoldWithContext
   with FoldForallContext
   with FoldExistsContext
