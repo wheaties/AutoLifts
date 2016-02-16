@@ -37,7 +37,7 @@ trait LowPriorityCatsLiftMap1 extends LowPriorityCatsLiftMap2{
 trait LowPriorityCatsLiftMap2{
   type Aux[Obj, Fn, Out0] = CatsLiftMap[Obj, Fn]{ type Out = Out0 }
 
-  implicit def unbase[FG, G, Fn](implicit unapply: Un.Apply[Functor, FG, G], lift: LiftMap[G, Fn]): Aux[FG, Fn, unapply.M[lift.Out]] =
+  implicit def unrecur[FG, G, Fn](implicit unapply: Un.Apply[Functor, FG, G], lift: LiftMap[G, Fn]): Aux[FG, Fn, unapply.M[lift.Out]] =
     new CatsLiftMap[FG, Fn]{
       type Out = unapply.M[lift.Out]
 
