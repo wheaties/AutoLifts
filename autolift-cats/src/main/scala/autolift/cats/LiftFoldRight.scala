@@ -17,14 +17,32 @@ object CatsLiftFoldRight extends LowPriorityCatsLiftFoldRight{
     }
 }
 
-trait LowPriorityCatsLiftFoldRight{
-  type Aux[FA, Fn, Z, Out0] = CatsLiftFoldRight[FA, Fn, Z]{ type Out = Out0 }
+trait LowPriorityCatsLiftFoldRight extends LowPriorityCatsLiftFoldRight1{
+  implicit def unbase[FA, A, C >: A, B](implicit unapply: Un.Apply[Foldable, FA, A]): Aux[FA, (C, Eval[B]) => Eval[B], Eval[B], Eval[B]] =
+    new CatsLiftFoldRight[FA, (C, Eval[B]) => Eval[B], Eval[B]]{
+      type Out = Eval[B]
 
+      def apply(fa: FA, f: (C, Eval[B]) => Eval[B], z: Eval[B]) = unapply.TC.foldRight(unapply.subst(fa), z)(f)
+    }
+}
+
+trait LowPriorityCatsLiftFoldRight1 extends LowPriorityCatsLiftFoldRight2{
   implicit def recur[F[_], G, Fn, Z](implicit functor: Functor[F], lift: LiftFoldRight[G, Fn, Z]): Aux[F[G], Fn, Z, F[lift.Out]] =
     new CatsLiftFoldRight[F[G], Fn, Z]{
       type Out = F[lift.Out]
 
       def apply(fg: F[G], f: Fn, z: Z) = functor.map(fg){ g: G => lift(g, f, z) }
+    }
+}
+
+trait LowPriorityCatsLiftFoldRight2{
+  type Aux[FA, Fn, Z, Out0] = CatsLiftFoldRight[FA, Fn, Z]{ type Out = Out0 }
+
+  implicit def unrecur[FG, F[_], G, Fn, Z](implicit unapply: Un.Aux[Functor, FG, F, G], lift: LiftFoldRight[G, Fn, Z]): Aux[FG, Fn, Z, F[lift.Out]] =
+    new CatsLiftFoldRight[FG, Fn, Z]{
+      type Out = F[lift.Out]
+
+      def apply(fg: FG, f: Fn, z: Z) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g, f, z) }
     }
 }
 
