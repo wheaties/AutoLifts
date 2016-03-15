@@ -28,9 +28,9 @@ trait LowPriorityCatsLiftFlatten extends LowPriorityCatsLiftFlatten1{
 trait LowPriorityCatsLiftFlatten1{
   type Aux[M[_], Obj, Out0] = CatsLiftFlatten[M, Obj]{ type Out = Out0 }
 
-  implicit def unrecur[M[_], FG, F[_], G](implicit unapply: Un.Aux[Functor, FG, F, G], lift: LiftFlatten[M, G]): Aux[M, FG, F[lift.Out]] =
+  implicit def unrecur[M[_], FG, F[_], G](implicit unapply: Un.Apply[Functor, FG, G], lift: LiftFlatten[M, G]): Aux[M, FG, unapply.M[lift.Out]] =
     new CatsLiftFlatten[M, FG]{
-      type Out = F[lift.Out]
+      type Out = unapply.M[lift.Out]
 
       def apply(fg: FG) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g) }
     }

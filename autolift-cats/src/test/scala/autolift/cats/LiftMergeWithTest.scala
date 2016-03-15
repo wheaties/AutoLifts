@@ -3,6 +3,7 @@ package autolift.cats
 import autolift.Cats._
 import cats.implicits._
 import cats.{Functor, Apply}
+import cats.data.Xor
 
 class LiftMergeWithTest extends BaseSpec{
 

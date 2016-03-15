@@ -38,9 +38,9 @@ trait LowPriorityCatsLiftFoldRight1 extends LowPriorityCatsLiftFoldRight2{
 trait LowPriorityCatsLiftFoldRight2{
   type Aux[FA, Fn, Z, Out0] = CatsLiftFoldRight[FA, Fn, Z]{ type Out = Out0 }
 
-  implicit def unrecur[FG, F[_], G, Fn, Z](implicit unapply: Un.Aux[Functor, FG, F, G], lift: LiftFoldRight[G, Fn, Z]): Aux[FG, Fn, Z, F[lift.Out]] =
+  implicit def unrecur[FG, G, Fn, Z](implicit unapply: Un.Apply[Functor, FG, G], lift: LiftFoldRight[G, Fn, Z]): Aux[FG, Fn, Z, unapply.M[lift.Out]] =
     new CatsLiftFoldRight[FG, Fn, Z]{
-      type Out = F[lift.Out]
+      type Out = unapply.M[lift.Out]
 
       def apply(fg: FG, f: Fn, z: Z) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g, f, z) }
     }

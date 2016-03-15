@@ -18,16 +18,6 @@ object CatsLiftFlatMap extends LowPriorityCatsLiftFlatMap {
 }
 
 trait LowPriorityCatsLiftFlatMap extends LowPriorityCatsLiftFlatMap1{
-  implicit def unbase[MA, A, C >: A, B](implicit unapply: Un.Apply[FlatMap, MA, A]): Aux[MA, C => unapply.M[B], unapply.M[B]] =
-    new CatsLiftFlatMap[MA, C => unapply.M[B]]{
-      type Out = unapply.M[B]
-
-      //Is this too coupled a type signature?
-      def apply(ma: MA, f: C => unapply.M[B]) = unapply.TC.flatMap(unapply.subst(ma))(f)
-    }
-}
-
-trait LowPriorityCatsLiftFlatMap1 extends LowPriorityCatsLiftFlatMap2{
   implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftFlatMap[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
     new CatsLiftFlatMap[F[G], Fn]{
       type Out = F[lift.Out]
@@ -36,12 +26,12 @@ trait LowPriorityCatsLiftFlatMap1 extends LowPriorityCatsLiftFlatMap2{
     }
 }
 
-trait LowPriorityCatsLiftFlatMap2{
+trait LowPriorityCatsLiftFlatMap1{
   type Aux[Obj, Fn, Out0] = CatsLiftFlatMap[Obj, Fn]{ type Out = Out0 }
 
-  implicit def unrecur[FG, F[_], G, Fn](implicit unapply: Un.Aux[Functor, FG, F, G], lift: LiftFlatMap[G, Fn]): Aux[FG, Fn, F[lift.Out]] =
+  implicit def unrecur[FG, G, Fn](implicit unapply: Un.Apply[Functor, FG, G], lift: LiftFlatMap[G, Fn]): Aux[FG, Fn, unapply.M[lift.Out]] =
     new CatsLiftFlatMap[FG, Fn]{
-      type Out = F[lift.Out]
+      type Out = unapply.M[lift.Out]
 
       def apply(fg: FG, f: Fn) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g, f) }
     }
