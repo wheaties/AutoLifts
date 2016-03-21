@@ -2,6 +2,7 @@ package autolift.cats
 
 import cats.Functor
 import cats.implicits._
+import cats.data.Xor
 import autolift.Cats._
 
 class LiftForAllTest extends BaseSpec{
@@ -22,6 +23,13 @@ class LiftForAllTest extends BaseSpec{
     val out = in liftForAll even
 
     same[List[Boolean]](out, List(false, true, false))
+  }
+
+  "liftForAll" should "work on a Xor[List]" in{
+    val in = Xor.right(List(1, 2, 3))
+    val out = in liftForAll even
+
+    same[Xor[Nothing,Boolean]](out, Xor.right(false))
   }
 
   "liftForAll" should "work with functions" in{

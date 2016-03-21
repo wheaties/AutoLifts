@@ -1,7 +1,7 @@
 package autolift.cats
 
-import cats.{Functor, Monoid, Foldable}
-import autolift.LiftFoldMap
+import cats.{Functor, Monoid, Foldable, Unapply}
+import autolift.{LiftFoldMap, LiftFoldMapSyntax}
 
 trait CatsLiftFoldMap[FA, Fn] extends LiftFoldMap[FA, Fn]
 
@@ -43,6 +43,24 @@ trait LowPriorityCatsLiftFoldMap2{
 
       def apply(fg: FG, f: Fn) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g, f) }
     }
+}
+
+trait CatsLiftFoldMapSyntax extends LiftFoldMapSyntax with LowPriorityLiftFoldMapSyntax
+
+trait LowPriorityLiftFoldMapSyntax{
+
+  /// Syntax extension providing for a `liftFoldMap` method.
+  implicit class LowLiftFoldMapOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
+    /**
+     * Automatic lifting of a Fold dictated by the signature of a function and given that the mapping maps one type 
+     * to another which has a Monoid.
+     *
+     * @param f the function over which to fold.
+     * @tparam B the argument of the function.
+     * @tparam C the return type of the function which must have a Monoid.
+     */
+    def liftFoldMap[B, C](f: B => C)(implicit lift: LiftFoldMap[FA, B => C]): lift.Out = lift(fa, f)
+  }
 }
 
 final class LiftedFoldMap[A, B : Monoid](f: A => B){

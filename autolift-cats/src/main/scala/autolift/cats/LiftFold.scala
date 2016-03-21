@@ -1,7 +1,7 @@
 package autolift.cats
 
-import cats.{Functor, Monoid, Foldable}
-import autolift.LiftFold
+import cats.{Functor, Monoid, Foldable, Unapply}
+import autolift.{LiftFold, LiftFoldSyntax}
 
 
 trait CatsLiftFold[Obj] extends LiftFold[Obj]
@@ -46,3 +46,16 @@ trait LowPriorityCatsLiftFold2{
     }
 }
 
+trait CatsLiftFoldSyntax extends LiftFoldSyntax with LowPriorityLiftFoldSyntax
+
+trait LowPriorityLiftFoldSyntax{
+
+  /// Syntax extension providing for a `liftFold` method.
+  implicit class LowLiftFoldOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
+
+    /**
+     * Automatic lifting of a Fold on the first nested type which has as a type parameter a Monoid.
+     */
+    def liftFold(implicit lift: LiftFold[FA]): lift.Out = lift(fa)
+  }
+}

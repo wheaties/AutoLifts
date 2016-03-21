@@ -45,6 +45,25 @@ trait LowPriorityCatsLiftMap2{
     }
 }
 
+trait CatsLiftMapSyntax extends LiftMapSyntax with LowPriorityLiftMapSyntax
+
+trait LowPriorityLiftMapSyntax{
+
+  /// Syntax extension providing for a `liftMap` method on an object with shape differing from F[A].
+  implicit class LowLiftMapOps[MA](ma: MA)(implicit ev: Unapply[Functor, MA]){
+
+    /**
+     * Automatic lifting of the function `f` over the object such that the application point is dictated by the type
+     * of function invocation.
+     *
+     * @param f the function to be lifted.
+     * @tparam B the argument type of the function.
+     * @tparam C the return type of the function.
+     */
+    def liftMap[B, C](f: B => C)(implicit lift: LiftMap[MA, B => C]): lift.Out = lift(ma, f)
+  }
+}
+
 trait LiftedMapImplicits{
   implicit def liftedMapFunctor[A] = new Functor[LiftedMap[A, ?]]{
     def map[B, C](lm: LiftedMap[A, B])(f: B => C) = lm map f

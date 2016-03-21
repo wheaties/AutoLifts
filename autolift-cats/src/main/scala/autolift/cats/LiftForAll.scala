@@ -1,7 +1,7 @@
 package autolift.cats
 
-import cats.{Functor, Foldable}
-import autolift.{LiftForAll, LiftedForAll}
+import cats.{Functor, Foldable, Unapply}
+import autolift.{LiftForAll, LiftedForAll, LiftForAllSyntax}
 
 //TODO: syntax is currently forAll vs forall. Make consistent?
 trait CatsLiftForAll[Obj, Fn] extends LiftForAll[Obj, Fn]
@@ -33,6 +33,24 @@ trait LowPriorityCatsLiftForAll1 extends LowPriorityCatsLiftForAll2{
 
       def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }
     }
+}
+
+trait CatLiftForAllSyntax extends LiftForAllSyntax with LowPriorityLiftForAllSyntax
+
+trait LowPriorityLiftForAllSyntax{
+
+  /// Syntax extension providing for a `liftForAll` method.
+  implicit class LowLiftForAllOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
+
+    /**
+     * Automatic lifting of the predicate `f` over the object such that the application point is dictated by the type
+     * of predicate invocation.
+     *
+     * @param f the predicate to be lifted.
+     * @tparam B the argument type of the predicate.
+     */
+    def liftForAll[B](f: B => Boolean)(implicit lift: LiftForAll[FA, B => Boolean]): lift.Out = lift(fa, f)
+  }
 }
 
 trait LowPriorityCatsLiftForAll2{

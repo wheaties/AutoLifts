@@ -22,6 +22,13 @@ class LiftFoldRightTest extends BaseSpec{
     same[List[Int]](out, List(4, 5, 3))
   }
 
+  "liftFoldRight on a Xor[List]" should "work" in{
+    val in = Xor.right(List(1, 2, 3))
+    val out = in.liftFoldRight(Now(0))(plus).map(_.value)
+
+    same[Xor[Nothing,Int]](out, Xor.right(6))
+  }
+
   "LiftedFoldRight on a List[Option]" should "work" in{
     val fn = liftFoldRight(Now(0))(plus)
     val out = fn(List(Option(1), Option(2), None)).map(_.value)
@@ -29,7 +36,7 @@ class LiftFoldRightTest extends BaseSpec{
     same[List[Int]](out, List(1, 2, 0))
   }
 
-  "LiftedFoldRight on an Option[Xor[List]]" should "work" in{
+  "LiftedFoldRight on an Xor[List]" should "work" in{
     val fn = liftFoldRight(Now(0))(plus)
     val out = fn(Xor.right(List(1,2))).map(_.value)
 

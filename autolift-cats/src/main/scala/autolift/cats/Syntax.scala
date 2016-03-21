@@ -2,20 +2,20 @@ package autolift.cats
 
 import autolift._
 
-trait Syntax extends LiftMapSyntax
+trait Syntax extends CatsLiftMapSyntax
   with LiftApSyntax
   with LiftFlatMapSyntax
   with LiftFilterSyntax
-  with LiftFoldLeftSyntax
-  with LiftFoldRightSyntax
-  with LiftFoldAtSyntax
   with LiftFlattenSyntax
-  with LiftFoldSyntax
-  with LiftFoldMapSyntax
+  with CatsLiftFoldLeftSyntax
+  with CatsLiftFoldRightSyntax
+  with CatsLiftFoldSyntax
+  with CatsLiftFoldAtSyntax
+  with CatsLiftFoldMapSyntax
   with LiftExistsSyntax
   with LiftMergeSyntax
   with LiftMergeWithSyntax
-  with LiftForAllSyntax
+  with CatLiftForAllSyntax
   with FoldForallSyntax
   with FoldExistsSyntax
   with FoldCompleteSyntax

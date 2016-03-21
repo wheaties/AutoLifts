@@ -19,11 +19,11 @@ class LiftFoldMapTest extends BaseSpec{
     same[List[Int]](out, List(1, 2, 3))
   }
 
-  "liftFoldMap on a List[Xor[List]]" should "work" in{
-    val in = List(Xor.right(List("1", "1", "1")))
+  "liftFoldMap on a Xor[List]" should "work" in{
+    val in = Xor.right(List("1", "1", "1"))
     val out = in.liftFoldMap{ x: String => x.toInt }
 
-    same[List[Xor[Nothing,Int]]](out, List(Xor.right(3)))
+    same[Xor[Nothing,Int]](out, Xor.right(3))
   }
 
   "LiftedFoldMap" should "work on a List" in{

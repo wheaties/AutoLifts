@@ -19,10 +19,10 @@ class LiftFoldLeftTest extends BaseSpec{
     same[List[Int]](out, List(4, 5, 3))
   }
 
-  "liftFoldLeft on an Option[Xor[List]]" should "work" in{
-    val in = Option(Xor.right(List(1, 2)))
+  "liftFoldLeft on an Xor[List]" should "work" in{
+    val in = Xor.right(List(1, 2))
     val out = in.liftFoldLeft(0)(intintF)
 
-    same[Option[Xor[Nothing,Int]]](out, Option(Xor.right(3)))
+    same[Xor[Nothing,Int]](out, Xor.right(3))
   }
 }
