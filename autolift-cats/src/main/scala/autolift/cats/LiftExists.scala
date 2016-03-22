@@ -1,7 +1,7 @@
 package autolift.cats
 
-import cats.{Functor, Foldable}
-import autolift.{LiftExists, LiftedExists}
+import cats.{Functor, Foldable, Unapply}
+import autolift.{LiftExists, LiftedExists, LiftExistsSyntax}
 
 trait CatsLiftExists[Obj, Fn] extends LiftExists[Obj, Fn]
 
@@ -45,3 +45,10 @@ trait LowPriorityCatsLiftExists2{
     }
 }
 
+trait CatsLiftExistsSyntax extends LiftExistsSyntax with LowPriorityLiftExistsSyntax
+
+trait LowPriorityLiftExistsSyntax{
+  implicit class LowLiftExistsOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
+    def liftExists[B](f: B => Boolean)(implicit lift: LiftExists[FA, B => Boolean]): lift.Out = lift(fa, f)
+  }
+}

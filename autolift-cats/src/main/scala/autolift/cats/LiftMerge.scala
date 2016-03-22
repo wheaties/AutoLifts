@@ -1,7 +1,7 @@
 package autolift.cats
 
-import autolift.LiftMerge
-import cats.{Functor, Apply}
+import autolift.{LiftMerge, LiftMergeSyntax}
+import cats.{Functor, Apply, Unapply}
 
 trait CatsLiftMerge[Obj1, Obj2] extends LiftMerge[Obj1, Obj2]
 
@@ -37,4 +37,21 @@ trait LowPriorityCatsLiftMerge1{
 
       def apply(fg: FG, h: H) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g, h) }
     }
+}
+
+trait CatsLiftMergeSyntax extends LiftMergeSyntax with LowPriorityLiftMergeSyntax
+
+trait LowPriorityLiftMergeSyntax{
+
+  /// Syntax extension providing for a `liftMerge` method.
+  implicit class LowLiftMergeOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
+
+    /**
+     * Automatic lifting of a `merge` operation, type merged dependent on the nested type structure.
+     *
+     * @param that the object to be merged.
+     * @tparam That the argument type of the object to be merged.
+     */
+    def liftMerge[That](that: That)(implicit lift: LiftMerge[FA, That]): lift.Out = lift(fa, that)
+  }
 }

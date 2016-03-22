@@ -1,6 +1,7 @@
 package autolift.cats
 
-import cats._
+import cats.{Functor, Foldable, Eval}
+import cats.data.Xor
 import cats.implicits._
 import autolift.Cats._
 
@@ -43,5 +44,12 @@ class LiftExistsTest extends BaseSpec{
     val out = in liftExists even
 
     same[List[Boolean]](out, List(false))
+  }
+
+  "liftExists" should "work on a Xor[List]" in{
+    val in = Xor.right(List(1, 2))
+    val out = in liftExists even
+
+    same[Xor[Nothing,Boolean]](out, Xor.right(true))
   }
 }

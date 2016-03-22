@@ -1,7 +1,7 @@
 package autolift.cats
 
-import cats.{FlatMap, Functor}
-import autolift.LiftFlatMap
+import cats.{FlatMap, Functor, Unapply}
+import autolift.{LiftFlatMap, LiftFlatMapSyntax}
 
 
 trait CatsLiftFlatMap[Obj, Fn] extends LiftFlatMap[Obj, Fn]
@@ -35,6 +35,26 @@ trait LowPriorityCatsLiftFlatMap1{
 
       def apply(fg: FG, f: Fn) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g, f) }
     }
+}
+
+trait CatsLiftFlatMapSyntax extends LiftFlatMapSyntax with LowLiftFlatMapSyntax
+
+trait LowLiftFlatMapSyntax{
+
+  /// Syntax extension providing for a `liftFlatMap` method.
+  implicit class LowLiftFlatMapOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
+
+    /**
+     * Automatic lifting and flattening of the contained function `f` such that the application point is dicated by the
+     * argument and return type of the function.
+     *
+     * @param f the function that returns a type with a Monad.
+     * @tparam B the argument type of the function.
+     * @tparam C the inner type of the return type of the function.
+     * @tparam M the higher-kinded type of the return type of the function which has a Monad.
+     */
+    def liftFlatMap[B, C, M[_]](f: B => M[C])(implicit lift: LiftFlatMap[FA, B => M[C]]): lift.Out = lift(fa, f)
+  }
 }
 
 final class LiftedFlatMap[A, B, M[_]](protected val f: A => M[B])(implicit flatMap: FlatMap[M]){

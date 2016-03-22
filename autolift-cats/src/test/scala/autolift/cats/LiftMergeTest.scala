@@ -9,7 +9,14 @@ class LiftMergeTest extends BaseSpec{
 		val in = Option(1)
 		val out = in liftMerge in
 
-		same[Option[(Int,Int)]](out, Option((1, 1)))
+		same[Option[(Int,Int)]](out, Option(1 -> 1))
+	}
+
+	"liftMerge on a Xor[Option] from an Option" should "work" in{
+		val in = Xor.right(Option(1))
+		val out = in liftMerge Option(1)
+
+		same[Xor[Nothing,Option[(Int,Int)]]](out, Xor.right(Option(1 -> 1)))
 	}
 
 	"liftMerge on a Option[List[Int]] on a List[Int]" should "work" in{

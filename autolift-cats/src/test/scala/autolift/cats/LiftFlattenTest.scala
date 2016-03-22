@@ -26,10 +26,10 @@ class LiftFlattenTest extends BaseSpec{
     same[Option[List[Int]]](out, Option(List(1)))
   }
 
-  "liftFlatten" should "work on a List of Xor of Option of Option" in{
-    val in = List(Xor.right(Option(Option(1))))
+  "liftFlatten" should "work on a Xor of Option of Option" in{
+    val in = Xor.right(Option(Option(1)))
     val out = in.liftFlatten
 
-    same[List[Xor[Nothing,Option[Int]]]](out, List(Xor.right(Option(1))))
+    same[Xor[Nothing,Option[Int]]](out, Xor.right(Option(1)))
   }
 }

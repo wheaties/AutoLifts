@@ -19,6 +19,13 @@ class LiftFlatMapTest extends BaseSpec{
     same[Option[Int]](out, Option(1))
   }
 
+  "liftFlatMap on a Xor[List]" should "work" in{
+    val in = Xor.right(List(1))
+    val out = in liftFlatMap { x: Int => List(x+1) }
+
+    same[Xor[Nothing,List[Int]]](out, Xor.right(List(2)))
+  }
+
   "liftFlatMap on an Option[Xor[List]]" should "work" in{
     val in = Option(Xor.right(List(1)))
     val out = in liftFlatMap { x: Int => List(x+1) }
