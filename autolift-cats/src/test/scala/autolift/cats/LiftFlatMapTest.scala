@@ -1,6 +1,7 @@
 package autolift.cats
 
 import cats.implicits._
+import cats.data.Xor
 import autolift.Cats._
 
 class LiftFlatMapTest extends BaseSpec{
@@ -16,6 +17,20 @@ class LiftFlatMapTest extends BaseSpec{
     val out = in liftFlatMap anyO
 
     same[Option[Int]](out, Option(1))
+  }
+
+  "liftFlatMap on a Xor[List]" should "work" in{
+    val in = Xor.right(List(1))
+    val out = in liftFlatMap { x: Int => List(x+1) }
+
+    same[Xor[Nothing,List[Int]]](out, Xor.right(List(2)))
+  }
+
+  "liftFlatMap on an Option[Xor[List]]" should "work" in{
+    val in = Option(Xor.right(List(1)))
+    val out = in liftFlatMap { x: Int => List(x+1) }
+
+    same[Option[Xor[Nothing,List[Int]]]](out, Option(Xor.right(List(2))))
   }
 
   "LiftedBind" should "work on a List" in{

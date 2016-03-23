@@ -1,7 +1,7 @@
 package autolift.cats
 
-import cats.{FlatMap, Functor}
-import autolift.LiftFlatMap
+import cats.{FlatMap, Functor, Unapply}
+import autolift.{LiftFlatMap, LiftFlatMapSyntax}
 
 
 trait CatsLiftFlatMap[Obj, Fn] extends LiftFlatMap[Obj, Fn]
@@ -13,19 +13,48 @@ object CatsLiftFlatMap extends LowPriorityCatsLiftFlatMap {
     new CatsLiftFlatMap[M[A], C => M[B]]{
       type Out = M[B]
 
-      def apply(fa: M[A], f: C => M[B]) = flatMap.flatMap(fa)(f)
+      def apply(ma: M[A], f: C => M[B]) = flatMap.flatMap(ma)(f)
     }
 }
 
-trait LowPriorityCatsLiftFlatMap{
-  type Aux[Obj, Fn, Out0] = CatsLiftFlatMap[Obj, Fn]{ type Out = Out0 }
-
+trait LowPriorityCatsLiftFlatMap extends LowPriorityCatsLiftFlatMap1{
   implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftFlatMap[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
     new CatsLiftFlatMap[F[G], Fn]{
       type Out = F[lift.Out]
 
       def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }
     }
+}
+
+trait LowPriorityCatsLiftFlatMap1{
+  type Aux[Obj, Fn, Out0] = CatsLiftFlatMap[Obj, Fn]{ type Out = Out0 }
+
+  implicit def unrecur[FG, G, Fn](implicit unapply: Un.Apply[Functor, FG, G], lift: LiftFlatMap[G, Fn]): Aux[FG, Fn, unapply.M[lift.Out]] =
+    new CatsLiftFlatMap[FG, Fn]{
+      type Out = unapply.M[lift.Out]
+
+      def apply(fg: FG, f: Fn) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g, f) }
+    }
+}
+
+trait CatsLiftFlatMapSyntax extends LiftFlatMapSyntax with LowLiftFlatMapSyntax
+
+trait LowLiftFlatMapSyntax{
+
+  /// Syntax extension providing for a `liftFlatMap` method.
+  implicit class LowLiftFlatMapOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
+
+    /**
+     * Automatic lifting and flattening of the contained function `f` such that the application point is dicated by the
+     * argument and return type of the function.
+     *
+     * @param f the function that returns a type with a Monad.
+     * @tparam B the argument type of the function.
+     * @tparam C the inner type of the return type of the function.
+     * @tparam M the higher-kinded type of the return type of the function which has a Monad.
+     */
+    def liftFlatMap[B, C, M[_]](f: B => M[C])(implicit lift: LiftFlatMap[FA, B => M[C]]): lift.Out = lift(fa, f)
+  }
 }
 
 final class LiftedFlatMap[A, B, M[_]](protected val f: A => M[B])(implicit flatMap: FlatMap[M]){

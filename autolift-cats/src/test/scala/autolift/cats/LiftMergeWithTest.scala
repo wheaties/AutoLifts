@@ -3,6 +3,7 @@ package autolift.cats
 import autolift.Cats._
 import cats.implicits._
 import cats.{Functor, Apply}
+import cats.data.Xor
 
 class LiftMergeWithTest extends BaseSpec{
 
@@ -18,6 +19,13 @@ class LiftMergeWithTest extends BaseSpec{
 		val out = in.liftMergeWith(List(1))(intintF)
 
 		same[Option[List[Int]]](out, Option(List(2)))
+	}
+
+	"liftMergeWith on a Xor[Option]" should "work" in{
+		val in = Xor.right(Option(1))
+		val out = in.liftMergeWith(Option(1))(intintF)
+
+		same[Xor[Nothing,Option[Int]]](out, Xor.right(Option(2)))
 	}
 
 	"LiftedMergeWith on a Option[List]" should "work" in{

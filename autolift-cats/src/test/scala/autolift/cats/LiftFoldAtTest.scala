@@ -1,6 +1,7 @@
 package autolift.cats
 
 import cats.implicits._
+import cats.data.Xor
 import autolift.Cats._
 
 class LiftFoldAtTest extends BaseSpec{
@@ -23,5 +24,12 @@ class LiftFoldAtTest extends BaseSpec{
     val out = in.liftFoldAt[Option]
 
     same[List[Int]](out, List(1, 0, 2))
+  }
+
+  "liftFoldAt on a Xor[List]" should "work" in{
+    val in = Xor.right(List(1, 2))
+    val out = in.liftFoldAt[List]
+
+    same[Xor[Nothing,Int]](out, Xor.right(3))
   }
 }
