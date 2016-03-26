@@ -8,12 +8,12 @@ A dependently typed library for auto lifting and auto mapping of functions based
 ## Modules
 AutoLifts is organized in a multi-project structure. The following modules are available for download: 
 
- * [`autolift-core`](https://github.com/wheaties/AutoLifts/tree/develop/autolift-core/) - contains type class definitions, syntax extensions and contexts.
- * [`autolift-algebird`](https://github.com/wheaties/AutoLifts/tree/develop/autolift-algebird) - an implementation of core type classes backed by the [Algebird](https://github.com/twitter/algebird) project.
- * [`autolift-cats`](https://github.com/wheaties/AutoLifts/tree/develop/autolift-cats) - an implementation of core type classes backed by the [Cats](https://github.com/non/cats/) project.
- * [`autolift-scalaz`](https://github.com/wheaties/AutoLifts/tree/develop/autolift-scalaz) - an implementation of core type classes backed by the [Scalaz](https://github.com/scalaz/scalaz/) project.
+ * [`autolift-core`](https://github.com/wheaties/AutoLifts/tree/0.5/autolift-core/) - contains type class definitions, syntax extensions and contexts.
+ * [`autolift-algebird`](https://github.com/wheaties/AutoLifts/tree/0.5/autolift-algebird) - an implementation of core type classes backed by the [Algebird](https://github.com/twitter/algebird) project.
+ * [`autolift-cats`](https://github.com/wheaties/AutoLifts/tree/0.5/autolift-cats) - an implementation of core type classes backed by the [Cats](https://github.com/non/cats/) project.
+ * [`autolift-scalaz`](https://github.com/wheaties/AutoLifts/tree/0.5/autolift-scalaz) - an implementation of core type classes backed by the [Scalaz](https://github.com/scalaz/scalaz/) project.
 
-The *core* module is a dependency of *algebird*, *cats* and *scalaz*. While it forms the backbone of AutoLifts and can be downloaded, it is not a standalone project. Subprojects such as [docs](https://github.com/wheaties/AutoLifts/tree/develop/docs) and [bench](https://github.com/wheaties/AutoLifts/tree/develop/bench) are for reference only.
+The *core* module is a dependency of *algebird*, *cats* and *scalaz*. While it forms the backbone of AutoLifts and can be downloaded, it is not a standalone project. Subprojects such as [docs](https://github.com/wheaties/AutoLifts/tree/0.5/docs) and [bench](https://github.com/wheaties/AutoLifts/tree/0.5/bench) are for reference only.
 
 ##Using
 The current released branch is 0.4 and compiled against Scala version 2.11. If using SBT add the following to the build definition:
