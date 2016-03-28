@@ -3,14 +3,14 @@ package autolift.scalaz
 import autolift._
 
 trait Syntax extends LiftMapSyntax
-	with LiftApSyntax
+	with ScalazLiftApSyntax
 	with LiftBindSyntax
 	with LiftFilterSyntax
 	with LiftFoldLeftSyntax
 	with LiftFoldRightSyntax
-	with LiftFoldAtSyntax
-	with LiftFlattenSyntax
-	with LiftFoldSyntax
+	with ScalazLiftFoldAtSyntax
+	with ScalazLiftFlattenSyntax
+	with ScalazLiftFoldSyntax
 	with LiftFoldMapSyntax
 	with LiftAnySyntax
 	with LiftAllSyntax
