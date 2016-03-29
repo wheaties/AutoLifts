@@ -85,5 +85,7 @@ trait LiftedApImplicits{
 
 trait LiftApContext{
 	def liftAp[A, B, F[_]](f: F[A => B])(implicit ap: Apply[F]) = new LiftedAp(f)
+
+	def liftAp[A, B, FAB](f: FAB)(implicit un: Un.Apply[Apply, FAB, A => B]) = new LiftedAp(un(f))(un.TC)
 }
 

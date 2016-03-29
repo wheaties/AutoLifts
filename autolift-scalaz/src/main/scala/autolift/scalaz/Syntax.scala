@@ -6,12 +6,12 @@ trait Syntax extends LiftMapSyntax
 	with ScalazLiftApSyntax
 	with LiftBindSyntax
 	with LiftFilterSyntax
-	with LiftFoldLeftSyntax
+	with ScalazLiftFoldLeftSyntax
 	with LiftFoldRightSyntax
 	with ScalazLiftFoldAtSyntax
 	with ScalazLiftFlattenSyntax
 	with ScalazLiftFoldSyntax
-	with LiftFoldMapSyntax
+	with ScalazLiftFoldMapSyntax
 	with LiftAnySyntax
 	with LiftAllSyntax
 	with LiftZipSyntax

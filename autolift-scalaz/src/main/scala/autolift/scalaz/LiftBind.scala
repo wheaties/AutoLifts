@@ -98,5 +98,7 @@ trait LiftedBindImplicits{
 
 trait LiftBindContext{
 	def liftBind[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedBind(f)
+	
+	def liftBind[A, MB](f: A => MB)(implicit un: Unapply[Bind, MB]) = new LiftedBind(f andThen{ mb: MB => un(mb) })(un.TC)
 }
 
