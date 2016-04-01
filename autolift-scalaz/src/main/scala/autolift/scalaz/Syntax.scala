@@ -2,7 +2,7 @@ package autolift.scalaz
 
 import autolift._
 
-trait Syntax extends LiftMapSyntax
+trait Syntax extends ScalazLiftMapSyntax
 	with ScalazLiftApSyntax
 	with LiftBindSyntax
 	with LiftFilterSyntax
@@ -14,10 +14,10 @@ trait Syntax extends LiftMapSyntax
 	with ScalazLiftFoldMapSyntax
 	with LiftAnySyntax
 	with LiftAllSyntax
-	with LiftZipSyntax
+	with ScalazLiftZipSyntax
 	with LiftZipWithSyntax
-	with LiftMergeSyntax
-	with LiftMergeWithSyntax
+	with ScalazLiftMergeSyntax
+	with ScalazLiftMergeWithSyntax
 	with FoldAllSyntax
 	with FoldAnySyntax
 	with FoldCompleteSyntax
