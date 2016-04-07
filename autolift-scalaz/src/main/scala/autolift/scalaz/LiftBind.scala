@@ -18,9 +18,9 @@ object ScalazLiftFlatMap extends LowPriorityScalazLiftFlatMap {
 }
 
 trait LowPriorityScalazLiftFlatMap extends LowPriorityScalazLiftFlatMap1{
-	implicit def unbase[MA, A, C >: A, MB, B](implicit un: Un.Apply2[Bind, MA, MB, A, B]): Aux[MA, C => MB, un.M[un.B]] =
+	implicit def unbase[MA, A, C >: A, MB, B](implicit un: Un.Apply2[Bind, MA, MB, A, B]): Aux[MA, C => MB, un.M[B]] =
 		new ScalazLiftFlatMap[MA, C => MB]{
-			type Out = un.M[un.B]
+			type Out = un.M[B]
 
 			def apply(ma: MA, f: C => MB) = un.TC.bind(un._1(ma)){ a: A => un._2(f(a)) }
 		}
@@ -57,7 +57,8 @@ trait LiftBindSyntax extends LowPriorityLiftBindSyntax{
 		 *
 		 * @param f the function that returns a type with a Bind.
 		 * @tparam B the argument type of the function.
-		 * @tparam MC the type of the return type of the function for which there exists an `Unapply` on a `Bind`.
+		 * @tparam MC the type of the return type of the function which has the shape M[C] or for which there exists an 
+		 *         `Unapply` on a `Bind`.
 		 */
 		def liftBind[B, MC](f: B => MC)(implicit lift: LiftFlatMap[F[A], B => MC]): lift.Out = lift(fa, f)
 	}
@@ -74,7 +75,8 @@ trait LowPriorityLiftBindSyntax{
 		 *
 		 * @param f the function that returns a type with a Bind.
 		 * @tparam B the argument type of the function.
-		 * @tparam MC the type of the return type of the function for which there exists an `Unapply` on a `Bind`.
+		 * @tparam MC the type of the return type of the function which has the shape M[C] or for which there exists an 
+		 *         `Unapply` on a `Bind`.
 		 */
 		def liftBind[B, MC](f: B => MC)(implicit lift: LiftFlatMap[FA, B => MC]): lift.Out = lift(fa, f)
 	}

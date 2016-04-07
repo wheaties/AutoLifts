@@ -15,7 +15,7 @@ trait Syntax extends ScalazLiftMapSyntax
 	with LiftAnySyntax
 	with LiftAllSyntax
 	with ScalazLiftZipSyntax
-	with LiftZipWithSyntax
+	with ScalazLiftZipWithSyntax
 	with ScalazLiftMergeSyntax
 	with ScalazLiftMergeWithSyntax
 	with FoldAllSyntax

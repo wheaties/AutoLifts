@@ -37,7 +37,7 @@ trait LowPriorityScalazLiftMerge1 extends LowPriorityScalazLiftMerge2{
 trait LowPriorityScalazLiftMerge2{
 	type Aux[Obj1, Obj2, Out0] = ScalazLiftMerge[Obj1, Obj2]{ type Out = Out0 }
 
-	implicit def unrecur[FG, G, H](implicit lift: LiftMerge[G, H], un: Un.Apply[Functor, FG, G]): Aux[FG, H, un.M[lift.Out]] =
+	implicit def unrecur[FG, G, H](implicit un: Un.Apply[Functor, FG, G], lift: LiftMerge[G, H]): Aux[FG, H, un.M[lift.Out]] =
 		new ScalazLiftMerge[FG, H]{
 			type Out = un.M[lift.Out]
 

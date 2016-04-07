@@ -19,7 +19,7 @@ object ScalazLiftFold extends LowPriorityScalazLiftFold{
 trait LowPriorityScalazLiftFold extends LowPriorityScalazLiftFold1{
 	implicit def unbase[FA, A](implicit un: Un.Apply[Foldable, FA, A], ev: Monoid[A]): Aux[FA, A] =
 		new ScalazLiftFold[FA]{
-			type Out = un.A
+			type Out = A
 
 			def apply(fa: FA) = un.TC.fold(un(fa))
 		}

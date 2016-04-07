@@ -20,4 +20,19 @@ class LiftFoldRightTest extends BaseSpec{
 
 		same[List[Int]](out, List(4, 5, 3))
 	}
+
+	"liftFoldRight on a Disjunction[Option]" should "work" in{
+		val in: Int \/ Option[Int] = \/.right(Option(1))
+		val out = in.liftFoldRight(-1)(plus)
+
+		same[Int \/ Int](out, \/.right(0))
+	}
+
+	//TODO: investigate, \/ is a Traverseable...
+	/*"liftFoldRight on a List[Disjunction]" should "work" in{
+		val in: List[Int \/ Int] = List(\/.right(1))
+		val out = in.liftFoldRight(-1)(plus)
+
+		same[List[Int]](out, List(0))
+	}*/
 }

@@ -19,6 +19,21 @@ class LiftFoldMapTest extends BaseSpec{
 		same[List[Int]](out, List(1, 2, 3))
 	}
 
+	"liftFoldMap on a Disjunction[Option]" should "work" in{
+		val in: Int \/ Option[String] = \/.right(Option("1"))
+		val out = in liftFoldMap { x: String => x.toInt }
+
+		same[Int \/ Int](out, \/.right(1))
+	}
+
+	//TODO: investigate, \/ is a Traversable...
+	/*"liftFoldMap on a List[Disjunction]" should "work" in{
+		val in: List[Int \/ String] = List(\/.right("1"), \/.right("2"))
+		val out = in liftFoldMap { x: String => x.toInt }
+
+		same[List[Int]](out, List(3))
+	}*/
+
 	"LiftedFoldMap" should "work on a List" in{
 		val lf = liftFoldMap(intF)
 		val out = lf(List(1, 2, 3))

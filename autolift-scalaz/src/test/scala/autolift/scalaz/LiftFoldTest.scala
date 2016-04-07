@@ -18,4 +18,11 @@ class LiftFoldTest extends BaseSpec{
 
 		same[List[Int]](out, List(1))
 	}
+
+	"liftFold on a State[List]" should "work" in{
+		val in: State[Int,List[Int]] = State.state[Int,List[Int]](List(1, 2, 3))
+		val out = in.liftFold
+
+		same[Int](out.run(1)._2, 6)
+	}
 }

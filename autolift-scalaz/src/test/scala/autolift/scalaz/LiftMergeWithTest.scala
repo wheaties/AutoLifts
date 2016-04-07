@@ -20,6 +20,13 @@ class LiftMergeWithTest extends BaseSpec{
 		same[Option[List[Int]]](out, Option(List(2)))
 	}
 
+	"liftMergeWith on a Disjunction[List] on a List" should "work" in{
+		val in: Int \/ List[Int] = \/.right(List(1))
+		val out = in.liftMergeWith(List(1))(intintF)
+
+		same[Int \/ List[Int]](out, \/.right(List(2)))
+	}
+
 	"LiftedMergeWith on a Option[List]" should "work" in{
 		val lf = liftMergeWith(intintF)
 		val out = lf(Option(List(1)), List(1))

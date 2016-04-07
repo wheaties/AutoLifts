@@ -20,6 +20,13 @@ class LiftZipWithTest extends BaseSpec{
 		same[Option[List[Int]]](out, Option(List(2, 4)))
 	}
 
+	"liftZipWith on a Disjunction[List]" should "work" in{
+		val in: Int \/ List[Int] = \/.right(List(1, 2))
+		val out = in.liftZipWith(List(1, 2))(intintF)
+
+		same[Int \/ List[Int]](out, \/.right(List(2, 4)))
+	}
+
 	"LiftedZipWith on a Option[List]" should "work" in{
 		val lf = liftZipWith(intintF)
 		val out = lf(Option(List(1)), List(1))

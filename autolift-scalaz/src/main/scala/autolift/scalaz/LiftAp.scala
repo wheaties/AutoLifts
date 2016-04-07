@@ -37,7 +37,7 @@ trait LowPriorityScalazLiftAp1 extends LowPriorityScalazLiftAp2{
 trait LowPriorityScalazLiftAp2{
 	type Aux[Obj, Fn, Out0] = ScalazLiftAp[Obj, Fn]{ type Out = Out0 }
 
-	implicit def urecur[FG, G, Fn](implicit un: Un.Apply[Functor, FG, G], lift: LiftAp[G, Fn]): Aux[FG, Fn, un.M[lift.Out]] =
+	implicit def unrecur[FG, G, Fn](implicit un: Un.Apply[Functor, FG, G], lift: LiftAp[G, Fn]): Aux[FG, Fn, un.M[lift.Out]] =
 		new ScalazLiftAp[FG, Fn]{
 			type Out = un.M[lift.Out]
 
@@ -45,7 +45,22 @@ trait LowPriorityScalazLiftAp2{
 		}
 }
 
-trait ScalazLiftApSyntax extends LiftApSyntax with LowPriorityLiftApSyntax
+trait ScalazLiftApSyntax extends LowPriorityLiftApSyntax{
+	
+	/// Syntax extension providing for a `liftAp` method.
+	implicit class LiftApOps[F[_], A](fa: F[A]){
+
+		/**
+		 * Automatic Applicative lifting of the contained function `f` such that the application point is dictated by the
+		 * type of the Applicative.
+		 *
+		 * @param f the wrapped function to be lifted.
+		 * @tparam MBC the argument type of the wrapped function which has the shape M[B => C] or for which there exists an 
+		 *         `Unapply` on an `Apply`.
+		 */
+		def liftAp[MBC](f: MBC)(implicit lift: LiftAp[F[A], MBC]): lift.Out = lift(fa, f)
+	}
+}
 
 trait LowPriorityLiftApSyntax{
 
@@ -57,7 +72,8 @@ trait LowPriorityLiftApSyntax{
 		 * type of the Applicative.
 		 *
 		 * @param f the wrapped function to be lifted.
-		 * @tparam MBC the argument type of the wrapped function.
+		 * @tparam MBC the argument type of the wrapped function which has the shape M[B => C] or for which there exists an 
+		 *         `Unapply` on an `Apply`.
 		 */
 		def liftAp[MBC](f: MBC)(implicit lift: LiftAp[FA, MBC]): lift.Out = lift(fa, f)
 	}

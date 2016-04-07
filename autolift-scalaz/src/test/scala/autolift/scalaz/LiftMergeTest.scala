@@ -16,6 +16,13 @@ class LiftMergeTest extends BaseSpec{
 		val in = Option(List(1, 2))
 		val out = in liftMerge List(1, 2)
 
-		same[Option[List[(Int,Int)]]](out, Option(List((1, 1), (2, 1), (1, 2), (2, 2))))
+		same[Option[List[(Int,Int)]]](out, Option(List((1, 1), (1, 2), (2, 1), (2, 2))))
+	}
+
+	"liftMerge on a Disjunction[Option]" should "work" in{
+		val in: Int \/ Option[Int] = \/.right(Option(1))
+		val out = in liftMerge Option(2)
+
+		same[Int \/ Option[(Int,Int)]](out, \/.right(Option(1 -> 2)))
 	}
 }
