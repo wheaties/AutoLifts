@@ -25,4 +25,11 @@ class LiftFlattenTest extends BaseSpec{
 
 		same[Option[List[Int]]](out, Option(List(1)))
 	}
+
+	"liftFlatten" should "work on a Disjunction of List of Lists" in{
+		val in: Int \/ List[List[Int]] = \/.right(List(List(1, 2), List(3, 4)))
+		val out = in.liftFlatten
+
+		same[Int \/ List[Int]](out, \/.right(List(1, 2, 3, 4)))
+	}
 }

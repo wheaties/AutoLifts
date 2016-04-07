@@ -18,4 +18,11 @@ class LiftFoldLeftTest extends BaseSpec{
 
 		same[List[Int]](out, List(4, 5, 3))
 	}
+
+	"liftFoldLeft on a Disjunction[List]" should "work" in{
+		val in: Int \/ List[Int] = \/.right(List(1, 2, 3))
+		val out = in.liftFoldLeft(4)(intintF)
+
+		same[Int \/ Int](out, \/.right(10))
+	}
 }

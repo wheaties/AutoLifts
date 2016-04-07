@@ -19,6 +19,21 @@ class LiftMapTest extends BaseSpec{
 		same[Option[Int]](out, Option(1))
 	}
 
+	"liftMap on a Disjunction[List]" should "work" in{
+		val in: Int \/ List[Int] = \/.right(List(1))
+		val out = in liftMap intF
+
+		same[Int \/ List[Int]](out, \/.right(List(2)))
+	}
+
+	//TODO: investigate, \/ has a Functor...
+	/*"liftMap on a List[Disjunction]" should "work" in{
+		val in: List[Int \/ Int] = List(\/.right(1))
+		val out = in liftMap intF
+
+		same[List[Int \/ Int]](out, List(\/.right(2)))
+	}*/
+
 	"LiftedMap" should "work on a List" in{
 		val lf = liftMap(intF)
 		val out = lf(List(1))

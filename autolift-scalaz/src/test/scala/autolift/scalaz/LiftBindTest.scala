@@ -19,6 +19,22 @@ class LiftBindTest extends BaseSpec{
 		same[Option[Int]](out, Option(1))
 	}
 
+	"liftBind on a Disjunction[List]" should "work" in{
+		val in: Int \/ List[Int] = \/.right(List(1))
+		val out = in liftBind intL
+
+		same[Int \/ List[Int]](out, \/.right(List(2, 3)))
+	}
+
+	//TODO: revisit
+	/*"liftBind on a List[Disjunction]" should "work" in{
+		val in: List[Int \/ Int] = List(\/.right(1))
+		val f: Int => \/[Int,Int] = { x: Int => \/.right(x + 1) }
+		val out = in liftBind f
+
+		same[List[Int \/ Int]](out, List(\/.right(2)))
+	}*/
+
 	"LiftedBind" should "work on a List" in{
 		val lf = liftBind(intL)
 		val out = lf(List(1))

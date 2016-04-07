@@ -17,6 +17,13 @@ class LiftExistsTest extends BaseSpec{
 		same[Boolean](out, true)
 	}
 
+	"liftExists" should "work on a Disjunction[List]" in{
+		val in: Int \/ List[Int] = \/.right(List(1, 2, 3))
+		val out = in liftAny even
+
+		same[Int \/ Boolean](out, \/.right(true))
+	}
+
 	"liftExists" should "work on a List[Option]" in{
 		val in = List(Option(1), None, Option(3))
 		val out = in liftAny even

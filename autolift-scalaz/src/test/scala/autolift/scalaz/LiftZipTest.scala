@@ -19,4 +19,12 @@ class LiftZipTest extends BaseSpec{
 
 		same[Option[List[(Int,Int)]]](out, in map (_ zip arg))
 	}
+
+	"liftZip on a Disjunction[List] with a List" should "work" in{
+		val arg = List(1, 2)
+		val in: Int \/ List[Int] = \/.right(arg)
+		val out = in liftZip arg
+
+		same[Int \/ List[(Int,Int)]](out, in map (_ zip arg))
+	}
 }

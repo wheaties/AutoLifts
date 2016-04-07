@@ -1,7 +1,7 @@
 package autolift.scalaz
 
-import scalaz.{Functor, Bind}
-import autolift.LiftFlatten
+import scalaz.{Functor, Bind, Unapply}
+import autolift.{LiftFlatten, LiftFlattenSyntax}
 
 trait ScalazLiftFlatten[M[_], Obj] extends LiftFlatten[M, Obj]
 
@@ -16,9 +16,7 @@ object ScalazLiftFlatten extends LowPriorityScalazLiftFlatten{
 		}
 }
 
-trait LowPriorityScalazLiftFlatten{
-	type Aux[M[_], Obj, Out0] = ScalazLiftFlatten[M, Obj]{ type Out = Out0 }
-
+trait LowPriorityScalazLiftFlatten extends LowPriorityScalazLiftFlatten1{
 	implicit def recur[M[_], F[_], G](implicit functor: Functor[F], lift: LiftFlatten[M, G]): Aux[M, F[G], F[lift.Out]] =
 		new ScalazLiftFlatten[M, F[G]]{
 			type Out = F[lift.Out]
@@ -27,3 +25,30 @@ trait LowPriorityScalazLiftFlatten{
 		}
 }
 
+trait LowPriorityScalazLiftFlatten1{
+	type Aux[M[_], Obj, Out0] = ScalazLiftFlatten[M, Obj]{ type Out = Out0 }
+
+	implicit def unrecur[M[_], FG, G](implicit un: Un.Apply[Functor, FG, G], lift: LiftFlatten[M, G]): Aux[M, FG, un.M[lift.Out]] =
+		new ScalazLiftFlatten[M, FG]{
+			type Out = un.M[lift.Out]
+
+			def apply(fg: FG) = un.TC.map(un(fg)){ g: G => lift(g) }
+		}
+}
+
+trait ScalazLiftFlattenSyntax extends LiftFlattenSyntax with LowPriorityLiftFlattenSyntax
+
+trait LowPriorityLiftFlattenSyntax{
+
+  ///Syntax extension providing for a `liftFlatten` method.
+  implicit class LowLiftFlattenOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
+
+    /**
+     * Automatic lifting of a flatten operation given the juxtaposition of the two of the given types in the nested type 
+     * structure.
+     *
+     * @tparam M the type over which to flatten given that there exists the concept of flattening of the type.
+     */
+    def liftFlatten[M[_]](implicit lift: LiftFlatten[M, FA]): lift.Out = lift(fa)
+  }
+}
