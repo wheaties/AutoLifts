@@ -17,7 +17,7 @@ val item2 = List(1, 2)
 
 val out = item1.map{ ints =>
   for{
-    x <- itns
+    x <- ints
     y <- item2
   } yield (x, y)
 }
