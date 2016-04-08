@@ -16,10 +16,10 @@ AutoLifts is organized in a multi-project structure. The following modules are a
 The *core* module is a dependency of *algebird*, *cats* and *scalaz*. While it forms the backbone of AutoLifts and can be downloaded, it is not a standalone project. Subprojects such as [docs](https://github.com/wheaties/AutoLifts/tree/0.5/docs) and [bench](https://github.com/wheaties/AutoLifts/tree/0.5/bench) are for reference only.
 
 ##Using
-The current released branch is 0.4 and compiled against Scala version 2.11. If using SBT add the following to the build definition:
+The current released branch is 0.5 and compiled against Scala version 2.11. If using SBT add the following to the build definition:
 
 ```scala
-libraryDependencies += "com.github.wheaties" %% "autolift-[backend]" % "0.4"
+libraryDependencies += "com.github.wheaties" %% "autolift-[backend]" % "0.5"
 ```
 
 where "backend" is one of *algebird*, *cats* or *scalaz*. As stated above, *core* will be downloaded as a dependency.
