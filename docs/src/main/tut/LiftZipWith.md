@@ -17,7 +17,7 @@ val item2 = List(1, 2)
 def add(x: Int, y: Int) = x + y
 
 val out = item1.map{ inner: List[Int] =>
-  (inner zip item2) map (add.tupled)
+  (inner zip item2) map (add(_,_).tupled)
 }
 ```
 
