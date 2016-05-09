@@ -6,9 +6,10 @@ package autolift
  *
  * @author Owein Reese
  *
- * @tparam Obj The type to be lifted into.
+ * @tparam F The type at which to stop folding.
+ * @tparam Obj The type over which to lift the folding.
  */
-trait LiftFold[Obj] extends DFunction1[Obj]
+trait LiftFold[F[_], Obj] extends DFunction1[Obj]
 
 trait LiftFoldSyntax{
 
@@ -18,7 +19,7 @@ trait LiftFoldSyntax{
 		/**
 		 * Automatic lifting of a Fold on the first nested type which has as a type parameter a Monoid.
 		 */
-		def liftFold(implicit lift: LiftFold[F[A]]): lift.Out = lift(fa)
+		def liftFold[M[_]](implicit lift: LiftFold[M, F[A]]): lift.Out = lift(fa)
 	}
 }
 

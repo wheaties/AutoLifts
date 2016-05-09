@@ -10,7 +10,6 @@ trait Syntax extends CatsLiftMapSyntax
   with CatsLiftFoldLeftSyntax
   with CatsLiftFoldRightSyntax
   with CatsLiftFoldSyntax
-  with CatsLiftFoldAtSyntax
   with CatsLiftFoldMapSyntax
   with CatsLiftExistsSyntax
   with CatsLiftMergeSyntax

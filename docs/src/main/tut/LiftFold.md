@@ -30,3 +30,16 @@ import autolift.Scalaz._
 val listOpt = Option(List(1,2,3))
 val out = listOpt.liftFold
 ```
+
+Optionally, the higher-kinded type may be explicitly provided so as to leap frog to an inner type instead of the first foldable containing a `Monoid`:
+
+```tut
+import scalaz._
+import Scalaz._
+import autolift.Scalaz._
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+val futListOpt = Future(List(Option(1), None, Option(2)))
+val out = futListOpt.liftFold[Option]
+```

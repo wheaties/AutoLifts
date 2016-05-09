@@ -8,7 +8,6 @@ trait Syntax extends ScalazLiftMapSyntax
 	with LiftFilterSyntax
 	with ScalazLiftFoldLeftSyntax
 	with LiftFoldRightSyntax
-	with ScalazLiftFoldAtSyntax
 	with ScalazLiftFlattenSyntax
 	with ScalazLiftFoldSyntax
 	with ScalazLiftFoldMapSyntax

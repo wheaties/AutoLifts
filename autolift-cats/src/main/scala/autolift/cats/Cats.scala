@@ -8,9 +8,8 @@ object Cats extends Syntax with Context with Reexports with Implicits{
   implicit def mkFM[Obj, Fn](implicit lift: CatsLiftFlatMap[Obj, Fn]): CatsLiftFlatMap.Aux[Obj, Fn, lift.Out] = lift
   implicit def mkFldL[Obj, Fn, Z](implicit lift: CatsLiftFoldLeft[Obj, Fn, Z]): CatsLiftFoldLeft.Aux[Obj, Fn, Z, lift.Out] = lift
   implicit def mkFldR[Obj, Fn, Z](implicit lift: CatsLiftFoldRight[Obj, Fn, Z]): CatsLiftFoldRight.Aux[Obj, Fn, Z, lift.Out] = lift
-  implicit def mkFld[Obj](implicit lift: CatsLiftFold[Obj]): CatsLiftFold.Aux[Obj, lift.Out] = lift
   implicit def mkFlM[Obj, Fn](implicit lift: CatsLiftFoldMap[Obj, Fn]): CatsLiftFoldMap.Aux[Obj, Fn, lift.Out] = lift
-  implicit def mkFlA[M[_], Obj](implicit lift: CatsLiftFoldAt[M, Obj]): CatsLiftFoldAt.Aux[M, Obj, lift.Out] = lift
+  implicit def mkFlA[M[_], Obj](implicit lift: CatsLiftFold[M, Obj]): CatsLiftFold.Aux[M, Obj, lift.Out] = lift
   implicit def mkFl[M[_], Obj](implicit lift: CatsLiftFlatten[M, Obj]): CatsLiftFlatten.Aux[M, Obj, lift.Out] = lift
   implicit def mkFil[Obj, Fn](implicit lift: CatsLiftFilter[Obj, Fn]): CatsLiftFilter[Obj, Fn] = lift
   implicit def mkFAll[Obj, Fn](implicit lift: CatsFoldAll[Obj, Fn]): CatsFoldAll[Obj, Fn] = lift

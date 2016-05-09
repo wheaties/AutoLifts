@@ -3,13 +3,13 @@ package autolift.scalaz
 import scalaz.{Functor, Foldable, Monoid, Unapply}
 import autolift.{LiftFold, LiftFoldSyntax}
 
-trait ScalazLiftFold[Obj] extends LiftFold[Obj]
+trait ScalazLiftFold[F[_], Obj] extends LiftFold[F, Obj]
 
 object ScalazLiftFold extends LowPriorityScalazLiftFold{
-	def apply[FA](implicit lift: ScalazLiftFold[FA]): Aux[FA, lift.Out] = lift
+	def apply[F[_], Obj](implicit fold: ScalazLiftFold[F, Obj]): Aux[F, Obj, fold.Out] = fold
 
-	implicit def base[F[_], A](implicit fold: Foldable[F], ev: Monoid[A]): Aux[F[A], A] =
-		new ScalazLiftFold[F[A]]{
+	implicit def base[F[_], A](implicit fold: Foldable[F], m: Monoid[A]): Aux[F, F[A], A] =
+		new ScalazLiftFold[F, F[A]]{
 			type Out = A
 
 			def apply(fa: F[A]) = fold.fold(fa)
@@ -17,8 +17,8 @@ object ScalazLiftFold extends LowPriorityScalazLiftFold{
 }
 
 trait LowPriorityScalazLiftFold extends LowPriorityScalazLiftFold1{
-	implicit def unbase[FA, A](implicit un: Un.Apply[Foldable, FA, A], ev: Monoid[A]): Aux[FA, A] =
-		new ScalazLiftFold[FA]{
+	implicit def unbase[FA, A](implicit un: Un.Apply[Foldable, FA, A], m: Monoid[A]): Aux[un.M, FA, A] =
+		new ScalazLiftFold[un.M, FA]{
 			type Out = A
 
 			def apply(fa: FA) = un.TC.fold(un(fa))
@@ -26,22 +26,22 @@ trait LowPriorityScalazLiftFold extends LowPriorityScalazLiftFold1{
 }
 
 trait LowPriorityScalazLiftFold1 extends LowPriorityScalazLiftFold2{
-	implicit def recur[F[_], G](implicit functor: Functor[F], lift: LiftFold[G]): Aux[F[G], F[lift.Out]] =
-		new ScalazLiftFold[F[G]]{
-			type Out = F[lift.Out]
+	implicit def recur[F[_], G[_], H](implicit functor: Functor[G], fold: LiftFold[F, H]): Aux[F, G[H], G[fold.Out]] =
+		new ScalazLiftFold[F, G[H]]{
+			type Out = G[fold.Out]
 
-			def apply(fg: F[G]) = functor.map(fg){ g: G => lift(g) }
+			def apply(gh: G[H]) = functor.map(gh){ h: H => fold(h) }
 		}
 }
 
 trait LowPriorityScalazLiftFold2{
-	type Aux[FA, Out0] = ScalazLiftFold[FA]{ type Out = Out0 }
+	type Aux[F[_], Obj, Out0] = ScalazLiftFold[F, Obj]{ type Out = Out0 }
 
-	implicit def unrecur[FG, G](implicit un: Un.Apply[Functor, FG, G], lift: LiftFold[G]): Aux[FG, un.M[lift.Out]] =
-		new ScalazLiftFold[FG]{
-			type Out = un.M[lift.Out]
+	implicit def unrecur[F[_], GH, H](implicit un: Un.Apply[Functor, GH, H], fold: LiftFold[F, H]): Aux[F, GH, un.M[fold.Out]] =
+		new ScalazLiftFold[F, GH]{
+			type Out = un.M[fold.Out]
 
-			def apply(fg: FG) = un.TC.map(un(fg)){ g: G => lift(g) }
+			def apply(gh: GH) = un.TC.map(un(gh)){ h: H => fold(h) }
 		}
 }
 
@@ -53,8 +53,11 @@ trait LowPriorityLiftFoldSyntax{
   implicit class LowLiftFoldOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
 
     /**
-     * Automatic lifting of a Fold on the first nested type which has as a type parameter a Monoid.
+     * Automatic lifting of a Fold at the indicated type, assuming the type permits folding and the contained type has 
+     * a Monoid.
+     * 
+     * @tparam M the higher-kinded type for which there is the notion of folding or traversing.
      */
-    def liftFold(implicit lift: LiftFold[FA]): lift.Out = lift(fa)
+    def liftFold[M[_]](implicit fold: LiftFold[M, FA]): fold.Out = fold(fa)
   }
 }
