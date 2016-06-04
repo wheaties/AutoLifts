@@ -1,6 +1,5 @@
 package autolift
 
-
 /**
  * Type class supporting folding over an arbitrary nesting of type constructors.
  *
@@ -24,4 +23,3 @@ trait LiftFoldSyntax{
 }
 
 //Contexts for a liftFold do not exist.
-
