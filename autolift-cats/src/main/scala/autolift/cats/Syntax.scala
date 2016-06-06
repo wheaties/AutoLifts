@@ -16,6 +16,7 @@ trait Syntax extends CatsLiftMapSyntax
   with CatsLiftMergeWithSyntax
   with CatLiftForAllSyntax
   with LiftSequenceSyntax
+  with LiftTraverseSyntax
   with FoldForallSyntax
   with FoldExistsSyntax
   with FoldCompleteSyntax
