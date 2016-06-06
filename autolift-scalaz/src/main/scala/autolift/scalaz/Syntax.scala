@@ -19,6 +19,7 @@ trait Syntax extends ScalazLiftMapSyntax
 	with ScalazLiftMergeWithSyntax
 	with LiftSequenceSyntax
 	with LiftReverseSyntax
+	with LiftTraverseSyntax
 	with FoldAllSyntax
 	with FoldAnySyntax
 	with FoldCompleteSyntax

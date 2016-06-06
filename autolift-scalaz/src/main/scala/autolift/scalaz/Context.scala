@@ -13,6 +13,7 @@ trait Context extends LiftMapContext
 	with LiftAllContext
 	with LiftZipWithContext
 	with LiftMergeWithContext
+  with LiftTraverseContext
   with LiftA2Context
   with LiftA3Context
   with LiftA4Context
