@@ -1,6 +1,6 @@
 package autolift.cats
 
-import autolift.Cats._
+import autolift.cats.applicative._
 import cats.implicits._
 import cats.{Functor, Apply}
 import cats.data.Xor

@@ -2,7 +2,7 @@ package autolift.cats
 
 import cats.implicits._
 import cats.data.Xor
-import autolift.Cats._
+import autolift.cats.monad._
 
 class LiftFlatMapTest extends BaseSpec{
   "liftFlatMap on an Option[List]" should "work" in{

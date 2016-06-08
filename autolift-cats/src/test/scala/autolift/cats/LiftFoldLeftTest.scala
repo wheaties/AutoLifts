@@ -2,7 +2,7 @@ package autolift.cats
 
 import cats.implicits._
 import cats.data.Xor
-import autolift.Cats._
+import autolift.cats.fold._
 
 class LiftFoldLeftTest extends BaseSpec{
   "liftFoldLeft on a List" should "work" in{

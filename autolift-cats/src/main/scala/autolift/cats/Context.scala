@@ -13,26 +13,7 @@ trait Context extends LiftMapContext
   with LiftForAllContext
   with LiftMergeWithContext
   with LiftTraverseContext
-  with LiftA2Context
-  with LiftA3Context
-  with LiftA4Context
-  with LiftA5Context
-  with LiftA6Context
-  with LiftA7Context
-  with LiftA8Context
-  with LiftA9Context
-  with LiftA10Context
-  with LiftA11Context
-  with LiftA12Context
-  with LiftA13Context
-  with LiftA14Context
-  with LiftA15Context
-  with LiftA16Context
-  with LiftA17Context
-  with LiftA18Context
-  with LiftA19Context
-  with LiftA20Context
-  with LiftA21Context
+  with `LiftA*Context`
   with LiftM2Context
   with LiftM3Context
   with LiftM4Context
@@ -56,3 +37,24 @@ trait Context extends LiftMapContext
   with FoldWithContext
   with FoldForallContext
   with FoldExistsContext
+
+trait `LiftA*Context` extends LiftA2Context
+  with LiftA3Context
+  with LiftA4Context
+  with LiftA5Context
+  with LiftA6Context
+  with LiftA7Context
+  with LiftA8Context
+  with LiftA9Context
+  with LiftA10Context
+  with LiftA11Context
+  with LiftA12Context
+  with LiftA13Context
+  with LiftA14Context
+  with LiftA15Context
+  with LiftA16Context
+  with LiftA17Context
+  with LiftA18Context
+  with LiftA19Context
+  with LiftA20Context
+  with LiftA21Context

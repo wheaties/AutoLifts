@@ -2,7 +2,7 @@ package autolift.cats
 
 import cats.implicits._
 import cats.data.Xor
-import autolift.Cats._
+import autolift.cats.applicative._
 
 class LiftApTest extends BaseSpec{
   "liftAp on an Option[List]" should "work" in{

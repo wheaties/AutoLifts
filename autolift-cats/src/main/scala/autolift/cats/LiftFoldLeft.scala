@@ -1,7 +1,7 @@
 package autolift.cats
 
 import cats.{Functor, Foldable, Unapply}
-import autolift.{LiftFoldLeft, LiftFoldLeftSyntax}
+import autolift.{LiftFoldLeft, LiftFoldLeftSyntax, LiftFoldLeftContext}
 
 
 trait CatsLiftFoldLeft[Obj, Fn, Z] extends LiftFoldLeft[Obj, Fn, Z]
@@ -65,3 +65,11 @@ trait LowPriorityLiftFoldLeftSyntax{
       lift(fa, f, z)
   }
 }
+
+trait LiftFoldLeftExport{
+  implicit def mkFldL[Obj, Fn, Z](implicit lift: CatsLiftFoldLeft[Obj, Fn, Z]): CatsLiftFoldLeft.Aux[Obj, Fn, Z, lift.Out] = lift
+}
+
+trait LiftFoldLeftPackage extends LiftFoldLeftExport
+  with CatsLiftFoldLeftSyntax
+  with LiftFoldLeftContext

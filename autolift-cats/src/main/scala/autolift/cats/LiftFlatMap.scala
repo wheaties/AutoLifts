@@ -77,3 +77,11 @@ trait LiftFlatMapContext{
   def liftFlatMap[A, B, M[_]](f: A => M[B])(implicit flatMap: FlatMap[M]) = new LiftedFlatMap(f)
 }
 
+trait LiftFlatMapExport{
+  implicit def mkFM[Obj, Fn](implicit lift: CatsLiftFlatMap[Obj, Fn]): CatsLiftFlatMap.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftFlatMapPackage extends LiftedFlatMapImplicits
+  with LiftFlatMapExport
+  with LiftFlatMapContext
+  with CatsLiftFlatMapSyntax

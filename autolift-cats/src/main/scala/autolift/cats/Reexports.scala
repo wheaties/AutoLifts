@@ -2,7 +2,16 @@ package autolift.cats
 
 //TODO: boilerplate this
 
-trait Reexports extends `LiftM*Reexports` with `LiftA*Reexports`
+trait Reexports extends LiftMapExport
+	with LiftApExport
+	with LiftMergeExport
+	with LiftMergeWithExport
+	with LiftFlatMapExport
+	with LiftFlattenExport
+	with LiftFilterExport
+	with LiftFoldExport
+	with `LiftM*Reexports` 
+	with `LiftA*Reexports`
 
 trait `LiftM*Reexports` extends LiftM2Reexport
 	with LiftM3Reexport

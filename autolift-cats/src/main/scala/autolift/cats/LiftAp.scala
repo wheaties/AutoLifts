@@ -80,3 +80,11 @@ trait LiftApContext{
   def liftAp[A, B, F[_]](f: F[A => B])(implicit ap: Apply[F]) = new LiftedAp(f)
 }
 
+trait LiftApExport{
+  implicit def mkAp[Obj, Fn](implicit lift: CatsLiftAp[Obj, Fn]): CatsLiftAp.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftApPackage extends LiftApExport
+  with CatsLiftApSyntax 
+  with LiftApContext
+  with LiftedApImplicits

@@ -30,4 +30,3 @@ trait LiftTraverseSyntax{
 }
 
 //See individual implementations for liftTraverse Context.
-

@@ -1,5 +1,13 @@
 package autolift
 
+/**
+ * Type class supporting the folding of a predicate over an arbitrary nesting of type constructors.
+ *
+ * @author Owein Reese
+ *
+ * @tparam Obj the type to be lifted into.
+ * @tparam Fn the predicate to be lifted.
+ */
 trait LiftForAll[Obj, Fn] extends DFunction2[Obj, Fn]
 
 trait LiftForAllSyntax{
@@ -25,4 +33,3 @@ final class LiftedForAll[A](f: A => Boolean){
 trait LiftForAllContext{
 	def liftForAll[A](f: A => Boolean) = new LiftedForAll(f)
 }
-

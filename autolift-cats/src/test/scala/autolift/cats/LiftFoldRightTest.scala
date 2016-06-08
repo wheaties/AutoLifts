@@ -3,7 +3,7 @@ package autolift.cats
 import cats.{Eval, Now}
 import cats.implicits._
 import cats.data.Xor
-import autolift.Cats._
+import autolift.cats.fold._
 
 class LiftFoldRightTest extends BaseSpec{
   def plus(x: Int, y: Eval[Int]) = y.map(_ + x)

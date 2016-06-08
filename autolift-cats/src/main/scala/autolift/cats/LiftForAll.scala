@@ -1,7 +1,7 @@
 package autolift.cats
 
 import cats.{Functor, Foldable, Unapply}
-import autolift.{LiftForAll, LiftedForAll, LiftForAllSyntax}
+import autolift.{LiftForAll, LiftedForAll, LiftForAllSyntax, LiftForAllContext}
 
 //TODO: syntax is currently forAll vs forall. Make consistent?
 trait CatsLiftForAll[Obj, Fn] extends LiftForAll[Obj, Fn]
@@ -35,7 +35,7 @@ trait LowPriorityCatsLiftForAll1 extends LowPriorityCatsLiftForAll2{
     }
 }
 
-trait CatLiftForAllSyntax extends LiftForAllSyntax with LowPriorityLiftForAllSyntax
+trait CatsLiftForAllSyntax extends LiftForAllSyntax with LowPriorityLiftForAllSyntax
 
 trait LowPriorityLiftForAllSyntax{
 
@@ -64,3 +64,10 @@ trait LowPriorityCatsLiftForAll2{
     }
 }
 
+trait LiftForAllExport{
+  implicit def mkAll[Obj, Fn](implicit lift: CatsLiftForAll[Obj, Fn]): CatsLiftForAll.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftForAllPackage extends LiftForAllExport
+  with CatsLiftForAllSyntax
+  with LiftForAllContext
