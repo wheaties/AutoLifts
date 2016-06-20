@@ -2,7 +2,7 @@ package autolift.cats
 
 import cats.implicits._
 import cats.data.Xor
-import autolift.Cats._
+import autolift.cats.functor._
 
 class LiftMapTest extends BaseSpec{
   "liftMap on an Option[List]" should "work" in{

@@ -2,7 +2,7 @@ package autolift.cats
 
 import cats.implicits._
 import cats.data.Xor
-import autolift.Cats._
+import autolift.cats.monad._
 
 class LiftFlattenTest extends BaseSpec{
   "liftFlatten" should "work on a List of Lists" in{

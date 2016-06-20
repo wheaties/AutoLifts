@@ -1,7 +1,7 @@
 package autolift.cats
 
 import cats.implicits._
-import autolift.Cats._
+import autolift.cats.traverse._
 
 class LiftSequenceTest extends BaseSpec{
   "liftSequence on a List[Option]" should "work" in{

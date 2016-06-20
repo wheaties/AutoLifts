@@ -3,7 +3,7 @@ package autolift.cats
 import cats.Functor
 import cats.implicits._
 import cats.data.Xor
-import autolift.Cats._
+import autolift.cats.fold._
 
 class LiftForAllTest extends BaseSpec{
   case class Bar[A](a: A)

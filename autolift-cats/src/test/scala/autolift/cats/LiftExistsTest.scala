@@ -3,7 +3,7 @@ package autolift.cats
 import cats.{Functor, Foldable, Eval}
 import cats.data.Xor
 import cats.implicits._
-import autolift.Cats._
+import autolift.cats.fold._
 
 class LiftExistsTest extends BaseSpec{
   case class Bar[A](a: A)

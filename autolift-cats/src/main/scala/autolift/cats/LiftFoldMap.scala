@@ -77,3 +77,10 @@ trait LiftFoldMapContext{
   def liftFoldMap[A, B : Monoid](f: A => B) = new LiftedFoldMap(f)
 }
 
+trait LiftFoldMapExport{
+  implicit def mkFlM[Obj, Fn](implicit lift: CatsLiftFoldMap[Obj, Fn]): CatsLiftFoldMap.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftFoldMapPackage extends LiftFoldMapExport
+  with LiftFoldMapContext
+  with CatsLiftFoldMapSyntax

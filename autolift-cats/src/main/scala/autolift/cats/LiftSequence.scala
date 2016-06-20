@@ -1,6 +1,6 @@
 package autolift.cats
 
-import autolift.LiftSequence
+import autolift.{LiftSequence, LiftSequenceSyntax}
 import cats.{Traverse, Applicative, Functor}
 
 trait CatsLiftSequence[M[_], Obj] extends LiftSequence[M, Obj]
@@ -26,3 +26,10 @@ trait LowPriorityCatsLiftSequence{
       def apply(fg: F[G]) = functor.map(fg){ g: G => lift(g) }
     }
 }
+
+trait LiftSequenceExport{
+  implicit def mkSq[M[_], Obj](implicit lift: CatsLiftSequence[M, Obj]): CatsLiftSequence.Aux[M, Obj, lift.Out] = lift
+}
+
+trait LiftSequencePackage extends LiftSequenceExport
+  with LiftSequenceSyntax

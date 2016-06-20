@@ -1,7 +1,7 @@
 package autolift.cats
 
 import cats.{Functor, Unapply}
-import autolift.{LiftMap, LiftedMap, LiftMapSyntax}
+import autolift.{LiftMap, LiftedMap, LiftMapSyntax, LiftMapContext}
 
 trait CatsLiftMap[Obj, Fn] extends LiftMap[Obj, Fn]
 
@@ -70,3 +70,11 @@ trait LiftedMapImplicits{
   }
 }
 
+trait LiftMapExport{
+  implicit def mkM[Obj, Fn](implicit lift: CatsLiftMap[Obj, Fn]): CatsLiftMap.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftMapPackage extends LiftMapExport
+  with LiftedMapImplicits
+  with CatsLiftMapSyntax
+  with LiftMapContext

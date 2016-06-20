@@ -2,7 +2,7 @@ package autolift.cats
 
 import cats.implicits._
 import cats.data.NonEmptyList
-import autolift.Cats._
+import autolift.cats.monad._
 
 class LiftFilterTest extends BaseSpec{
   "liftFilter on a List" should "work" in{

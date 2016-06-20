@@ -55,3 +55,9 @@ trait LowPriorityLiftMergeSyntax{
     def liftMerge[That](that: That)(implicit lift: LiftMerge[FA, That]): lift.Out = lift(fa, that)
   }
 }
+
+trait LiftMergeExport{
+  implicit def mkJ[Obj1, Obj2](implicit lift: CatsLiftMerge[Obj1, Obj2]): CatsLiftMerge.Aux[Obj1, Obj2, lift.Out] = lift
+}
+
+trait LiftMergePackage extends LiftMergeExport with CatsLiftMergeSyntax

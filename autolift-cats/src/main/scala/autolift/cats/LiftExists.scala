@@ -1,7 +1,7 @@
 package autolift.cats
 
 import cats.{Functor, Foldable, Unapply}
-import autolift.{LiftExists, LiftedExists, LiftExistsSyntax}
+import autolift.{LiftExists, LiftedExists, LiftExistsSyntax, LiftExistsContext}
 
 trait CatsLiftExists[Obj, Fn] extends LiftExists[Obj, Fn]
 
@@ -52,3 +52,11 @@ trait LowPriorityLiftExistsSyntax{
     def liftExists[B](f: B => Boolean)(implicit lift: LiftExists[FA, B => Boolean]): lift.Out = lift(fa, f)
   }
 }
+
+trait LiftExistsExport{
+  implicit def mkAny[Obj, Fn](implicit lift: CatsLiftExists[Obj, Fn]): CatsLiftExists.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftExistsPackage extends LiftExistsExport
+  with CatsLiftExistsSyntax
+  with LiftExistsContext

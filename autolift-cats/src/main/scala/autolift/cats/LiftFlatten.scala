@@ -52,3 +52,10 @@ trait LowPriorityLiftFlattenSyntax{
     def liftFlatten[M[_]](implicit lift: LiftFlatten[M, FA]): lift.Out = lift(fa)
   }
 }
+
+trait LiftFlattenExport{
+  implicit def mkFl[M[_], Obj](implicit lift: CatsLiftFlatten[M, Obj]): CatsLiftFlatten.Aux[M, Obj, lift.Out] = lift
+}
+
+trait LiftFlattenPackage extends LiftFlattenExport
+  with CatsLiftFlattenSyntax
