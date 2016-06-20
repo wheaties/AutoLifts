@@ -1,7 +1,7 @@
 package autolift.cats
 
 import cats.implicits._
-import autolift.Cats._
+import autolift.cats.traverse._
 
 class LiftTraverseTest extends BaseSpec{
   def anyI(in: Int) = Option(in)

@@ -1,6 +1,6 @@
 package autolift.cats
 
-import autolift.LiftTraverse
+import autolift.{LiftTraverse, LiftTraverseSyntax}
 import cats.{Functor, Applicative, Traverse}
 
 trait CatsLiftTraverse[Obj, Fn] extends LiftTraverse[Obj, Fn]
@@ -42,3 +42,11 @@ trait LiftedTraverseImplicits{
 trait LiftTraverseContext{
   def liftTraverse[M[_], A, B](f: A => M[B])(implicit ap: Applicative[M]) = new LiftedTraverse(f)
 }
+
+trait LiftTraverseExport{
+  implicit def mkTv[Obj, Fn](implicit lift: CatsLiftTraverse[Obj, Fn]): CatsLiftTraverse.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftTraversePackage extends LiftTraverseExport
+  with LiftTraverseContext
+  with LiftTraverseSyntax

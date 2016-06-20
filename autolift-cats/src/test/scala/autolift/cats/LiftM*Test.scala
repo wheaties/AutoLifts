@@ -1,7 +1,7 @@
 package autolift.cats
 
 import cats.implicits._
-import autolift.Cats._
+import autolift.cats.monad._
 
 class `LiftM*Test` extends BaseSpec{
   "liftM2" should "work on a pair of List" in{

@@ -1,0 +1,44 @@
+package autolift.cats
+
+import autolift._
+
+trait `LiftM*Package` extends LiftM2Context
+  with LiftM3Context
+  with LiftM4Context
+  with LiftM5Context
+  with LiftM6Context
+  with LiftM7Context
+  with LiftM8Context
+  with LiftM9Context
+  with LiftM10Context
+  with LiftM11Context
+  with LiftM12Context
+  with LiftM13Context
+  with LiftM14Context
+  with LiftM15Context
+  with LiftM16Context
+  with LiftM17Context
+  with LiftM18Context
+  with LiftM19Context
+  with LiftM20Context
+  with LiftM21Context
+  with LiftM2Reexport
+  with LiftM3Reexport
+  with LiftM4Reexport
+  with LiftM5Reexport
+  with LiftM6Reexport
+  with LiftM7Reexport
+  with LiftM8Reexport
+  with LiftM9Reexport
+  with LiftM10Reexport
+  with LiftM11Reexport
+  with LiftM12Reexport
+  with LiftM13Reexport
+  with LiftM14Reexport
+  with LiftM15Reexport
+  with LiftM16Reexport
+  with LiftM17Reexport
+  with LiftM18Reexport
+  with LiftM19Reexport
+  with LiftM20Reexport
+  with LiftM21Reexport
