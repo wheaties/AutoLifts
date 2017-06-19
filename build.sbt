@@ -15,8 +15,8 @@ lazy val core = module("autolift-core").settings(
 
 lazy val autoCats = module("autolift-cats").settings(
   libraryDependencies ++= Seq(
-    "org.typelevel" %% "cats" % "0.4.0",
-    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
+    "org.typelevel" %% "cats" % "0.9.0",
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
   ),
   initialCommands in console := """
     import cats._
@@ -29,8 +29,8 @@ lazy val autoCats = module("autolift-cats").settings(
 
 lazy val autoAlge = module("autolift-algebird").settings(
   libraryDependencies ++= Seq(
-    "com.twitter" %% "algebird-core" % "0.11.0",
-    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
+    "com.twitter" %% "algebird-core" % "0.13.0",
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
   ),
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genAlgebird)
 )
@@ -39,7 +39,7 @@ lazy val autoAlge = module("autolift-algebird").settings(
 lazy val autoScalaz = module("autolift-scalaz").settings(
   libraryDependencies ++= Seq(
     "org.scalaz" %% "scalaz-core" % ScalaZ,
-    compilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
+    compilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
   ),
   initialCommands in console := """
     import scalaz._
@@ -52,7 +52,7 @@ lazy val autoScalaz = module("autolift-scalaz").settings(
 .dependsOn(core)
 
 lazy val docs = build("docs", "docs")
-  .settings(tutSettings: _*)
+  .enablePlugins(TutPlugin)
   .settings(site.settings: _*)
   .settings(ghpages.settings: _*)
   .settings(
@@ -76,6 +76,4 @@ lazy val bench = build("bench", "bench")
   )
   .dependsOn(core, autoScalaz)
   .enablePlugins(JmhPlugin)
-
-addCommandAlias("gen-site", "unidoc;tut;make-site")
 

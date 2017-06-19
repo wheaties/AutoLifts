@@ -4,8 +4,8 @@ import xerial.sbt.Sonatype._
 import xerial.sbt.Sonatype.SonatypeKeys._
 
 object AutoLift{
-	val ScalaVersion = "2.11.7"
-	val ScalaZ = "7.2.0"
+	val ScalaVersion = "2.12.2"
+	val ScalaZ = "7.2.13"
 
   def module(name: String) =
     build(name, name).
@@ -19,7 +19,7 @@ object AutoLift{
         defaultOptions filterNot unwantedOptions
       },
       libraryDependencies ++= Seq(
-        "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+        "org.scalatest" %% "scalatest" % "3.0.0" % "test"
       ),
       sonatypeProfileName := "wheaties"
     )
