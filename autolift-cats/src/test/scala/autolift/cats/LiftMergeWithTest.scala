@@ -2,8 +2,6 @@ package autolift.cats
 
 import autolift.cats.applicative._
 import cats.implicits._
-import cats.{Functor, Apply}
-import cats.data.Xor
 
 class LiftMergeWithTest extends BaseSpec{
 
@@ -21,11 +19,11 @@ class LiftMergeWithTest extends BaseSpec{
 		same[Option[List[Int]]](out, Option(List(2)))
 	}
 
-	"liftMergeWith on a Xor[Option]" should "work" in{
-		val in = Xor.right(Option(1))
+	"liftMergeWith on a Either[Option]" should "work" in{
+		val in = Either.right(Option(1))
 		val out = in.liftMergeWith(Option(1))(intintF)
 
-		same[Xor[Nothing,Option[Int]]](out, Xor.right(Option(2)))
+		same[Either[Nothing,Option[Int]]](out, Either.right(Option(2)))
 	}
 
 	"LiftedMergeWith on a Option[List]" should "work" in{

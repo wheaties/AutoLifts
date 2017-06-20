@@ -1,7 +1,6 @@
 package autolift.cats
 
 import cats.implicits._
-import cats.data.Xor
 import autolift.cats.applicative._
 
 class LiftApTest extends BaseSpec{
@@ -12,11 +11,11 @@ class LiftApTest extends BaseSpec{
     same[Option[List[Int]]](out, Option(List(2)))
   }
 
-  "liftAp on a Xor[List]" should "work" in{
-    val in = Xor.right(List(1))
+  "liftAp on a Either[List]" should "work" in{
+    val in = Either.right(List(1))
     val out = in liftAp List(intF)
 
-    same[Xor[Nothing,List[Int]]](out, Xor.right(List(2)))
+    same[Either[Nothing,List[Int]]](out, Either.right(List(2)))
   }
 
   "LiftedAp" should "work on a List" in{

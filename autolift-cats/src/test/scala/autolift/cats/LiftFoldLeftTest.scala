@@ -1,7 +1,6 @@
 package autolift.cats
 
 import cats.implicits._
-import cats.data.Xor
 import autolift.cats.fold._
 
 class LiftFoldLeftTest extends BaseSpec{
@@ -19,10 +18,10 @@ class LiftFoldLeftTest extends BaseSpec{
     same[List[Int]](out, List(4, 5, 3))
   }
 
-  "liftFoldLeft on an Xor[List]" should "work" in{
-    val in = Xor.right(List(1, 2))
+  "liftFoldLeft on an Either[List]" should "work" in{
+    val in = Either.right(List(1, 2))
     val out = in.liftFoldLeft(0)(intintF)
 
-    same[Xor[Nothing,Int]](out, Xor.right(3))
+    same[Either[Nothing,Int]](out, Either.right(3))
   }
 }

@@ -25,7 +25,7 @@ lazy val autoCats = module("autolift-cats").settings(
   """,
   sourceGenerators in Compile <+= (sourceManaged in Compile).map(Boilerplate.genCats)
 )
-  .dependsOn(core)
+.dependsOn(core)
 
 lazy val autoAlge = module("autolift-algebird").settings(
   libraryDependencies ++= Seq(

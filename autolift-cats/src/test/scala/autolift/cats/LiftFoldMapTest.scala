@@ -1,7 +1,6 @@
 package autolift.cats
 
 import cats.implicits._
-import cats.data.Xor
 import autolift.cats.fold._
 
 class LiftFoldMapTest extends BaseSpec{
@@ -19,11 +18,11 @@ class LiftFoldMapTest extends BaseSpec{
     same[List[Int]](out, List(1, 2, 3))
   }
 
-  "liftFoldMap on a Xor[List]" should "work" in{
-    val in = Xor.right(List("1", "1", "1"))
+  "liftFoldMap on a Either[List]" should "work" in{
+    val in = Either.right(List("1", "1", "1"))
     val out = in.liftFoldMap{ x: String => x.toInt }
 
-    same[Xor[Nothing,Int]](out, Xor.right(3))
+    same[Either[Nothing,Int]](out, Either.right(3))
   }
 
   "LiftedFoldMap" should "work on a List" in{

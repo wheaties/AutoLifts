@@ -17,23 +17,14 @@ object CatsLiftFlatMap extends LowPriorityCatsLiftFlatMap {
     }
 }
 
-trait LowPriorityCatsLiftFlatMap extends LowPriorityCatsLiftFlatMap1{
+trait LowPriorityCatsLiftFlatMap{
+  type Aux[Obj, Fn, Out0] = CatsLiftFlatMap[Obj, Fn]{ type Out = Out0 }
+
   implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftFlatMap[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
     new CatsLiftFlatMap[F[G], Fn]{
       type Out = F[lift.Out]
 
       def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }
-    }
-}
-
-trait LowPriorityCatsLiftFlatMap1{
-  type Aux[Obj, Fn, Out0] = CatsLiftFlatMap[Obj, Fn]{ type Out = Out0 }
-
-  implicit def unrecur[FG, G, Fn](implicit unapply: Un.Apply[Functor, FG, G], lift: LiftFlatMap[G, Fn]): Aux[FG, Fn, unapply.M[lift.Out]] =
-    new CatsLiftFlatMap[FG, Fn]{
-      type Out = unapply.M[lift.Out]
-
-      def apply(fg: FG, f: Fn) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g, f) }
     }
 }
 

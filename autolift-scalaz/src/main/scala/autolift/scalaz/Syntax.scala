@@ -20,8 +20,3 @@ trait Syntax extends ScalazLiftMapSyntax
 	with LiftSequenceSyntax
 	with LiftReverseSyntax
 	with LiftTraverseSyntax
-	with FoldAllSyntax
-	with FoldAnySyntax
-	with FoldCompleteSyntax
-	with FoldOverSyntax
-	with FoldWithSyntax

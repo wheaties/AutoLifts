@@ -18,24 +18,14 @@ object CatsLiftMergeWith extends LowPriorityCatsLiftMergeWith{
     }
 }
 
-trait LowPriorityCatsLiftMergeWith extends LowPriorityCatsLiftMergeWith1{
+trait LowPriorityCatsLiftMergeWith{
+  type Aux[Obj1, Obj2, Fn, Out0] = CatsLiftMergeWith[Obj1, Obj2, Fn]{ type Out = Out0 }
+
   implicit def recur[F[_], G, H, Fn](implicit functor: Functor[F], lift: LiftMergeWith[G, H, Fn]): Aux[F[G], H, Fn, F[lift.Out]] =
     new CatsLiftMergeWith[F[G], H, Fn]{
       type Out = F[lift.Out]
 
       def apply(fg: F[G], h: H, f: Fn) = functor.map(fg){ g: G => lift(g, h, f) }
-    }
-}
-
-trait LowPriorityCatsLiftMergeWith1{
-  type Aux[Obj1, Obj2, Fn, Out0] = CatsLiftMergeWith[Obj1, Obj2, Fn]{ type Out = Out0 }
-
-  implicit def unrecur[FG, G, H, Fn](implicit unapply: Un.Apply[Functor, FG, G], 
-                                              lift: LiftMergeWith[G, H, Fn]): Aux[FG, H, Fn, unapply.M[lift.Out]] =
-    new CatsLiftMergeWith[FG, H, Fn]{
-      type Out = unapply.M[lift.Out]
-
-      def apply(fg: FG, h: H, f: Fn) = unapply.TC.map(unapply.subst(fg)){ g: G => lift(g, h, f) }
     }
 }
 

@@ -12,6 +12,7 @@ object AutoLift{
     settings(
       scalacOptions ++= Seq(
         "-Xfatal-warnings",
+        "-Ypartial-unification",
         "-Ywarn-unused-import"
       ),
       scalacOptions in (Compile, console) ~= { defaultOptions =>
