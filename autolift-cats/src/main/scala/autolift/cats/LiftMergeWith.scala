@@ -1,7 +1,7 @@
 package autolift.cats
 
 import autolift.{LiftMergeWith, LiftedMergeWith, LiftMergeWithSyntax, LiftMergeWithContext}
-import cats.{Functor, Apply, Unapply}
+import cats.{Functor, Apply}
 
 trait CatsLiftMergeWith[Obj1, Obj2, Fn] extends LiftMergeWith[Obj1, Obj2, Fn]
 
@@ -29,28 +29,6 @@ trait LowPriorityCatsLiftMergeWith{
     }
 }
 
-trait CatsLiftMergeWithSyntax extends LiftMergeWithSyntax with LowPriorityLiftMergeWithSyntax
-
-trait LowPriorityLiftMergeWithSyntax{
-
-  /// Syntax extension providing for a `liftMergeWith` method.
-  implicit class LowLiftMergeWithOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
-
-    /**
-     * Automatic lifting of a `merging` operation based upon the application of a function.
-     *
-     * @param that the object to be merged
-     * @param f the function over which to merge
-     * @tparam That the type of the object to be merged
-     * @tparam B the first argument of the function used in the merging
-     * @tparam C the second argument of the function used in the merging
-     * @tparam D the return type of the function used in the merging
-     */
-    def liftMergeWith[That, B, C, D](that: That)(f: (B, C) => D)(implicit lift: LiftMergeWith[FA, That, (B, C) => D]): lift.Out = 
-      lift(fa, that, f)
-  }
-}
-
 trait LiftedMergeWithImplicits{
   implicit def liftedMergeWithFunctor[A, B] = new Functor[LiftedMergeWith[A, B, ?]]{
     def map[C, D](lm: LiftedMergeWith[A, B, C])(f: C => D) = lm map f
@@ -63,5 +41,5 @@ trait LiftMergeWithExport{
 
 trait LiftMergeWithPackage extends LiftMergeWithExport
   with LiftedMergeWithImplicits
-  with CatsLiftMergeWithSyntax
+  with LiftMergeWithSyntax
   with LiftMergeWithContext

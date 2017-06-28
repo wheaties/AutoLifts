@@ -1,6 +1,6 @@
 package autolift.cats
 
-import cats.{Eval, Functor, Foldable, Unapply}
+import cats.{Eval, Functor, Foldable}
 import autolift.LiftFoldRight
 
 
@@ -28,16 +28,9 @@ trait LowPriorityCatsLiftFoldRight{
     }
 }
 
-trait CatsLiftFoldRightSyntax extends LowPriorityLiftFoldRightSyntax{
+trait CatsLiftFoldRightSyntax {
   implicit class LiftFoldRightOps[F[_], A](fa: F[A]){
     def liftFoldRight[B, Z](z: Eval[Z])(f: (B, Eval[Z]) => Eval[Z])(implicit lift: LiftFoldRight[F[A], (B, Eval[Z]) => Eval[Z], Eval[Z]]): lift.Out =
-      lift(fa, f, z)
-  }
-}
-
-trait LowPriorityLiftFoldRightSyntax{
-  implicit class LowLiftFoldRightOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
-    def liftFoldRight[B, Z](z: Eval[Z])(f: (B, Eval[Z]) => Eval[Z])(implicit lift: LiftFoldRight[FA, (B, Eval[Z]) => Eval[Z], Eval[Z]]): lift.Out =
       lift(fa, f, z)
   }
 }

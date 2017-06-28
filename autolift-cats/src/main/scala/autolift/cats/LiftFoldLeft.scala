@@ -1,6 +1,6 @@
 package autolift.cats
 
-import cats.{Functor, Foldable, Unapply}
+import cats.{Functor, Foldable}
 import autolift.{LiftFoldLeft, LiftFoldLeftSyntax, LiftFoldLeftContext}
 
 
@@ -28,30 +28,10 @@ trait LowPriorityCatsLiftFoldLeft{
     }
 }
 
-trait CatsLiftFoldLeftSyntax extends LiftFoldLeftSyntax with LowPriorityLiftFoldLeftSyntax
-
-trait LowPriorityLiftFoldLeftSyntax{
-
-  /// Syntax extension provided for a `liftFoldLeft` method.
-  implicit class LowLiftFoldLeftOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
-
-    /**
-     * Automatic lifting of a FoldL dicated by the argument type of the function.
-     *
-     * @param z the initial value which starts the fold.
-     * @param f the function which defines the fold.
-     * @tparam B the type to be folded.
-     * @tparam Z the resultant type of the fold.
-     */
-    def liftFoldLeft[B, Z](z: Z)(f: (Z, B) => Z)(implicit lift: LiftFoldLeft[FA, (Z, B) => Z, Z]): lift.Out = 
-      lift(fa, f, z)
-  }
-}
-
 trait LiftFoldLeftExport{
   implicit def mkFldL[Obj, Fn, Z](implicit lift: CatsLiftFoldLeft[Obj, Fn, Z]): CatsLiftFoldLeft.Aux[Obj, Fn, Z, lift.Out] = lift
 }
 
 trait LiftFoldLeftPackage extends LiftFoldLeftExport
-  with CatsLiftFoldLeftSyntax
+  with LiftFoldLeftSyntax
   with LiftFoldLeftContext

@@ -1,6 +1,6 @@
 package autolift.cats
 
-import cats.{Functor, Apply, Unapply}
+import cats.{Functor, Apply}
 import autolift.{LiftAp, LiftApSyntax}
 
 trait CatsLiftAp[Obj, Fn] extends LiftAp[Obj, Fn]
@@ -27,25 +27,7 @@ trait LowPriorityCatsLiftAp{
     }
 }
 
-trait CatsLiftApSyntax extends LiftApSyntax with LowPriorityLiftApSyntax
-
-trait LowPriorityLiftApSyntax{
-
-  /// Syntax extension providing for a `liftAp` method.
-  implicit class LowLiftApOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
-
-    /**
-     * Automatic Applicative lifting of the contained function `f` such that the application point is dictated by the
-     * type of the Applicative.
-     *
-     * @param f the wrapped function to be lifted.
-     * @tparam B the argument type of the function.
-     * @tparam C the return type of the function.
-     * @tparam M the higher-kinded type with an Applicative.
-     */
-    def liftAp[B, C, M[_]](f: M[B => C])(implicit lift: LiftAp[FA, M[B => C]]): lift.Out = lift(fa, f)
-  }
-}
+trait CatsLiftApSyntax extends LiftApSyntax
 
 final class LiftedAp[A, B, F[_]](protected val f: F[A => B])(implicit ap: Apply[F]){
   def andThen[C >: B, D](lf: LiftedAp[C, D, F]) = new LiftedAp(ap.ap(

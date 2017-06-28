@@ -2,21 +2,21 @@ package autolift.scalaz
 
 import autolift._
 
-trait Syntax extends ScalazLiftMapSyntax
-	with ScalazLiftApSyntax
-	with LiftBindSyntax
-	with LiftFilterSyntax
-	with ScalazLiftFoldLeftSyntax
-	with LiftFoldRightSyntax
-	with ScalazLiftFlattenSyntax
-	with ScalazLiftFoldSyntax
-	with ScalazLiftFoldMapSyntax
-	with LiftAnySyntax
-	with LiftAllSyntax
-	with ScalazLiftZipSyntax
-	with ScalazLiftZipWithSyntax
-	with ScalazLiftMergeSyntax
-	with ScalazLiftMergeWithSyntax
-	with LiftSequenceSyntax
-	with LiftReverseSyntax
-	with LiftTraverseSyntax
+trait Syntax extends LiftMapSyntax
+  with LiftApSyntax
+  with LiftBindSyntax
+  with LiftFilterSyntax
+  with LiftFoldLeftSyntax
+  with LiftFoldRightSyntax
+  with LiftFlattenSyntax
+  with LiftFoldSyntax
+  with LiftFoldMapSyntax
+  with LiftAnySyntax
+  with LiftAllSyntax
+  with LiftZipSyntax
+  with LiftZipWithSyntax
+  with LiftMergeSyntax
+  with LiftMergeWithSyntax
+  with LiftSequenceSyntax
+  with LiftReverseSyntax
+  with LiftTraverseSyntax

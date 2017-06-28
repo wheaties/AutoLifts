@@ -1,6 +1,6 @@
 package autolift.cats
 
-import cats.{FlatMap, Functor, Unapply}
+import cats.{FlatMap, Functor}
 import autolift.{LiftFlatten, LiftFlattenSyntax}
 
 trait CatsLiftFlatten[M[_], Obj] extends LiftFlatten[M, Obj]
@@ -27,26 +27,9 @@ trait LowPriorityCatsLiftFlatten{
     }
 }
 
-trait CatsLiftFlattenSyntax extends LiftFlattenSyntax with LowPriorityLiftFlattenSyntax
-
-trait LowPriorityLiftFlattenSyntax{
-
-  ///Syntax extension providing for a `liftFlatten` method.
-  implicit class LowLiftFlattenOps[FA](fa: FA)(implicit ev: Unapply[Functor, FA]){
-
-    /**
-     * Automatic lifting of a flatten operation given the juxtaposition of the two of the given types in the nested type 
-     * structure.
-     *
-     * @tparam M the type over which to flatten given that there exists the concept of flattening of the type.
-     */
-    def liftFlatten[M[_]](implicit lift: LiftFlatten[M, FA]): lift.Out = lift(fa)
-  }
-}
-
 trait LiftFlattenExport{
   implicit def mkFl[M[_], Obj](implicit lift: CatsLiftFlatten[M, Obj]): CatsLiftFlatten.Aux[M, Obj, lift.Out] = lift
 }
 
 trait LiftFlattenPackage extends LiftFlattenExport
-  with CatsLiftFlattenSyntax
+  with LiftFlattenSyntax

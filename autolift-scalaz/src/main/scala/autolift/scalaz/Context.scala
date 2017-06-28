@@ -3,16 +3,16 @@ package autolift.scalaz
 import autolift._
 
 trait Context extends LiftMapContext
-	with LiftApContext
-	with LiftBindContext
-	with LiftFilterContext
-	with LiftFoldLeftContext
-	with LiftFoldRightContext
-	with LiftFoldMapContext
-	with LiftAnyContext
-	with LiftAllContext
-	with LiftZipWithContext
-	with LiftMergeWithContext
+  with LiftApContext
+  with LiftBindContext
+  with LiftFilterContext
+  with LiftFoldLeftContext
+  with LiftFoldRightContext
+  with LiftFoldMapContext
+  with LiftAnyContext
+  with LiftAllContext
+  with LiftZipWithContext
+  with LiftMergeWithContext
   with LiftTraverseContext
   with LiftA2Context
   with LiftA3Context
