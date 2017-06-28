@@ -3,7 +3,7 @@ package autolift.cats
 import cats.{Functor, Foldable}
 import autolift.{LiftExists, LiftExistsSyntax, LiftExistsContext}
 
-trait CatsLiftExists[Obj, Fn] extends LiftExists[Obj, Fn]
+trait CatsLiftExists[Obj, Fn] extends LiftExists[Obj, Fn] with Serializable
 
 object CatsLiftExists extends LowPriorityCatsLiftExists {
   def apply[Obj, Fn](implicit lift: CatsLiftExists[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift

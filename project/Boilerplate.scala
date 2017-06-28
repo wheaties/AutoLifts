@@ -244,7 +244,7 @@ object Boilerplate {
          |
         -import autolift.LiftM$arity
         -
-        -trait CatsLiftM$arity[${`Obj..N`}, Fn] extends LiftM$arity[${`Obj..N`}, Fn]
+        -trait CatsLiftM$arity[${`Obj..N`}, Fn] extends LiftM$arity[${`Obj..N`}, Fn] with Serializable
         -
         -object CatsLiftM$arity extends LowPriorityCatsLiftM$arity {
         -  def apply[${`Obj..N`}, Fn](implicit lift: CatsLiftM$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift
@@ -477,7 +477,7 @@ object Boilerplate {
          |
         -import autolift.LiftA$arity
         -
-        -trait CatsLiftA$arity[${`Obj..N`}, Fn] extends LiftA$arity[${`Obj..N`}, Fn]
+        -trait CatsLiftA$arity[${`Obj..N`}, Fn] extends LiftA$arity[${`Obj..N`}, Fn] with Serializable
         -
         -object CatsLiftA$arity extends LowPriorityCatsLiftA$arity {
         -  def apply[${`Obj..N`}, Fn](implicit lift: CatsLiftA$arity[${`Obj..N`}, Fn]): Aux[${`Obj..N`}, Fn, lift.Out] = lift

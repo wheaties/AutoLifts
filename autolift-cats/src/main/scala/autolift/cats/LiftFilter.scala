@@ -3,7 +3,7 @@ package autolift.cats
 import cats.{MonadFilter, Functor}
 import autolift.{LiftFilter, LiftFilterSyntax}
 
-trait CatsLiftFilter[Obj, Fn] extends LiftFilter[Obj, Fn]
+trait CatsLiftFilter[Obj, Fn] extends LiftFilter[Obj, Fn] with Serializable
 
 object CatsLiftFilter extends LowPriorityCatsLiftFilter{
   def apply[Obj, Fn](implicit lift: LiftFilter[Obj, Fn]) = lift

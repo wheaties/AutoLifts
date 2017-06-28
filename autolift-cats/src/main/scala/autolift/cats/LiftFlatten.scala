@@ -3,7 +3,7 @@ package autolift.cats
 import cats.{FlatMap, Functor}
 import autolift.{LiftFlatten, LiftFlattenSyntax}
 
-trait CatsLiftFlatten[M[_], Obj] extends LiftFlatten[M, Obj]
+trait CatsLiftFlatten[M[_], Obj] extends LiftFlatten[M, Obj] with Serializable
 
 object CatsLiftFlatten extends LowPriorityCatsLiftFlatten{
   def apply[M[_], Obj](implicit lift: CatsLiftFlatten[M, Obj]): Aux[M, Obj, lift.Out] = lift

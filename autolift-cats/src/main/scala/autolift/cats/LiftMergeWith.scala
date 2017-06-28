@@ -3,7 +3,8 @@ package autolift.cats
 import autolift.{LiftMergeWith, LiftedMergeWith, LiftMergeWithSyntax, LiftMergeWithContext}
 import cats.{Functor, Apply}
 
-trait CatsLiftMergeWith[Obj1, Obj2, Fn] extends LiftMergeWith[Obj1, Obj2, Fn]
+trait CatsLiftMergeWith[Obj1, Obj2, Fn] extends LiftMergeWith[Obj1, Obj2, Fn] 
+  with Serializable
 
 object CatsLiftMergeWith extends LowPriorityCatsLiftMergeWith{
   def apply[Obj1, Obj2, Fn](implicit lift: CatsLiftMergeWith[Obj1, Obj2, Fn]): Aux[Obj1, Obj2, Fn, lift.Out] = lift

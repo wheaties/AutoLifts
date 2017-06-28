@@ -3,7 +3,7 @@ package autolift.cats
 import cats.Functor
 import autolift.{LiftMap, LiftedMap, LiftMapSyntax, LiftMapContext}
 
-trait CatsLiftMap[Obj, Fn] extends LiftMap[Obj, Fn]
+trait CatsLiftMap[Obj, Fn] extends LiftMap[Obj, Fn] with Serializable
 
 object CatsLiftMap extends LowPriorityCatsLiftMap {
   def apply[Obj, Fn](implicit lift: CatsLiftMap[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift

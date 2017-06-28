@@ -3,7 +3,7 @@ package autolift.cats
 import autolift.{LiftTraverse, LiftTraverseSyntax}
 import cats.{Functor, Applicative, Traverse}
 
-trait CatsLiftTraverse[Obj, Fn] extends LiftTraverse[Obj, Fn]
+trait CatsLiftTraverse[Obj, Fn] extends LiftTraverse[Obj, Fn] with Serializable
 
 object CatsLiftTraverse extends LowPriorityCatsLiftTraverse{
   def apply[Obj, Fn](implicit lift: CatsLiftTraverse[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift

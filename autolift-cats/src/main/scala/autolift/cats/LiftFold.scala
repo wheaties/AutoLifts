@@ -3,7 +3,7 @@ package autolift.cats
 import cats.{Functor, Monoid, Foldable}
 import autolift.{LiftFold, LiftFoldSyntax}
 
-trait CatsLiftFold[F[_], Obj] extends LiftFold[F, Obj]
+trait CatsLiftFold[F[_], Obj] extends LiftFold[F, Obj] with Serializable
 
 object CatsLiftFold extends LowPriorityCatsLiftFold{
   def apply[F[_], Obj](implicit fold: CatsLiftFold[F, Obj]): Aux[F, Obj, fold.Out] = fold

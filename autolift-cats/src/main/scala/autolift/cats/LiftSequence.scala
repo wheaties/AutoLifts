@@ -3,7 +3,7 @@ package autolift.cats
 import autolift.{LiftSequence, LiftSequenceSyntax}
 import cats.{Traverse, Applicative, Functor}
 
-trait CatsLiftSequence[M[_], Obj] extends LiftSequence[M, Obj]
+trait CatsLiftSequence[M[_], Obj] extends LiftSequence[M, Obj] with Serializable
 
 object CatsLiftSequence extends LowPriorityCatsLiftSequence{
   def apply[M[_], Obj](implicit lift: CatsLiftSequence[M, Obj]): Aux[M, Obj, lift.Out] = lift

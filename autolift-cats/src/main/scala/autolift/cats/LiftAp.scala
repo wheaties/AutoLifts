@@ -27,8 +27,6 @@ trait LowPriorityCatsLiftAp{
     }
 }
 
-trait CatsLiftApSyntax extends LiftApSyntax
-
 final class LiftedAp[A, B, F[_]](protected val f: F[A => B])(implicit ap: Apply[F]){
   def andThen[C >: B, D](lf: LiftedAp[C, D, F]) = new LiftedAp(ap.ap(
     ap.map(lf.f){
@@ -58,6 +56,6 @@ trait LiftApExport{
 }
 
 trait LiftApPackage extends LiftApExport
-  with CatsLiftApSyntax 
+  with LiftApSyntax 
   with LiftApContext
   with LiftedApImplicits

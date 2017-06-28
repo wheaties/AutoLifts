@@ -3,7 +3,7 @@ package autolift.cats
 import cats.{Functor, Monoid, Foldable}
 import autolift.{LiftFoldMap, LiftFoldMapSyntax}
 
-trait CatsLiftFoldMap[FA, Fn] extends LiftFoldMap[FA, Fn]
+trait CatsLiftFoldMap[FA, Fn] extends LiftFoldMap[FA, Fn] with Serializable
 
 object CatsLiftFoldMap extends LowPriorityCatsLiftFoldMap{
   def apply[FA, Fn](implicit lift: CatsLiftFoldMap[FA, Fn]): Aux[FA, Fn, lift.Out] = lift

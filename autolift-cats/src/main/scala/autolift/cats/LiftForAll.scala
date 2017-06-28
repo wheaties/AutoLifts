@@ -4,7 +4,7 @@ import cats.{Functor, Foldable}
 import autolift.{LiftForAll, LiftForAllSyntax, LiftForAllContext}
 
 //TODO: syntax is currently forAll vs forall. Make consistent?
-trait CatsLiftForAll[Obj, Fn] extends LiftForAll[Obj, Fn]
+trait CatsLiftForAll[Obj, Fn] extends LiftForAll[Obj, Fn] with Serializable
 
 object CatsLiftForAll extends LowPriorityCatsLiftForAll {
   def apply[Obj, Fn](implicit lift: CatsLiftForAll[Obj, Fn]): Aux[Obj, Fn, lift.Out] = lift

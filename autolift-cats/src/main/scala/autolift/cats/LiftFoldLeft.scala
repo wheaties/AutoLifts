@@ -4,7 +4,7 @@ import cats.{Functor, Foldable}
 import autolift.{LiftFoldLeft, LiftFoldLeftSyntax, LiftFoldLeftContext}
 
 
-trait CatsLiftFoldLeft[Obj, Fn, Z] extends LiftFoldLeft[Obj, Fn, Z]
+trait CatsLiftFoldLeft[Obj, Fn, Z] extends LiftFoldLeft[Obj, Fn, Z] with Serializable
 
 object CatsLiftFoldLeft extends LowPriorityCatsLiftFoldLeft{
   def apply[FA, Fn, Z](implicit lift: CatsLiftFoldLeft[FA, Fn, Z]): Aux[FA, Fn, Z, lift.Out] = lift
