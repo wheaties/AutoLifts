@@ -39,10 +39,9 @@ trait LiftBindSyntax{
      *
      * @param f the function that returns a type with a Bind.
      * @tparam B the argument type of the function.
-     * @tparam MC the type of the return type of the function which has the shape M[C] or for which there exists an 
-     *         `Unapply` on a `Bind`.
+     * @tparam M the type of the return type of the function which has the shape M[C] where M has a Monad.
      */
-    def liftBind[B, MC](f: B => MC)(implicit lift: LiftFlatMap[F[A], B => MC]): lift.Out = lift(fa, f)
+    def liftBind[B, C, M[_]](f: B => M[C])(implicit lift: LiftFlatMap[F[A], B => M[C]]): lift.Out = lift(fa, f)
   }
 }
 
@@ -66,3 +65,11 @@ trait LiftBindContext{
   def liftBind[A, B, M[_]](f: A => M[B])(implicit bind: Bind[M]) = new LiftedBind(f)
 }
 
+trait LiftBindExport{
+  implicit def mkB[Obj, Fn](implicit lift: ScalazLiftFlatMap[Obj, Fn]): ScalazLiftFlatMap.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftFlatMapPackage extends LiftedBindImplicits
+  with LiftBindExport
+  with LiftBindContext
+  with LiftBindSyntax

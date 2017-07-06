@@ -1,6 +1,6 @@
 package autolift.scalaz
 
-import autolift.{LiftMergeWith, LiftedMergeWith}
+import autolift.{LiftMergeWith, LiftedMergeWith, LiftMergeWithSyntax, LiftMergeWithContext}
 import scalaz.{Functor, Apply}
 
 trait ScalazLiftMergeWith[Obj1, Obj2, Fn] extends LiftMergeWith[Obj1, Obj2, Fn]
@@ -32,3 +32,12 @@ trait LiftedMergeWithImplicits{
     def map[C, D](lm: LiftedMergeWith[A, B, C])(f: C => D) = lm map f
   }
 }
+
+trait LiftMergeWithExport{
+  implicit def mkJw[Obj1, Obj2, Fn](implicit lift: ScalazLiftMergeWith[Obj1, Obj2, Fn]): ScalazLiftMergeWith.Aux[Obj1, Obj2, Fn, lift.Out] = lift
+}
+
+trait LiftMergeWithPackage extends LiftMergeWithExport
+  with LiftedMergeWithImplicits
+  with LiftMergeWithSyntax
+  with LiftMergeWithContext

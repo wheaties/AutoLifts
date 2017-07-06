@@ -1,7 +1,7 @@
 package autolift.scalaz
 
 import scalaz.{Functor, Foldable}
-import autolift.{LiftFoldLeft, LiftFoldLeftSyntax}
+import autolift.{LiftFoldLeft, LiftFoldLeftSyntax, LiftFoldLeftContext}
 
 
 trait ScalazLiftFoldLeft[Obj, Fn, Z] extends LiftFoldLeft[Obj, Fn, Z]
@@ -28,22 +28,10 @@ trait LowPriorityScalazLiftFoldLeft{
     }
 }
 
-trait ScalazLiftFoldLeftSyntax extends LiftFoldLeftSyntax with LowPriorityLiftFoldLeftSyntax
-
-trait LowPriorityLiftFoldLeftSyntax{
-
-  /// Syntax extension provided for a `liftFoldLeft` method.
-  implicit class LowLiftFoldLeftOps[F[_], A](fa: F[A])(implicit ev: Functor[F]){
-
-    /**
-     * Automatic lifting of a FoldL dicated by the argument type of the function.
-     *
-     * @param z the initial value which starts the fold.
-     * @param f the function which defines the fold.
-     * @tparam B the type to be folded.
-     * @tparam Z the resultant type of the fold.
-     */
-    def liftFoldLeft[B, Z](z: Z)(f: (Z, B) => Z)(implicit lift: LiftFoldLeft[F[A], (Z, B) => Z, Z]): lift.Out = 
-      lift(fa, f, z)
-  }
+trait LiftFoldLeftExport{
+  implicit def mkFldL[Obj, Fn, Z](implicit lift: ScalazLiftFoldLeft[Obj, Fn, Z]): ScalazLiftFoldLeft.Aux[Obj, Fn, Z, lift.Out] = lift
 }
+
+trait LiftFoldLeftPackage extends LiftFoldLeftExport
+  with LiftFoldLeftSyntax
+  with LiftFoldLeftContext

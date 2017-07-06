@@ -1,7 +1,7 @@
 package autolift.scalaz
 
 import scalaz.{Functor, Bind}
-import autolift.LiftFlatten
+import autolift.{LiftFlatten, LiftFlattenSyntax}
 
 trait ScalazLiftFlatten[M[_], Obj] extends LiftFlatten[M, Obj]
 
@@ -26,3 +26,10 @@ trait LowPriorityScalazLiftFlatten{
       def apply(fg: F[G]) = functor.map(fg){ g: G => lift(g) }
     }
 }
+
+trait LiftFlattenExport{
+  implicit def mkFl[M[_], Obj](implicit lift: ScalazLiftFlatten[M, Obj]): ScalazLiftFlatten.Aux[M, Obj, lift.Out] = lift
+}
+
+trait LiftFlattenPackage extends LiftFlattenExport
+  with LiftFlattenSyntax

@@ -27,19 +27,9 @@ trait LowPriorityScalazLiftFold{
     }
 }
 
-trait ScalazLiftFoldSyntax extends LiftFoldSyntax with LowPriorityLiftFoldSyntax
-
-trait LowPriorityLiftFoldSyntax{
-
-  /// Syntax extension providing for a `liftFold` method.
-  implicit class LowLiftFoldOps[F[_], A](fa: F[A])(implicit ev: Functor[F]){
-
-    /**
-     * Automatic lifting of a Fold at the indicated type, assuming the type permits folding and the contained type has 
-     * a Monoid.
-     * 
-     * @tparam M the higher-kinded type for which there is the notion of folding or traversing.
-     */
-    def liftFold[M[_]](implicit fold: LiftFold[M, F[A]]): fold.Out = fold(fa)
-  }
+trait LiftFoldExport{
+  implicit def mkFlA[M[_], Obj](implicit lift: ScalazLiftFold[M, Obj]): ScalazLiftFold.Aux[M, Obj, lift.Out] = lift
 }
+
+trait LiftFoldPackage extends LiftFoldExport 
+  with LiftFoldSyntax

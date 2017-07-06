@@ -1,7 +1,7 @@
 package autolift.scalaz
 
 import scalaz.{Functor, Apply}
-import autolift.LiftAp
+import autolift.{LiftAp, LiftApSyntax}
 
 trait ScalazLiftAp[Obj, Fn] extends LiftAp[Obj, Fn]
 
@@ -25,23 +25,6 @@ trait LowPriorityScalazLiftAp {
 
       def apply(fg: F[G], f: Fn) = functor.map(fg){ g: G => lift(g, f) }
     }
-}
-
-trait ScalazLiftApSyntax{
-  
-  /// Syntax extension providing for a `liftAp` method.
-  implicit class LiftApOps[F[_], A](fa: F[A]){
-
-    /**
-     * Automatic Applicative lifting of the contained function `f` such that the application point is dictated by the
-     * type of the Applicative.
-     *
-     * @param f the wrapped function to be lifted.
-     * @tparam MBC the argument type of the wrapped function which has the shape M[B => C] or for which there exists an 
-     *         `Unapply` on an `Apply`.
-     */
-    def liftAp[MBC](f: MBC)(implicit lift: LiftAp[F[A], MBC]): lift.Out = lift(fa, f)
-  }
 }
 
 final class LiftedAp[A, B, F[_]](protected val f: F[A => B])(implicit ap: Apply[F]){
@@ -68,3 +51,11 @@ trait LiftApContext{
   def liftAp[A, B, F[_]](f: F[A => B])(implicit ap: Apply[F]) = new LiftedAp(f)
 }
 
+trait LiftApExport{
+  implicit def mkAp[Obj, Fn](implicit lift: ScalazLiftAp[Obj, Fn]): ScalazLiftAp.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftApPackage extends LiftApExport
+  with LiftApSyntax 
+  with LiftApContext
+  with LiftedApImplicits

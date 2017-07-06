@@ -38,3 +38,11 @@ trait LiftAnyContext{
 
   type LiftedAny[A] = LiftedExists[A]
 }
+
+trait LiftAnyExport{
+  implicit def mkAny[Obj, Fn](implicit lift: ScalazLiftExists[Obj, Fn]): ScalazLiftExists.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftExistsPackage extends LiftAnyExport
+  with LiftAnySyntax
+  with LiftAnyContext
