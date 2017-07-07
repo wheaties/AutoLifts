@@ -28,7 +28,7 @@ trait LowPriorityCatsLiftFoldRight{
     }
 }
 
-trait CatsLiftFoldRightSyntax {
+trait LiftFoldRightSyntax {
   implicit class LiftFoldRightOps[F[_], A](fa: F[A]){
     def liftFoldRight[B, Z](z: Eval[Z])(f: (B, Eval[Z]) => Eval[Z])(implicit lift: LiftFoldRight[F[A], (B, Eval[Z]) => Eval[Z], Eval[Z]]): lift.Out =
       lift(fa, f, z)
@@ -49,4 +49,4 @@ trait LiftFoldRightExport{
 
 trait LiftFoldRightPackage extends LiftFoldRightExport
   with LiftFoldRightContext
-  with CatsLiftFoldRightSyntax
+  with LiftFoldRightSyntax

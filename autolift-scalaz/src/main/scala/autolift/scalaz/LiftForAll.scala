@@ -39,3 +39,11 @@ trait LiftAllContext{
 
   type LiftedAll[A] = LiftedForAll[A]
 }
+
+trait LiftForAllExport{
+  implicit def mkAll[Obj, Fn](implicit lift: ScalazLiftForAll[Obj, Fn]): ScalazLiftForAll.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftForAllPackage extends LiftForAllExport
+  with LiftForAllSyntax
+  with LiftForAllContext

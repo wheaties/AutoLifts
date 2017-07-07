@@ -1,7 +1,7 @@
 package autolift.scalaz
 
 import scalaz.{Zip, Functor}
-import autolift.LiftZip
+import autolift.{LiftZip, LiftZip}
 
 trait ScalazLiftZip[Obj1, Obj2] extends LiftZip[Obj1, Obj2]
 
@@ -26,3 +26,10 @@ trait LowerPriorityScalazLiftZip {
       def apply(fg: F[G], h: H) = functor.map(fg){ g: G => lift(g, h) }
     }
 }
+
+trait LiftZipExport{
+  implicit def mkZip[Obj1, Obj2](implicit lift: ScalazLiftZip[Obj1, Obj2]): ScalazLiftZip.Aux[Obj1, Obj2, lift.Out] = lift
+}
+
+trait LiftZipPackage extends LiftZipExport
+  with LiftZipSyntax

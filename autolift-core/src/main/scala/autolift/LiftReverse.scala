@@ -13,14 +13,14 @@ trait LiftReverse[F[_], Obj] extends (Obj => Obj)
 
 trait LiftReverseSyntax{
 
-	/// Syntax extension providing for a `liftReverse` method.
-	implicit class LiftReverseOps[F[_], A](fa: F[A]){
+  /// Syntax extension providing for a `liftReverse` method.
+  implicit class LiftReverseOps[F[_], A](fa: F[A]){
 
-		/**
-		 * Automatic lifting of a Reverse on the first nested type matching `M`.
-		 */
-		def liftReverse[M[_]](implicit lift: LiftReverse[M, F[A]]): F[A] = lift(fa)
-	}
+    /**
+     * Automatic lifting of a Reverse on the first nested type matching `M`.
+     */
+    def liftReverse[M[_]](implicit lift: LiftReverse[M, F[A]]): F[A] = lift(fa)
+  }
 }
 
 //Contexts for a liftReverse do not exist.

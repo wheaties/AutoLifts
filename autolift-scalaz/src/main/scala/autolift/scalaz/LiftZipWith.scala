@@ -1,7 +1,7 @@
 package autolift.scalaz
 
 import scalaz.{Zip, Functor}
-import autolift.{LiftZipWith, LiftedZipWith}
+import autolift.{LiftZipWith, LiftedZipWith, LiftZipWithSyntax, LiftZipWithContext}
 
 trait ScalazLiftZipWith[Obj1, Obj2, Fn] extends LiftZipWith[Obj1, Obj2, Fn]
 
@@ -32,3 +32,12 @@ trait LiftedZipWithImplicits{
     def map[C, D](lm: LiftedZipWith[A, B, C])(f: C => D) = lm map f
   }
 }
+
+trait LiftZipWithExport{
+  implicit def mkZipWith[Obj1, Obj2, Fn](implicit lift: ScalazLiftZipWith[Obj1, Obj2, Fn]): ScalazLiftZipWith.Aux[Obj1, Obj2, Fn, lift.Out] = lift
+}
+
+trait LiftedZipWithPackage extends LiftZipWithExport
+  with LiftedZipWithImplicits
+  with LiftZipWithSyntax
+  with LiftZipWithContext

@@ -16,27 +16,27 @@ object LiftFoldLeft
 
 trait LiftFoldLeftSyntax{
 
-	/// Syntax extension provided for a `liftFoldLeft` method.
-	implicit class LiftFoldLeftOps[F[_], A](fa: F[A]){
+  /// Syntax extension provided for a `liftFoldLeft` method.
+  implicit class LiftFoldLeftOps[F[_], A](fa: F[A]){
 
-		/**
-		 * Automatic lifting of a FoldL dicated by the argument type of the function.
-		 *
-		 * @param z the initial value which starts the fold.
-		 * @param f the function which defines the fold.
-		 * @tparam B the type to be folded.
-		 * @tparam Z the resultant type of the fold.
-		 */
-		def liftFoldLeft[B, Z](z: Z)(f: (Z, B) => Z)(implicit lift: LiftFoldLeft[F[A], (Z, B) => Z, Z]): lift.Out = 
-			lift(fa, f, z)
-	}
+    /**
+     * Automatic lifting of a FoldL dicated by the argument type of the function.
+     *
+     * @param z the initial value which starts the fold.
+     * @param f the function which defines the fold.
+     * @tparam B the type to be folded.
+     * @tparam Z the resultant type of the fold.
+     */
+    def liftFoldLeft[B, Z](z: Z)(f: (Z, B) => Z)(implicit lift: LiftFoldLeft[F[A], (Z, B) => Z, Z]): lift.Out = 
+      lift(fa, f, z)
+  }
 }
 
 final class LiftedFoldLeft[B, Z](z: Z, f: (Z, B) => Z){
-	def apply[That](that: That)(implicit lift: LiftFoldLeft[That, (Z, B) => Z, Z]): lift.Out = lift(that, f, z)
+  def apply[That](that: That)(implicit lift: LiftFoldLeft[That, (Z, B) => Z, Z]): lift.Out = lift(that, f, z)
 }
 
 trait LiftFoldLeftContext{
-	def liftFoldLeft[B, Z](z: Z)(f: (Z, B) => Z) = new LiftedFoldLeft(z, f)
+  def liftFoldLeft[B, Z](z: Z)(f: (Z, B) => Z) = new LiftedFoldLeft(z, f)
 }
 

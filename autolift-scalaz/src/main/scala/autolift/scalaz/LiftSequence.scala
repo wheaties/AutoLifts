@@ -1,6 +1,6 @@
 package autolift.scalaz
 
-import autolift.LiftSequence
+import autolift.{LiftSequence, LiftSequenceSyntax}
 import scalaz.{Traverse, Applicative, Functor}
 
 trait ScalazLiftSequence[M[_], Obj] extends LiftSequence[M, Obj]
@@ -26,3 +26,10 @@ trait LowPriorityScalazLiftSequence{
       def apply(fg: F[G]) = functor.map(fg){ g: G => lift(g) }
     }
 }
+
+trait LiftSequenceExport{
+  implicit def mkSq[M[_], Obj](implicit lift: ScalazLiftSequence[M, Obj]): ScalazLiftSequence.Aux[M, Obj, lift.Out] = lift
+}
+
+trait LiftSequencePackage extends LiftSequenceExport
+  with LiftSequenceSyntax

@@ -1,7 +1,7 @@
 package autolift.scalaz
 
 import scalaz.Functor
-import autolift.{LiftMap, LiftedMap, LiftMapSyntax}
+import autolift.{LiftMap, LiftedMap, LiftMapSyntax, LiftMapContext}
 
 trait ScalazLiftMap[Obj, Fn] extends LiftMap[Obj, Fn]
 
@@ -33,4 +33,11 @@ trait LiftedMapImplicits{
   }
 }
 
-trait ScalazLiftMapSyntax extends LiftMapSyntax
+trait LiftMapExport{
+  implicit def mkM[Obj, Fn](implicit lift: ScalazLiftMap[Obj, Fn]): ScalazLiftMap.Aux[Obj, Fn, lift.Out] = lift
+}
+
+trait LiftMapPackage extends LiftMapExport
+  with LiftedMapImplicits
+  with LiftMapSyntax
+  with LiftMapContext

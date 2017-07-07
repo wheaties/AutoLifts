@@ -1,6 +1,6 @@
 package autolift.scalaz
 
-import autolift.LiftReverse
+import autolift.{LiftReverse, LiftReverseSyntax}
 import scalaz.{Traverse, Functor}
 
 trait ScalazLiftReverse[M[_], Obj] extends LiftReverse[M, Obj]
@@ -20,3 +20,10 @@ trait LowPriorityScalazLiftReverse{
       def apply(fg: F[G]) = functor.map(fg)(lift)
     }
 }
+
+trait LiftReverseExport{
+  implicit def mkRv[M[_], Obj](implicit lift: ScalazLiftReverse[M, Obj]) = lift
+}
+
+trait LiftReversePackage extends LiftReverseExport
+  with LiftReverseSyntax

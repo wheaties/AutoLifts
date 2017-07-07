@@ -42,3 +42,11 @@ final class LiftedFoldRight[B, Z](z: Z, f: (B, => Z) => Z){
 trait LiftFoldRightContext{
   def liftFoldRight[B, Z](z: Z)(f: (B, => Z) => Z) = new LiftedFoldRight(z, f)
 }
+
+trait LiftFoldRightExport{
+  implicit def mkFldR[Obj, Fn, Z](implicit lift: CatsLiftFoldRight[Obj, Fn, Z]): CatsLiftFoldRight.Aux[Obj, Fn, Z, lift.Out] = lift
+}
+
+trait LiftFoldRightPackage extends LiftFoldRightExport
+  with LiftFoldRightContext
+  with LiftFoldRightSyntax

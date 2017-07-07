@@ -12,15 +12,17 @@ trait LiftZip[Obj1, Obj2] extends DFunction2[Obj1, Obj2]
 
 trait LiftZipSyntax{
 
-	/// Syntax extension providing for a `liftZip` method.
-	implicit class LiftZipOps[F[_], A](fa: F[A]){
+  /// Syntax extension providing for a `liftZip` method.
+  implicit class LiftZipOps[F[_], A](fa: F[A]){
 
-		/**
-		 * Automatic lifting of a `zip` operation, type zipped dependent on the nested type structure.
-		 *
-		 * @param that the object to be zipped.
-		 * @tparam That the argument type of the object to be zipped.
-		 */
-		def liftZip[That](that: That)(implicit lift: LiftZip[F[A], That]): lift.Out = lift(fa, that)
-	}
+    /**
+     * Automatic lifting of a `zip` operation, type zipped dependent on the nested type structure.
+     *
+     * @param that the object to be zipped.
+     * @tparam That the argument type of the object to be zipped.
+     */
+    def liftZip[That](that: That)(implicit lift: LiftZip[F[A], That]): lift.Out = lift(fa, that)
+  }
 }
+
+//Contexts for a liftZip do not exist.

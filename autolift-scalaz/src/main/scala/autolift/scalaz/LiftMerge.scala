@@ -1,6 +1,6 @@
 package autolift.scalaz
 
-import autolift.LiftMerge
+import autolift.{LiftMerge, LiftMergeSyntax}
 import scalaz.{Functor, Apply}
 
 trait ScalazLiftMerge[Obj1, Obj2] extends LiftMerge[Obj1, Obj2]
@@ -26,3 +26,10 @@ trait LowPriorityScalazLiftMerge {
       def apply(fg: F[G], h: H) = functor.map(fg){ g: G => lift(g, h) }
     }
 }
+
+trait LiftMergeExport{
+  implicit def mkJ[Obj1, Obj2](implicit lift: ScalazLiftMerge[Obj1, Obj2]): ScalazLiftMerge.Aux[Obj1, Obj2, lift.Out] = lift
+}
+
+trait LiftMergePackage extends LiftMergeExport 
+  with LiftMergeSyntax

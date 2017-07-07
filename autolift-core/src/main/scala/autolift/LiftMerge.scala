@@ -12,15 +12,15 @@ trait LiftMerge[Obj1, Obj2] extends DFunction2[Obj1, Obj2]
 
 trait LiftMergeSyntax{
 
-	/// Syntax extension providing for a `liftMerge` method.
-	implicit class LiftMergeOps[F[_], A](fa: F[A]){
+  /// Syntax extension providing for a `liftMerge` method.
+  implicit class LiftMergeOps[F[_], A](fa: F[A]){
 
-		/**
-		 * Automatic lifting of a `merge` operation, type merged dependent on the nested type structure.
-		 *
-		 * @param that the object to be merged.
-		 * @tparam That the argument type of the object to be merged.
-		 */
-		def liftMerge[That](that: That)(implicit lift: LiftMerge[F[A], That]): lift.Out = lift(fa, that)
-	}
+    /**
+     * Automatic lifting of a `merge` operation, type merged dependent on the nested type structure.
+     *
+     * @param that the object to be merged.
+     * @tparam That the argument type of the object to be merged.
+     */
+    def liftMerge[That](that: That)(implicit lift: LiftMerge[F[A], That]): lift.Out = lift(fa, that)
+  }
 }
