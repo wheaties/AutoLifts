@@ -69,7 +69,7 @@ trait LiftBindExport{
   implicit def mkB[Obj, Fn](implicit lift: ScalazLiftFlatMap[Obj, Fn]): ScalazLiftFlatMap.Aux[Obj, Fn, lift.Out] = lift
 }
 
-trait LiftFlatMapPackage extends LiftedBindImplicits
+trait LiftBindPackage extends LiftedBindImplicits
   with LiftBindExport
   with LiftBindContext
   with LiftBindSyntax

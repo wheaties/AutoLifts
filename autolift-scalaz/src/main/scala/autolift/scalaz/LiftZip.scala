@@ -1,7 +1,7 @@
 package autolift.scalaz
 
 import scalaz.{Zip, Functor}
-import autolift.{LiftZip, LiftZip}
+import autolift.{LiftZip, LiftZipSyntax}
 
 trait ScalazLiftZip[Obj1, Obj2] extends LiftZip[Obj1, Obj2]
 

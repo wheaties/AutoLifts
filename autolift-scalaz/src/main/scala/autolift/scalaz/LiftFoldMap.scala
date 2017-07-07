@@ -42,7 +42,7 @@ trait LiftFoldMapContext{
 }
 
 trait LiftFoldMapExport{
-  implicit def mkFlM[Obj, Fn](implicit lift: CatsLiftFoldMap[Obj, Fn]): CatsLiftFoldMap.Aux[Obj, Fn, lift.Out] = lift
+  implicit def mkFlM[Obj, Fn](implicit lift: ScalazLiftFoldMap[Obj, Fn]): ScalazLiftFoldMap.Aux[Obj, Fn, lift.Out] = lift
 }
 
 trait LiftFoldMapPackage extends LiftFoldMapExport

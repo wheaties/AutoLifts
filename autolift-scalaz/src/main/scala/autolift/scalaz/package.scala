@@ -1,24 +1,27 @@
-package autolift
+package autolift.scalaz
 
-import autolift.scalaz._
+object functor extends LiftMapPackage
 
-object Scalaz extends LiftMapPackage
-  with LiftApPackage
+object applicative extends LiftApPackage
   with LiftMergePackage
   with LiftMergeWithPackage
   with `LiftA*Package`
-  with LiftBindPackage
+
+object monad extends LiftBindPackage
   with LiftFlattenPackage
   with LiftFilterPackage
   with `LiftM*Package`
-  with LiftFoldPackage
+
+object fold extends LiftFoldPackage
   with LiftFoldLeftPackage
   with LiftFoldRightPackage
   with LiftFoldMapPackage
   with LiftAnyPackage
   with LiftAllPackage
-  with LiftSequencePackage
+
+object traverse extends LiftSequencePackage
   with LiftTraversePackage
   with LiftReversePackage
-  with LiftZipPackage
+
+object zip extends LiftZipPackage
   with LiftZipWithPackage

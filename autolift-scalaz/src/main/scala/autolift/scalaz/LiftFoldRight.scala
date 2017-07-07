@@ -44,7 +44,7 @@ trait LiftFoldRightContext{
 }
 
 trait LiftFoldRightExport{
-  implicit def mkFldR[Obj, Fn, Z](implicit lift: CatsLiftFoldRight[Obj, Fn, Z]): CatsLiftFoldRight.Aux[Obj, Fn, Z, lift.Out] = lift
+  implicit def mkFldR[Obj, Fn, Z](implicit lift: ScalazLiftFoldRight[Obj, Fn, Z]): ScalazLiftFoldRight.Aux[Obj, Fn, Z, lift.Out] = lift
 }
 
 trait LiftFoldRightPackage extends LiftFoldRightExport

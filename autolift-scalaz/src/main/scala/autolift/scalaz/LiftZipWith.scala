@@ -37,7 +37,7 @@ trait LiftZipWithExport{
   implicit def mkZipWith[Obj1, Obj2, Fn](implicit lift: ScalazLiftZipWith[Obj1, Obj2, Fn]): ScalazLiftZipWith.Aux[Obj1, Obj2, Fn, lift.Out] = lift
 }
 
-trait LiftedZipWithPackage extends LiftZipWithExport
+trait LiftZipWithPackage extends LiftZipWithExport
   with LiftedZipWithImplicits
   with LiftZipWithSyntax
   with LiftZipWithContext
