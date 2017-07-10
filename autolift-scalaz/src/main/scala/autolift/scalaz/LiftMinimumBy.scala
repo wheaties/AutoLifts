@@ -1,28 +1,26 @@
-package autolift.cats
+package autolift.scalaz
 
-import cats.{Functor, Foldable, Order}
+import scalaz.{Functor, Foldable, Order}
 import autolift.{LiftMinimumBy, LiftMinimumBySyntax}
 
-trait CatsLiftMinimumBy[Obj, Fn] extends LiftMinimumBy[Obj, Fn] with Serializable
+trait ScalazLiftMinimumBy[Obj, Fn] extends LiftMinimumBy[Obj, Fn] with Serializable
 
-object CatsLiftMinimumBy extends LowPriorityCatsLiftMinimumBy{
-  def apply[Obj, A](implicit lift: CatsLiftMinimumBy[Obj, A]): Aux[Obj, A, lift.Out] = lift
+object ScalazLiftMinimumBy extends LowPriorityScalazLiftMinimumBy{
+  def apply[Obj, A](implicit lift: ScalazLiftMinimumBy[Obj, A]): Aux[Obj, A, lift.Out] = lift
 
   implicit def base[F[_], A, B, C >: A](implicit fold: Foldable[F], ord: Order[B]): Aux[F[A], C => B, Option[A]] =
-    new CatsLiftMinimumBy[F[A], C => B]{
+    new ScalazLiftMinimumBy[F[A], C => B]{
       type Out = Option[A]
 
-      def apply(fa: F[A], fn: C => B) = fold.reduceLeftOption(fa){
-        (x: A, y: A) => if(ord.lt(fn(x), fn(y))) x else y
-      }
+      def apply(fa: F[A], fn: C => B) = fold.minimumBy(fa)(fn)
     }
 }
 
-trait LowPriorityCatsLiftMinimumBy{
-  type Aux[Obj, A, Out0] = CatsLiftMinimumBy[Obj, A]{ type Out = Out0 }
+trait LowPriorityScalazLiftMinimumBy{
+  type Aux[Obj, A, Out0] = ScalazLiftMinimumBy[Obj, A]{ type Out = Out0 }
 
   implicit def recur[F[_], G, Fn](implicit functor: Functor[F], lift: LiftMinimumBy[G, Fn]): Aux[F[G], Fn, F[lift.Out]] =
-    new CatsLiftMinimumBy[F[G], Fn]{
+    new ScalazLiftMinimumBy[F[G], Fn]{
       type Out = F[lift.Out]
 
       def apply(fg: F[G], fn: Fn) = functor.map(fg){ g: G => lift(g, fn) }
@@ -40,7 +38,7 @@ trait LiftMinimumByContext{
 }
 
 trait LiftMinimumByExport{
-  implicit def mkMinBy[Obj, Fn](implicit lift: CatsLiftMinimumBy[Obj, Fn]): CatsLiftMinimumBy.Aux[Obj, Fn, lift.Out] = lift
+  implicit def mkMinBy[Obj, Fn](implicit lift: ScalazLiftMinimumBy[Obj, Fn]): ScalazLiftMinimumBy.Aux[Obj, Fn, lift.Out] = lift
 }
 
 trait LiftMinimumByPackage extends LiftMinimumByExport

@@ -24,3 +24,5 @@ object Scalaz extends LiftMapPackage
   with LiftZipWithPackage
   with LiftMinimumPackage
   with LiftMaximumPackage
+  with LiftMinimumByPackage
+  with LiftMaximumByPackage

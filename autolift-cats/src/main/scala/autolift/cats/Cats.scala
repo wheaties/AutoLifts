@@ -21,3 +21,5 @@ object Cats extends LiftMapPackage
   with LiftTraversePackage
   with LiftMinimumPackage
   with LiftMaximumPackage
+  with LiftMinimumByPackage
+  with LiftMaximumByPackage
