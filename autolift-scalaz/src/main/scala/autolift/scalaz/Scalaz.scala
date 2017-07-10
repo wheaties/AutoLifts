@@ -22,3 +22,5 @@ object Scalaz extends LiftMapPackage
   with LiftReversePackage
   with LiftZipPackage
   with LiftZipWithPackage
+  with LiftMinimumPackage
+  with LiftMaximumPackage

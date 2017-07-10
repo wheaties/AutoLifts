@@ -18,6 +18,8 @@ object fold extends LiftFoldPackage
   with LiftFoldMapPackage
   with LiftExistsPackage
   with LiftForAllPackage
+  with LiftMinimumPackage
+  with LiftMaximumPackage
 
 object traverse extends LiftSequencePackage
   with LiftTraversePackage
