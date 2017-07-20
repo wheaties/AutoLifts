@@ -27,10 +27,6 @@ trait LowPriorityCatsLiftExists{
     }
 }
 
-trait LiftExistsExport{
+trait LiftExistsPackage extends LiftExistsSyntax with LiftExistsContext{
   implicit def mkAny[Obj, Fn](implicit lift: CatsLiftExists[Obj, Fn]): CatsLiftExists.Aux[Obj, Fn, lift.Out] = lift
 }
-
-trait LiftExistsPackage extends LiftExistsExport
-  with LiftExistsSyntax
-  with LiftExistsContext

@@ -1,7 +1,7 @@
 package autolift.scalaz
 
 import scalaz.{Functor, MonadPlus}
-import autolift.{LiftFilter, LiftFilterSyntax}
+import autolift.{LiftFilter, LiftFilterSyntax, LiftFilterContext}
 
 trait ScalazLiftFilter[Obj, Fn] extends LiftFilter[Obj, Fn]
 
@@ -22,9 +22,7 @@ trait LowPriorityScalazLiftFilter{
     }
 }
 
-trait LiftFilterExport{
+
+trait LiftFilterPackage extends LiftFilterSyntax with LiftFilterContext{
   implicit def mkFil[Obj, Fn](implicit lift: ScalazLiftFilter[Obj, Fn]): ScalazLiftFilter[Obj, Fn] = lift
 }
-
-trait LiftFilterPackage extends LiftFilterExport
-  with LiftFilterSyntax

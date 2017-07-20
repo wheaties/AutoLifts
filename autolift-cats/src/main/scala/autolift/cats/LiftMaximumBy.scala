@@ -35,14 +35,8 @@ final class LiftedMaximumBy[A, B : Order](f: A => B){
   def apply[That](that: That)(implicit lift: LiftMaximumBy[That, A => B]): lift.Out = lift(that, f)
 }
 
-trait LiftMaximumByContext{
+trait LiftMaximumByPackage extends LiftMaximumBySyntax{
+  implicit def mkMaxBy[Obj, Fn](implicit lift: CatsLiftMaximumBy[Obj, Fn]): CatsLiftMaximumBy.Aux[Obj, Fn, lift.Out] = lift
+
   def liftMaxBy[A, B : Order](f: A => B) = new LiftedMaximumBy(f)
 }
-
-trait LiftMaximumByExport{
-  implicit def mkMaxBy[Obj, Fn](implicit lift: CatsLiftMaximumBy[Obj, Fn]): CatsLiftMaximumBy.Aux[Obj, Fn, lift.Out] = lift
-}
-
-trait LiftMaximumByPackage extends LiftMaximumByExport
-  with LiftMaximumBySyntax
-  with LiftMaximumByContext

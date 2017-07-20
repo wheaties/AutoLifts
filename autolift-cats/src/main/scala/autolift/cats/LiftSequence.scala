@@ -27,9 +27,6 @@ trait LowPriorityCatsLiftSequence{
     }
 }
 
-trait LiftSequenceExport{
+trait LiftSequencePackage extends LiftSequenceSyntax{
   implicit def mkSq[M[_], Obj](implicit lift: CatsLiftSequence[M, Obj]): CatsLiftSequence.Aux[M, Obj, lift.Out] = lift
 }
-
-trait LiftSequencePackage extends LiftSequenceExport
-  with LiftSequenceSyntax

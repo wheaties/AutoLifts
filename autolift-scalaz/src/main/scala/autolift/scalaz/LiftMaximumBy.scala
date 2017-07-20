@@ -3,7 +3,7 @@ package autolift.scalaz
 import scalaz.{Functor, Foldable, Order}
 import autolift.{LiftMaximumBy, LiftMaximumBySyntax}
 
-trait ScalazLiftMaximumBy[Obj, Fn] extends LiftMaximumBy[Obj, Fn] with Serializable
+trait ScalazLiftMaximumBy[Obj, Fn] extends LiftMaximumBy[Obj, Fn]
 
 object ScalazLiftMaximumBy extends LowPriorityScalazLiftMaximumBy{
   def apply[Obj, A](implicit lift: ScalazLiftMaximumBy[Obj, A]): Aux[Obj, A, lift.Out] = lift

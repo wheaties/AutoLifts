@@ -27,9 +27,6 @@ trait LowPriorityCatsLiftFold {
     }
 }
 
-trait LiftFoldExport{
+trait LiftFoldPackage extends LiftFoldSyntax{
   implicit def mkFlA[M[_], Obj](implicit lift: CatsLiftFold[M, Obj]): CatsLiftFold.Aux[M, Obj, lift.Out] = lift
 }
-
-trait LiftFoldPackage extends LiftFoldExport 
-  with LiftFoldSyntax

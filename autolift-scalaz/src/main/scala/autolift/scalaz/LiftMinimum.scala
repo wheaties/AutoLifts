@@ -27,9 +27,6 @@ trait LowPriorityScalazLiftMinimum{
     }
 }
 
-trait LiftMinimumExport{
+trait LiftMinimumPackage extends LiftMinimumSyntax{
   implicit def mkMin[Obj, A](implicit lift: ScalazLiftMinimum[Obj, A]): ScalazLiftMinimum.Aux[Obj, A, lift.Out] = lift
 }
-
-trait LiftMinimumPackage extends LiftMinimumExport
-  with LiftMinimumSyntax

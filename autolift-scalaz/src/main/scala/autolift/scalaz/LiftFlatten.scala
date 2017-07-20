@@ -27,9 +27,6 @@ trait LowPriorityScalazLiftFlatten{
     }
 }
 
-trait LiftFlattenExport{
+trait LiftFlattenPackage extends LiftFlattenSyntax{
   implicit def mkFl[M[_], Obj](implicit lift: ScalazLiftFlatten[M, Obj]): ScalazLiftFlatten.Aux[M, Obj, lift.Out] = lift
 }
-
-trait LiftFlattenPackage extends LiftFlattenExport
-  with LiftFlattenSyntax

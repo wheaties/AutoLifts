@@ -14,10 +14,9 @@ The syntax extension adds the method `liftZipWith` to any object of whose type c
 ```tut
 val item1 = Option(List(1, 2))
 val item2 = List(1, 2)
-def add(x: Int, y: Int) = x + y
 
 val out = item1.map{ inner: List[Int] =>
-  (inner zip item2) map (add(_,_).tupled)
+  (inner zip item2) map { case (x, y) => x+y }
 }
 ```
 

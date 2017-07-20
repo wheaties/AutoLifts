@@ -27,9 +27,6 @@ trait LowPriorityScalazLiftMaximum{
     }
 }
 
-trait LiftMaximumExport{
-  implicit def mkMin[Obj, A](implicit lift: ScalazLiftMaximum[Obj, A]): ScalazLiftMaximum.Aux[Obj, A, lift.Out] = lift
+trait LiftMaximumPackage extends LiftMaximumSyntax{
+  implicit def mkMax[Obj, A](implicit lift: ScalazLiftMaximum[Obj, A]): ScalazLiftMaximum.Aux[Obj, A, lift.Out] = lift
 }
-
-trait LiftMaximumPackage extends LiftMaximumExport
-  with LiftMaximumSyntax

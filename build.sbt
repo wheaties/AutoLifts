@@ -63,7 +63,8 @@ lazy val docs = build("docs", "docs")
     ghpagesNoJekyll := false,
     git.remoteRepo := "git@github.com:wheaties/autolifts.git",
     autoAPIMappings := true,
-    includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.md"
+    includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.md",
+    scalacOptions += "-Ypartial-unification"
   )
   .settings(site.includeScaladoc(): _*)
   .settings(site.jekyllSupport(): _*)

@@ -6,10 +6,10 @@ import autolift.Scalaz._
 
 class LiftReverseTest extends BaseSpec{
   "liftReverse on a List" should "work" in{
-  	val in = List(1, 2, 3)
-  	val out = in.liftReverse
+    val in = List(1, 2, 3)
+    val out = in.liftReverse
 
-  	same[List[Int]](out, List(3, 2, 1))
+    same[List[Int]](out, List(3, 2, 1))
   }
 
   "liftReverse on a NEList[List]" should "work" in{

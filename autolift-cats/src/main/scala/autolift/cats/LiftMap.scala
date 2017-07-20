@@ -27,17 +27,10 @@ trait LowPriorityCatsLiftMap{
     }
 }
 
-trait LiftedMapImplicits{
+trait LiftMapPackage extends LiftMapSyntax with LiftMapContext{
   implicit def liftedMapFunctor[A] = new Functor[LiftedMap[A, ?]]{
     def map[B, C](lm: LiftedMap[A, B])(f: B => C) = lm map f
   }
-}
 
-trait LiftMapExport{
   implicit def mkM[Obj, Fn](implicit lift: CatsLiftMap[Obj, Fn]): CatsLiftMap.Aux[Obj, Fn, lift.Out] = lift
 }
-
-trait LiftMapPackage extends LiftMapExport
-  with LiftedMapImplicits
-  with LiftMapSyntax
-  with LiftMapContext

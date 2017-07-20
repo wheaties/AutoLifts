@@ -41,21 +41,12 @@ final class LiftedAp[A, B, F[_]](protected val f: F[A => B])(implicit ap: Apply[
   def apply[That](that: That)(implicit lift: LiftAp[That, F[A => B]]): lift.Out = lift(that, f)
 }
 
-trait LiftedApImplicits{
+trait LiftApPackage extends LiftApSyntax{
+  implicit def mkAp[Obj, Fn](implicit lift: ScalazLiftAp[Obj, Fn]): ScalazLiftAp.Aux[Obj, Fn, lift.Out] = lift
+
   implicit def liftedApFunctor[A, F[_]] = new Functor[LiftedAp[A, ?, F]]{
     def map[B, C](lap: LiftedAp[A, B, F])(f: B => C) = lap map f
   }
-}
 
-trait LiftApContext{
   def liftAp[A, B, F[_]](f: F[A => B])(implicit ap: Apply[F]) = new LiftedAp(f)
 }
-
-trait LiftApExport{
-  implicit def mkAp[Obj, Fn](implicit lift: ScalazLiftAp[Obj, Fn]): ScalazLiftAp.Aux[Obj, Fn, lift.Out] = lift
-}
-
-trait LiftApPackage extends LiftApExport
-  with LiftApSyntax 
-  with LiftApContext
-  with LiftedApImplicits

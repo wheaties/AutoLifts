@@ -30,17 +30,10 @@ trait LowPriorityCatsLiftMergeWith{
     }
 }
 
-trait LiftedMergeWithImplicits{
+trait LiftMergeWithPackage extends LiftMergeWithSyntax with LiftMergeWithContext{
   implicit def liftedMergeWithFunctor[A, B] = new Functor[LiftedMergeWith[A, B, ?]]{
     def map[C, D](lm: LiftedMergeWith[A, B, C])(f: C => D) = lm map f
   }
-}
 
-trait LiftMergeWithExport{
   implicit def mkJw[Obj1, Obj2, Fn](implicit lift: CatsLiftMergeWith[Obj1, Obj2, Fn]): CatsLiftMergeWith.Aux[Obj1, Obj2, Fn, lift.Out] = lift
 }
-
-trait LiftMergeWithPackage extends LiftMergeWithExport
-  with LiftedMergeWithImplicits
-  with LiftMergeWithSyntax
-  with LiftMergeWithContext

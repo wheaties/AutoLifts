@@ -27,22 +27,14 @@ trait LowPriorityScalazLiftExists {
     }
 }
 
-trait LiftAnySyntax{
+trait LiftAnyPackage {
   implicit class LiftAnyOps[F[_], A](fa: F[A]){
     def liftAny[B](f: B => Boolean)(implicit lift: LiftExists[F[A], B => Boolean]): lift.Out = lift(fa, f)
   }
-}
 
-trait LiftAnyContext{
   def liftAny[A](f: A => Boolean): LiftedAny[A] = new LiftedExists(f)
 
   type LiftedAny[A] = LiftedExists[A]
-}
 
-trait LiftAnyExport{
   implicit def mkAny[Obj, Fn](implicit lift: ScalazLiftExists[Obj, Fn]): ScalazLiftExists.Aux[Obj, Fn, lift.Out] = lift
 }
-
-trait LiftAnyPackage extends LiftAnyExport
-  with LiftAnySyntax
-  with LiftAnyContext

@@ -28,10 +28,6 @@ trait LowPriorityCatsLiftForAll{
     }
 }
 
-trait LiftForAllExport{
+trait LiftForAllPackage extends LiftForAllSyntax with LiftForAllContext{
   implicit def mkAll[Obj, Fn](implicit lift: CatsLiftForAll[Obj, Fn]): CatsLiftForAll.Aux[Obj, Fn, lift.Out] = lift
 }
-
-trait LiftForAllPackage extends LiftForAllExport
-  with LiftForAllSyntax
-  with LiftForAllContext

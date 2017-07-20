@@ -1,7 +1,7 @@
 package autolift.cats
 
 import cats.{MonadFilter, Functor}
-import autolift.{LiftFilter, LiftFilterSyntax}
+import autolift.{LiftFilter, LiftFilterSyntax, LiftFilterContext}
 
 trait CatsLiftFilter[Obj, Fn] extends LiftFilter[Obj, Fn] with Serializable
 
@@ -21,9 +21,6 @@ trait LowPriorityCatsLiftFilter{
     }
 }
 
-trait LiftFilterExport{
+trait LiftFilterPackage extends LiftFilterSyntax with LiftFilterContext{
   implicit def mkFil[Obj, Fn](implicit lift: CatsLiftFilter[Obj, Fn]): CatsLiftFilter[Obj, Fn] = lift
 }
-
-trait LiftFilterPackage extends LiftFilterExport
-  with LiftFilterSyntax

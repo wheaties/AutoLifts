@@ -14,13 +14,12 @@ The syntax extension adds the method `liftMerge` to any object of whose type can
 ```tut
 val item1 = Option(List(1, 2))
 val item2 = List(1, 2)
-def add(x: Int, y: Int) = x + y
 
 item1.map{ ints =>
   for{
-    x <- itns
+    x <- ints
     y <- item2
-  } yield add(x, y)
+  } yield x + y
 }
 ```
 
@@ -33,7 +32,6 @@ import autolift.Scalaz._
 
 val item1 = Option(List(1, 2))
 val item2 = List(1, 2)
-def add(x: Int, y: Int) = x + y
 
-val out = item1.liftMerge(item2)(add)
+val out = item1.liftMerge(item2)
 ```

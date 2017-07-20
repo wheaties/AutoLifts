@@ -27,9 +27,6 @@ trait LowPriorityCatsLiftMaximum{
     }
 }
 
-trait LiftMaximumExport{
-  implicit def mkMin[Obj, A](implicit lift: CatsLiftMaximum[Obj, A]): CatsLiftMaximum.Aux[Obj, A, lift.Out] = lift
+trait LiftMaximumPackage extends LiftMaximumSyntax{
+  implicit def mkMax[Obj, A](implicit lift: CatsLiftMaximum[Obj, A]): CatsLiftMaximum.Aux[Obj, A, lift.Out] = lift
 }
-
-trait LiftMaximumPackage extends LiftMaximumExport
-  with LiftMaximumSyntax

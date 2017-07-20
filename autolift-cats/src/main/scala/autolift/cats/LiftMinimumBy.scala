@@ -35,14 +35,8 @@ final class LiftedMinimumBy[A, B : Order](f: A => B){
   def apply[That](that: That)(implicit lift: LiftMinimumBy[That, A => B]): lift.Out = lift(that, f)
 }
 
-trait LiftMinimumByContext{
+trait LiftMinimumByPackage extends LiftMinimumBySyntax{
+  implicit def mkMinBy[Obj, Fn](implicit lift: CatsLiftMinimumBy[Obj, Fn]): CatsLiftMinimumBy.Aux[Obj, Fn, lift.Out] = lift
+
   def liftMinBy[A, B : Order](f: A => B) = new LiftedMinimumBy(f)
 }
-
-trait LiftMinimumByExport{
-  implicit def mkMinBy[Obj, Fn](implicit lift: CatsLiftMinimumBy[Obj, Fn]): CatsLiftMinimumBy.Aux[Obj, Fn, lift.Out] = lift
-}
-
-trait LiftMinimumByPackage extends LiftMinimumByExport
-  with LiftMinimumBySyntax
-  with LiftMinimumByContext

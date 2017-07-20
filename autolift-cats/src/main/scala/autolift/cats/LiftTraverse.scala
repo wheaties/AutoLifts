@@ -33,20 +33,12 @@ final class LiftedTraverse[M[_], A, B](protected val f: A => M[B])(implicit ap: 
   def apply[That](that: That)(implicit lift: LiftTraverse[That, A => M[B]]): lift.Out = lift(that, f)
 }
 
-trait LiftedTraverseImplicits{
+trait LiftTraversePackage extends LiftTraverseSyntax{
   implicit def functor[M[_], A] = new Functor[LiftedTraverse[M, A, ?]]{
     def map[B, C](lt: LiftedTraverse[M, A, B])(f: B => C) = lt map f
   }
-}
 
-trait LiftTraverseContext{
+  implicit def mkTv[Obj, Fn](implicit lift: CatsLiftTraverse[Obj, Fn]): CatsLiftTraverse.Aux[Obj, Fn, lift.Out] = lift
+
   def liftTraverse[M[_], A, B](f: A => M[B])(implicit ap: Applicative[M]) = new LiftedTraverse(f)
 }
-
-trait LiftTraverseExport{
-  implicit def mkTv[Obj, Fn](implicit lift: CatsLiftTraverse[Obj, Fn]): CatsLiftTraverse.Aux[Obj, Fn, lift.Out] = lift
-}
-
-trait LiftTraversePackage extends LiftTraverseExport
-  with LiftTraverseContext
-  with LiftTraverseSyntax

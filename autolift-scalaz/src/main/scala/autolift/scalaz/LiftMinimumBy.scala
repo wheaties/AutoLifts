@@ -3,7 +3,7 @@ package autolift.scalaz
 import scalaz.{Functor, Foldable, Order}
 import autolift.{LiftMinimumBy, LiftMinimumBySyntax}
 
-trait ScalazLiftMinimumBy[Obj, Fn] extends LiftMinimumBy[Obj, Fn] with Serializable
+trait ScalazLiftMinimumBy[Obj, Fn] extends LiftMinimumBy[Obj, Fn]
 
 object ScalazLiftMinimumBy extends LowPriorityScalazLiftMinimumBy{
   def apply[Obj, A](implicit lift: ScalazLiftMinimumBy[Obj, A]): Aux[Obj, A, lift.Out] = lift

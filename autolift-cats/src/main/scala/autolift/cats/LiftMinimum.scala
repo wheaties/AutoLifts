@@ -27,9 +27,6 @@ trait LowPriorityCatsLiftMinimum{
     }
 }
 
-trait LiftMinimumExport{
+trait LiftMinimumPackage extends LiftMinimumSyntax{
   implicit def mkMin[Obj, A](implicit lift: CatsLiftMinimum[Obj, A]): CatsLiftMinimum.Aux[Obj, A, lift.Out] = lift
 }
-
-trait LiftMinimumPackage extends LiftMinimumExport
-  with LiftMinimumSyntax

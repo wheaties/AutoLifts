@@ -37,14 +37,8 @@ final class LiftedFoldMap[A, B : Monoid](f: A => B){
   def apply[That](that: That)(implicit lift: LiftFoldMap[That, A => B]): lift.Out = lift(that, f)
 }
 
-trait LiftFoldMapContext{
+trait LiftFoldMapPackage extends LiftFoldMapSyntax{
+  implicit def mkFlM[Obj, Fn](implicit lift: CatsLiftFoldMap[Obj, Fn]): CatsLiftFoldMap.Aux[Obj, Fn, lift.Out] = lift
+
   def liftFoldMap[A, B : Monoid](f: A => B) = new LiftedFoldMap(f)
 }
-
-trait LiftFoldMapExport{
-  implicit def mkFlM[Obj, Fn](implicit lift: CatsLiftFoldMap[Obj, Fn]): CatsLiftFoldMap.Aux[Obj, Fn, lift.Out] = lift
-}
-
-trait LiftFoldMapPackage extends LiftFoldMapExport
-  with LiftFoldMapContext
-  with LiftFoldMapSyntax
