@@ -17,7 +17,7 @@ matrix:
       jdk: oraclejdk7
 
 script:
-  - sbt clean compile coverage test && sbt coverageAggregate
+  - ./travish-bash.sh
 
 before_install:
   - pip install --user codecov
