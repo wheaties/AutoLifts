@@ -4,7 +4,7 @@ import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 import sbtunidoc.Plugin.UnidocKeys._
 
 lazy val root = (project in file(".")).settings(
-  scalaVersion := ScalaVersion,
+  scalaVersion := AutoLift.ScalaVersion,
   publishArtifact := false
 )
 .aggregate(core, autoAlge, autoScalaz, autoCats, docs)
