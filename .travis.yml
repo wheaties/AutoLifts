@@ -9,13 +9,6 @@ scala:
 jdk:
   - oraclejdk8
 
-matrix:
-  include:
-    - scala: 2.11.11
-      jdk: openjdk7
-    - scala: 2.11.11
-      jdk: oraclejdk7
-
 script:
   - sbt clean compile coverage test && sbt coverageAggregate
 

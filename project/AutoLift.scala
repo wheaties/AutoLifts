@@ -22,6 +22,7 @@ object AutoLift{
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % "3.0.0" % "test"
       ),
+      crossScalaVersions := Seq("2.11.11"),
       sonatypeProfileName := "wheaties"
     )
 
