@@ -5,6 +5,7 @@ import sbtunidoc.Plugin.UnidocKeys._
 
 lazy val root = (project in file(".")).settings(
   scalaVersion := AutoLift.ScalaVersion,
+  crossScalaVersions := Seq("2.11.11", AutoLift.ScalaVersion),
   publishArtifact := false
 )
 .aggregate(core, autoAlge, autoScalaz, autoCats, docs)
